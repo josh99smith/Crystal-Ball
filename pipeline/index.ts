@@ -15,6 +15,7 @@ import { buildDigest, digestToMarkdown } from "./digest";
 import { fetchDailyCloses, type PriceBar } from "./marketdata/stooq";
 import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
 import { heuristicOutcomes } from "./scenarios/heuristic";
+import { fetchRateContext, fomcOutcomesFromRates } from "./scenarios/weighting";
 import { fixtureEvents } from "./fixtures";
 import { FredProvider, fredKindFromId, RELEASES } from "./providers/fred";
 import { FinnhubProvider } from "./providers/finnhub";
@@ -95,7 +96,18 @@ async function addScenarios(events: MarketEvent[]): Promise<MarketEvent[]> {
     `[pipeline] scenarios via ${useClaude ? "Claude" : "heuristic"} for ${events.length} events`,
   );
 
+  // Market-implied FOMC weights from Treasury rates (free), when available.
+  let rateCtx = null;
+  if (fred.isConfigured() && events.some((e) => e.category === "monetary-policy")) {
+    rateCtx = await fetchRateContext(fred);
+    console.log(`[pipeline] FOMC weights: ${rateCtx ? "Treasury-implied" : "heuristic (no rate data)"}`);
+  }
+
   const generate = async (event: MarketEvent) => {
+    // FOMC: prefer market-based weights over the LLM/heuristic.
+    if (event.category === "monetary-policy" && rateCtx) {
+      return { ...event, outcomes: fomcOutcomesFromRates(event, rateCtx) };
+    }
     if (useClaude) {
       try {
         return { ...event, outcomes: await claudeOutcomes(event) };

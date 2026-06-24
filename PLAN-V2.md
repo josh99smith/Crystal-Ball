@@ -128,8 +128,11 @@
   math — scroll to zoom, drag to pan), density clustering, generalized axis ticks,
   selected-node outcome fan, decade cyclical markers (BTC halvings + US
   elections). Remaining: recession-probability band (needs a data source).
-- **v2.2 — Trustworthy weights:** market-implied FOMC odds, consensus/actual for
-  econ data, blended weighting with provenance.
+- **v2.2 — Trustworthy weights:** ◑ FOMC hike/hold/cut weighted by a free
+  Treasury-rate proxy (3M T-bill vs policy rate) for fed-funds-futures odds, with
+  visible provenance on every weight; heuristic fallback when rate data is
+  absent. Remaining: consensus/actual for econ-data outcomes (needs a free
+  consensus source) and options-implied earnings magnitude.
 - **v2.3 — Calibration loop:** predictions ledger (persisted + scored),
   reliability diagram, per-category accuracy.
 - **v2.4 — Correlation depth:** multi-window studies, outcome-conditional

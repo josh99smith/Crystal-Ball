@@ -88,6 +88,26 @@ export class FredProvider implements EventProvider {
     }
   }
 
+  /** Latest numeric observation of a FRED series (e.g. DFF, DGS3MO). null if missing. */
+  async latestValue(seriesId: string): Promise<number | null> {
+    if (!this.isConfigured()) return null;
+    const url = new URL(`${FRED_BASE}/series/observations`);
+    url.searchParams.set("series_id", seriesId);
+    url.searchParams.set("api_key", this.apiKey);
+    url.searchParams.set("file_type", "json");
+    url.searchParams.set("sort_order", "desc");
+    url.searchParams.set("limit", "1");
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const body = (await res.json()) as { observations?: Array<{ value: string }> };
+      const v = Number(body.observations?.[0]?.value);
+      return Number.isFinite(v) ? v : null;
+    } catch {
+      return null;
+    }
+  }
+
   async fetchEvents(window: FetchWindow): Promise<MarketEvent[]> {
     if (!this.isConfigured()) return [];
 

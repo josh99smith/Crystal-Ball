@@ -53,6 +53,8 @@ export interface Outcome {
   assetImpacts: AssetImpact[];
   /** One-line explanation of the scenario and its market reaction. */
   rationale?: string;
+  /** What the probability weight is derived from (shown in the UI). */
+  provenance?: string;
 }
 
 export type LinkTier = "structural" | "historical";

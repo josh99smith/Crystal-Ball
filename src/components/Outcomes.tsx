@@ -86,6 +86,7 @@ export function OutcomeList({
                 <span className={`oc-src src-${o.weightSource}`}>{o.weightSource}</span>
               </div>
               {o.rationale && <p className="oc-rationale">{o.rationale}</p>}
+              {o.provenance && <p className="oc-provenance">basis: {o.provenance}</p>}
               {o.assetImpacts.length > 0 && (
                 <div className="oc-impacts">
                   {o.assetImpacts.map((im) => (

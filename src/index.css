@@ -587,6 +587,13 @@ body {
   font-size: 12px;
   color: var(--muted);
 }
+.oc-provenance {
+  margin: 0 0 5px;
+  font-size: 10.5px;
+  font-style: italic;
+  color: var(--accent-2);
+  opacity: 0.85;
+}
 .oc-impacts {
   display: flex;
   flex-wrap: wrap;

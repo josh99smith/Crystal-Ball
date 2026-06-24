@@ -147,6 +147,7 @@ function fromTemplates(event: MarketEvent, templates: OutcomeTemplate[]): Outcom
       weightSource: "historical",
       assetImpacts,
       rationale: t.rationale,
+      provenance: "Historical base rates (illustrative)",
     };
   });
 }
@@ -171,6 +172,7 @@ function earningsOutcomes(event: MarketEvent): Outcome[] {
       weightSource: "historical",
       assetImpacts: impactSet("up"),
       rationale: `${ticker}tops estimates / lifts guidance — stock gaps up, modest index lift.`,
+      provenance: "Historical base rates (illustrative)",
     },
     {
       id: "inline",
@@ -179,6 +181,7 @@ function earningsOutcomes(event: MarketEvent): Outcome[] {
       weightSource: "historical",
       assetImpacts: [],
       rationale: "Results roughly in line; reaction driven by guidance nuance.",
+      provenance: "Historical base rates (illustrative)",
     },
     {
       id: "miss",
@@ -187,6 +190,7 @@ function earningsOutcomes(event: MarketEvent): Outcome[] {
       weightSource: "historical",
       assetImpacts: impactSet("down"),
       rationale: `${ticker}disappoints — stock sells off, small index drag.`,
+      provenance: "Historical base rates (illustrative)",
     },
   ];
 }
@@ -201,6 +205,7 @@ function genericOutcomes(): Outcome[] {
       weightSource: "historical",
       assetImpacts: [],
       rationale: "Base case: outcome near expectations, limited market impact.",
+      provenance: "Historical base rates (illustrative)",
     },
     {
       id: "surprise",
@@ -209,6 +214,7 @@ function genericOutcomes(): Outcome[] {
       weightSource: "historical",
       assetImpacts: [],
       rationale: "Tail case: an unexpected result drives a larger move in linked assets.",
+      provenance: "Historical base rates (illustrative)",
     },
   ];
 }
