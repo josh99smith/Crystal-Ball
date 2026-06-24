@@ -279,9 +279,9 @@ Weights must be **honest and sourced**, not vibes:
 - ✅ Reliability/calibration surface: event-study scorecard (per event type ×
   asset: same-direction rate, avg |move|, sample size, strength), asset-filtered.
 - ✅ Breadth: computed **market-structure** events (monthly OpEx + quarterly
-  triple witching), always available with no API key.
-- ⬜ More categories/assets (FOMC, more tickers); anticipated (non-scheduled)
-  event detection from news (GDELT).
+  triple witching) and **FOMC** rate decisions (curated dates), both keyless,
+  with structural + historical correlation and hike/hold/cut scenarios.
+- ⬜ More tickers; anticipated (non-scheduled) event detection from news (GDELT).
 
 ## 9. Tech Stack (proposed)
 

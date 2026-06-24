@@ -26,6 +26,30 @@ interface OutcomeTemplate {
 
 // Direction templates keyed by event "kind".
 const TEMPLATES: Record<string, OutcomeTemplate[]> = {
+  // FOMC rate decision: hawkish (or hike) = risk-off; dovish (or cut) = risk-on.
+  fomc: [
+    {
+      id: "hawkish",
+      label: "Hawkish / hike",
+      weight: 0.25,
+      rationale: "Hawkish surprise: yields & USD up, risk assets and gold fall.",
+      dir: { US10Y: "up", USD: "up", SPX: "down", NDX: "down", GOLD: "down", BTC: "down" },
+    },
+    {
+      id: "hold",
+      label: "Hold as expected",
+      weight: 0.5,
+      rationale: "Hold; reaction driven by the statement and dot plot.",
+      dir: {},
+    },
+    {
+      id: "dovish",
+      label: "Dovish / cut",
+      weight: 0.25,
+      rationale: "Dovish surprise: yields & USD fall, risk assets and gold rally.",
+      dir: { US10Y: "down", USD: "down", SPX: "up", NDX: "up", GOLD: "up", BTC: "up" },
+    },
+  ],
   // Inflation prints (CPI, PCE): hot = hawkish/risk-off.
   inflation: [
     {
@@ -191,6 +215,7 @@ function genericOutcomes(): Outcome[] {
 
 export function heuristicOutcomes(event: MarketEvent): Outcome[] {
   if (event.category === "earnings") return earningsOutcomes(event);
+  if (event.category === "monetary-policy") return fromTemplates(event, TEMPLATES.fomc);
   const kind = fredKindFromId(event.id);
   const templateKey = kind ? KIND_TO_TEMPLATE[kind] : undefined;
   if (templateKey) return fromTemplates(event, TEMPLATES[templateKey]);

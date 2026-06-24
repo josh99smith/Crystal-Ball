@@ -19,6 +19,7 @@ import { fixtureEvents } from "./fixtures";
 import { FredProvider, fredKindFromId, RELEASES } from "./providers/fred";
 import { FinnhubProvider } from "./providers/finnhub";
 import { MarketStructureProvider } from "./providers/marketstructure";
+import { FomcProvider, FOMC_DECISION_DATES } from "./providers/fomc";
 import type { EventProvider } from "./providers/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -33,9 +34,33 @@ const STUDY_YEARS = 6;
 const fred = new FredProvider();
 // Keyed providers gate on API keys; computed providers are always available.
 const KEYED_PROVIDERS: EventProvider[] = [fred, new FinnhubProvider()];
-const COMPUTED_PROVIDERS: EventProvider[] = [new MarketStructureProvider()];
+const COMPUTED_PROVIDERS: EventProvider[] = [
+  new MarketStructureProvider(),
+  new FomcProvider(),
+];
 
-const KIND_LABEL = new Map(RELEASES.map((r) => [r.kind, r.title]));
+const KIND_LABEL = new Map<string, string>([
+  ...RELEASES.map((r) => [r.kind, r.title] as [string, string]),
+  ["fomc", "FOMC rate decision"],
+]);
+
+/** Correlation "kind" for an event (FRED releases, fixtures, and FOMC). */
+function kindOf(event: MarketEvent): string | undefined {
+  if (event.id.startsWith("fomc-")) return "fomc";
+  return fredKindFromId(event.id);
+}
+
+/** Past occurrence dates for an event kind, for the event study. */
+async function pastDatesFor(kind: string, from: Date, to: Date): Promise<string[]> {
+  if (kind === "fomc") {
+    return FOMC_DECISION_DATES.filter((d) => {
+      const t = new Date(`${d}T18:00:00Z`);
+      return t >= from && t <= to;
+    });
+  }
+  const rel = RELEASES.find((r) => r.kind === kind);
+  return rel ? fred.releaseDates(rel.releaseId, from, to) : [];
+}
 
 /** Recover an event's correlation "kind" from its id (provider-specific). */
 function kindFor(event: MarketEvent): string | undefined {
@@ -126,10 +151,10 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<Historic
       ...e,
       links: [...e.links, ...sampleHistoricalLinks(e)],
     }));
-    // One representative event per fred-kind seeds the sample scorecard.
+    // One representative event per kind seeds the sample scorecard.
     const byKind = new Map<string, EventAssetLink[]>();
     for (const e of withLinks) {
-      const kind = fredKindFromId(e.id);
+      const kind = kindOf(e);
       if (kind && !byKind.has(kind)) {
         byKind.set(kind, e.links.filter((l) => l.tier === "historical"));
       }
@@ -139,7 +164,7 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<Historic
 
   const from = new Date(now.getTime() - STUDY_YEARS * 365 * 24 * 60 * 60 * 1000);
   const kinds = new Set(
-    events.map((e) => fredKindFromId(e.id)).filter((k): k is string => !!k),
+    events.map((e) => kindOf(e)).filter((k): k is string => !!k),
   );
   if (kinds.size === 0) return { events, calibration: [] };
 
@@ -159,15 +184,13 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<Historic
   // Event study per kind.
   const linksByKind = new Map<string, EventAssetLink[]>();
   for (const kind of kinds) {
-    const rel = RELEASES.find((r) => r.kind === kind);
-    if (!rel) continue;
-    const dates = await fred.releaseDates(rel.releaseId, from, now);
-    linksByKind.set(kind, historicalLinks(dates, pricesByAsset));
+    const dates = await pastDatesFor(kind, from, now);
+    if (dates.length) linksByKind.set(kind, historicalLinks(dates, pricesByAsset));
   }
 
   console.log(`[pipeline] historical tier: event study over ${pricesByAsset.size} assets`);
   const withLinks = events.map((e) => {
-    const kind = fredKindFromId(e.id);
+    const kind = kindOf(e);
     const hist = kind ? linksByKind.get(kind) ?? [] : [];
     return { ...e, links: [...e.links, ...hist] };
   });

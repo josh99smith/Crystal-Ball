@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-24T16:48:13.303Z",
+  "generatedAt": "2026-06-24T17:53:43.776Z",
   "assets": [
     {
       "id": "SPX",
@@ -57,7 +57,7 @@
       "id": "fred-us-cpi-2026-06-28",
       "title": "US CPI (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-06-28T16:48:13.303Z",
+      "scheduledAt": "2026-06-28T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -246,7 +246,7 @@
       "id": "fred-us-nfp-2026-07-03",
       "title": "US Employment Situation (NFP) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-03T16:48:13.303Z",
+      "scheduledAt": "2026-07-03T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -410,7 +410,7 @@
       "id": "finnhub-earnings-NVDA-2026-07-06",
       "title": "NVDA earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-06T16:48:13.303Z",
+      "scheduledAt": "2026-07-06T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -524,7 +524,7 @@
       "id": "fred-us-pce-2026-07-11",
       "title": "US Personal Income & Outlays (PCE) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-11T16:48:13.303Z",
+      "scheduledAt": "2026-07-11T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.75,
       "source": "fixture",
@@ -663,7 +663,7 @@
       "id": "finnhub-earnings-AAPL-2026-07-15",
       "title": "AAPL earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-15T16:48:13.303Z",
+      "scheduledAt": "2026-07-15T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -836,7 +836,7 @@
       "id": "fred-us-gdp-2026-07-20",
       "title": "US GDP (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-20T16:48:13.303Z",
+      "scheduledAt": "2026-07-20T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -950,7 +950,7 @@
       "id": "finnhub-earnings-MSFT-2026-07-24",
       "title": "MSFT earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-24T16:48:13.303Z",
+      "scheduledAt": "2026-07-24T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -1054,7 +1054,7 @@
       "id": "fred-us-cpi-2026-07-28",
       "title": "US CPI (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-28T16:48:13.303Z",
+      "scheduledAt": "2026-07-28T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -1240,10 +1240,199 @@
       ]
     },
     {
+      "id": "fomc-2026-07-29",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2026-07-29T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "fred-us-nfp-2026-08-03",
       "title": "US Employment Situation (NFP) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-08-03T16:48:13.303Z",
+      "scheduledAt": "2026-08-03T17:53:43.776Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -1463,6 +1652,195 @@
       ]
     },
     {
+      "id": "fomc-2026-09-16",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2026-09-16T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-tw-2026-09-18",
       "title": "Triple witching",
       "category": "market-structure",
@@ -1581,6 +1959,195 @@
       ]
     },
     {
+      "id": "fomc-2026-11-04",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2026-11-04T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-opex-2026-11-20",
       "title": "Monthly options expiry (OpEx)",
       "category": "market-structure",
@@ -1636,6 +2203,195 @@
           "weightSource": "historical",
           "assetImpacts": [],
           "rationale": "Tail case: an unexpected result drives a larger move in linked assets."
+        }
+      ]
+    },
+    {
+      "id": "fomc-2026-12-16",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2026-12-16T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
         }
       ]
     },
@@ -1758,6 +2514,195 @@
       ]
     },
     {
+      "id": "fomc-2027-01-27",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-01-27T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-opex-2027-02-19",
       "title": "Monthly options expiry (OpEx)",
       "category": "market-structure",
@@ -1813,6 +2758,195 @@
           "weightSource": "historical",
           "assetImpacts": [],
           "rationale": "Tail case: an unexpected result drives a larger move in linked assets."
+        }
+      ]
+    },
+    {
+      "id": "fomc-2027-03-17",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-03-17T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
         }
       ]
     },
@@ -1935,6 +3069,195 @@
       ]
     },
     {
+      "id": "fomc-2027-04-28",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-04-28T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-opex-2027-05-21",
       "title": "Monthly options expiry (OpEx)",
       "category": "market-structure",
@@ -1990,6 +3313,195 @@
           "weightSource": "historical",
           "assetImpacts": [],
           "rationale": "Tail case: an unexpected result drives a larger move in linked assets."
+        }
+      ]
+    },
+    {
+      "id": "fomc-2027-06-16",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-06-16T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
         }
       ]
     },
@@ -2112,6 +3624,195 @@
       ]
     },
     {
+      "id": "fomc-2027-07-28",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-07-28T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-opex-2027-08-20",
       "title": "Monthly options expiry (OpEx)",
       "category": "market-structure",
@@ -2230,6 +3931,195 @@
       ]
     },
     {
+      "id": "fomc-2027-09-22",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-09-22T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-opex-2027-10-15",
       "title": "Monthly options expiry (OpEx)",
       "category": "market-structure",
@@ -2289,6 +4179,195 @@
       ]
     },
     {
+      "id": "fomc-2027-11-03",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-11-03T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
+        }
+      ]
+    },
+    {
       "id": "mktstruct-opex-2027-11-19",
       "title": "Monthly options expiry (OpEx)",
       "category": "market-structure",
@@ -2344,6 +4423,195 @@
           "weightSource": "historical",
           "assetImpacts": [],
           "rationale": "Tail case: an unexpected result drives a larger move in linked assets."
+        }
+      ]
+    },
+    {
+      "id": "fomc-2027-12-15",
+      "title": "FOMC rate decision",
+      "category": "monetary-policy",
+      "scheduledAt": "2027-12-15T18:00:00.000Z",
+      "isScheduled": true,
+      "expectedImpact": 0.9,
+      "source": "fomc",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.9
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.5
+        },
+        {
+          "asset": "US10Y",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 25,
+            "avgAbsMovePct": 1.6,
+            "directionHitRate": 0.56
+          }
+        },
+        {
+          "asset": "USD",
+          "tier": "historical",
+          "strength": 0.71,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 1.8,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "SPX",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 24,
+            "avgAbsMovePct": 1.5,
+            "directionHitRate": 0.61
+          }
+        },
+        {
+          "asset": "NDX",
+          "tier": "historical",
+          "strength": 0.55,
+          "stats": {
+            "n": 17,
+            "avgAbsMovePct": 0.8,
+            "directionHitRate": 0.78
+          }
+        },
+        {
+          "asset": "GOLD",
+          "tier": "historical",
+          "strength": 0.47,
+          "stats": {
+            "n": 21,
+            "avgAbsMovePct": 0.6,
+            "directionHitRate": 0.76
+          }
+        },
+        {
+          "asset": "BTC",
+          "tier": "historical",
+          "strength": 0.53,
+          "stats": {
+            "n": 34,
+            "avgAbsMovePct": 1.3,
+            "directionHitRate": 0.65
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "id": "hawkish",
+          "label": "Hawkish / hike",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hawkish surprise: yields & USD up, risk assets and gold fall."
+        },
+        {
+          "id": "hold",
+          "label": "Hold as expected",
+          "weight": 0.5,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Hold; reaction driven by the statement and dot plot."
+        },
+        {
+          "id": "dovish",
+          "label": "Dovish / cut",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Dovish surprise: yields & USD fall, risk assets and gold rally."
         }
       ]
     },
@@ -2762,13 +5030,13 @@
     }
   ],
   "digest": {
-    "generatedAt": "2026-06-24T16:48:13.303Z",
+    "generatedAt": "2026-06-24T17:53:43.776Z",
     "headline": "1 notable event in the next 7 days, 1 high-impact.",
     "daily": [
       {
         "eventId": "fred-us-cpi-2026-06-28",
         "title": "US CPI (sample)",
-        "scheduledAt": "2026-06-28T16:48:13.303Z",
+        "scheduledAt": "2026-06-28T17:53:43.776Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -2782,7 +5050,7 @@
       {
         "eventId": "fred-us-cpi-2026-06-28",
         "title": "US CPI (sample)",
-        "scheduledAt": "2026-06-28T16:48:13.303Z",
+        "scheduledAt": "2026-06-28T17:53:43.776Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -2794,7 +5062,7 @@
       {
         "eventId": "fred-us-nfp-2026-07-03",
         "title": "US Employment Situation (NFP) (sample)",
-        "scheduledAt": "2026-07-03T16:48:13.303Z",
+        "scheduledAt": "2026-07-03T17:53:43.776Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -2806,7 +5074,7 @@
       {
         "eventId": "fred-us-pce-2026-07-11",
         "title": "US Personal Income & Outlays (PCE) (sample)",
-        "scheduledAt": "2026-07-11T16:48:13.303Z",
+        "scheduledAt": "2026-07-11T17:53:43.776Z",
         "category": "economic-data",
         "expectedImpact": 0.75,
         "topAssets": [
@@ -2818,7 +5086,7 @@
       {
         "eventId": "finnhub-earnings-NVDA-2026-07-06",
         "title": "NVDA earnings (sample)",
-        "scheduledAt": "2026-07-06T16:48:13.303Z",
+        "scheduledAt": "2026-07-06T17:53:43.776Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -2830,7 +5098,7 @@
       {
         "eventId": "finnhub-earnings-AAPL-2026-07-15",
         "title": "AAPL earnings (sample)",
-        "scheduledAt": "2026-07-15T16:48:13.303Z",
+        "scheduledAt": "2026-07-15T17:53:43.776Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -2842,7 +5110,7 @@
       {
         "eventId": "fred-us-gdp-2026-07-20",
         "title": "US GDP (sample)",
-        "scheduledAt": "2026-07-20T16:48:13.303Z",
+        "scheduledAt": "2026-07-20T17:53:43.776Z",
         "category": "economic-data",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -2854,7 +5122,7 @@
       {
         "eventId": "finnhub-earnings-MSFT-2026-07-24",
         "title": "MSFT earnings (sample)",
-        "scheduledAt": "2026-07-24T16:48:13.303Z",
+        "scheduledAt": "2026-07-24T17:53:43.776Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -2897,6 +5165,15 @@
       "strength": 0.71
     },
     {
+      "kind": "fomc",
+      "kindLabel": "FOMC rate decision",
+      "asset": "USD",
+      "n": 21,
+      "avgAbsMovePct": 1.8,
+      "directionHitRate": 0.76,
+      "strength": 0.71
+    },
+    {
       "kind": "us-pce",
       "kindLabel": "US Personal Income & Outlays (PCE)",
       "asset": "USD",
@@ -2922,6 +5199,33 @@
       "avgAbsMovePct": 1.4,
       "directionHitRate": 0.66,
       "strength": 0.57
+    },
+    {
+      "kind": "fomc",
+      "kindLabel": "FOMC rate decision",
+      "asset": "NDX",
+      "n": 17,
+      "avgAbsMovePct": 0.8,
+      "directionHitRate": 0.78,
+      "strength": 0.55
+    },
+    {
+      "kind": "fomc",
+      "kindLabel": "FOMC rate decision",
+      "asset": "SPX",
+      "n": 24,
+      "avgAbsMovePct": 1.5,
+      "directionHitRate": 0.61,
+      "strength": 0.53
+    },
+    {
+      "kind": "fomc",
+      "kindLabel": "FOMC rate decision",
+      "asset": "BTC",
+      "n": 34,
+      "avgAbsMovePct": 1.3,
+      "directionHitRate": 0.65,
+      "strength": 0.53
     },
     {
       "kind": "us-nfp",
@@ -2958,6 +5262,24 @@
       "avgAbsMovePct": 0.8,
       "directionHitRate": 0.72,
       "strength": 0.48
+    },
+    {
+      "kind": "fomc",
+      "kindLabel": "FOMC rate decision",
+      "asset": "US10Y",
+      "n": 25,
+      "avgAbsMovePct": 1.6,
+      "directionHitRate": 0.56,
+      "strength": 0.47
+    },
+    {
+      "kind": "fomc",
+      "kindLabel": "FOMC rate decision",
+      "asset": "GOLD",
+      "n": 21,
+      "avgAbsMovePct": 0.6,
+      "directionHitRate": 0.76,
+      "strength": 0.47
     },
     {
       "kind": "us-cpi",

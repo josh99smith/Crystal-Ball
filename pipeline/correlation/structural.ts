@@ -8,6 +8,15 @@ import type { EventAssetLink } from "../../shared/schema";
  * added later (Phase 3) from event-study analysis.
  */
 const STRUCTURAL_LINKS: Record<string, Array<[asset: string, strength: number]>> = {
+  // FOMC rate decision — the broadest monetary-policy driver.
+  fomc: [
+    ["US10Y", 0.9],
+    ["USD", 0.8],
+    ["SPX", 0.8],
+    ["NDX", 0.78],
+    ["GOLD", 0.65],
+    ["BTC", 0.5],
+  ],
   // US Consumer Price Index — inflation print: rates, USD, gold, broad equities.
   "us-cpi": [
     ["US10Y", 0.85],
