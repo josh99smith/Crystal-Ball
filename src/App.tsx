@@ -16,10 +16,11 @@ import { DigestView } from "./components/DigestView";
 import { BriefView } from "./components/BriefView";
 import { ReliabilityView } from "./components/ReliabilityView";
 import { AssetChart } from "./components/AssetChart";
+import { StrategyLab } from "./components/StrategyLab";
 import { CryptoTicker } from "./components/CryptoTicker";
 
-type View = "timeline" | "brief" | "digest" | "reliability" | "chart";
-const VIEWS: View[] = ["timeline", "brief", "digest", "reliability", "chart"];
+type View = "timeline" | "brief" | "digest" | "reliability" | "chart" | "lab";
+const VIEWS: View[] = ["timeline", "brief", "digest", "reliability", "chart", "lab"];
 const SCALE_IDS = TIMELINE_SCALES.map((s) => s.id);
 
 const initial = readUrlState();
@@ -151,6 +152,14 @@ export function App() {
             >
               Chart
             </button>
+            <button
+              role="tab"
+              aria-selected={view === "lab"}
+              className={view === "lab" ? "vt active" : "vt"}
+              onClick={() => setView("lab")}
+            >
+              Lab
+            </button>
           </div>
 
           {view === "chart" && (
@@ -235,6 +244,15 @@ export function App() {
               )}
               pastMarkers={pastEvents}
               onSelect={setSelectedEvent}
+            />
+          )}
+          {view === "lab" && (
+            <StrategyLab
+              assets={bundle.assets}
+              prices={prices}
+              pastMarkers={pastEvents}
+              events={bundle.events}
+              defaultAsset={chartAsset}
             />
           )}
         </div>

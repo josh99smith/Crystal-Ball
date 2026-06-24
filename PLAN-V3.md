@@ -100,8 +100,11 @@ Seven pillars:
   Live Q&A deferred to v3.6 (serverless proxy).
 - **v3.2 — Personalization & delivery:** portfolio + event-risk exposure;
   calendar (.ics) export; personalized digest; scheduled email brief.
-- **v3.3 — Strategy lab:** client-side event-rule backtester + EV calculator,
-  calibration-aware.
+- **v3.3 — Strategy lab:** ✅ client-side backtester — pick asset + event type +
+  long/short + 1d/3d horizon; reports occurrences, win rate, avg/median/cumulative
+  return, best/worst over the published price history, with small-sample warnings.
+  Plus a forward expected-move read from the next event's weighted outcomes.
+  Remaining: longer price history for deeper backtests; multi-leg rules.
 - **v3.4 — Deeper data:** market-implied probs, consensus/actual, more assets.
 - **v3.5 — Model rigor:** calibration-driven weighting, multi-event control,
   regimes, confidence intervals.
