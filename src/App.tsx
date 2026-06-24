@@ -7,20 +7,25 @@ import {
 import { useDataBundle } from "./useDataBundle";
 import { AssetSelector } from "./components/AssetSelector";
 import { Timeline } from "./components/Timeline";
+import { EventDetail } from "./components/EventDetail";
+import { DigestView } from "./components/DigestView";
+import { CryptoTicker } from "./components/CryptoTicker";
+
+type View = "timeline" | "digest";
 
 export function App() {
   const state = useDataBundle();
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
   const [scale, setScale] = useState<TimelineScaleId>("monthly");
+  const [view, setView] = useState<View>("timeline");
+  const [selectedEvent, setSelectedEvent] = useState<MarketEvent | null>(null);
 
   const scaleDays = useMemo(
     () => TIMELINE_SCALES.find((s) => s.id === scale)!.days,
     [scale],
   );
 
-  if (state.status === "loading") {
-    return <Shell>Loading forecasts…</Shell>;
-  }
+  if (state.status === "loading") return <Shell>Loading forecasts…</Shell>;
   if (state.status === "error") {
     return (
       <Shell>
@@ -42,43 +47,98 @@ export function App() {
       const t = Date.parse(e.scheduledAt);
       return t >= now && t <= horizon;
     })
-    .filter((e) => relevant(e, selected));
+    .filter((e) => relevant(e, selectedAssets));
+
+  const eventsById = new Map(bundle.events.map((e) => [e.id, e]));
 
   return (
-    <Shell>
+    <Shell ticker={<CryptoTicker />}>
       <div className="controls">
         <AssetSelector
           assets={bundle.assets}
-          selected={selected}
+          selected={selectedAssets}
           onToggle={(id) =>
-            setSelected((prev) => {
+            setSelectedAssets((prev) => {
               const next = new Set(prev);
               next.has(id) ? next.delete(id) : next.add(id);
               return next;
             })
           }
-          onClear={() => setSelected(new Set())}
+          onClear={() => setSelectedAssets(new Set())}
         />
-        <div className="scales" role="tablist" aria-label="Timeline scale">
-          {TIMELINE_SCALES.map((s) => (
+
+        <div className="toolbar">
+          <div className="view-toggle" role="tablist" aria-label="View">
             <button
-              key={s.id}
               role="tab"
-              aria-selected={scale === s.id}
-              className={scale === s.id ? "scale active" : "scale"}
-              onClick={() => setScale(s.id)}
+              aria-selected={view === "timeline"}
+              className={view === "timeline" ? "vt active" : "vt"}
+              onClick={() => setView("timeline")}
             >
-              {s.label}
+              Timeline
             </button>
-          ))}
+            <button
+              role="tab"
+              aria-selected={view === "digest"}
+              className={view === "digest" ? "vt active" : "vt"}
+              onClick={() => setView("digest")}
+            >
+              Digest
+            </button>
+          </div>
+
+          {view === "timeline" && (
+            <div className="scales" role="tablist" aria-label="Timeline scale">
+              {TIMELINE_SCALES.map((s) => (
+                <button
+                  key={s.id}
+                  role="tab"
+                  aria-selected={scale === s.id}
+                  className={scale === s.id ? "scale active" : "scale"}
+                  onClick={() => setScale(s.id)}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      <Timeline events={visible} selected={selected} />
+      <div className="stage">
+        <div className="stage-main">
+          {view === "timeline" ? (
+            <Timeline
+              events={visible}
+              scale={scale}
+              horizonDays={scaleDays}
+              selectedAssets={selectedAssets}
+              selectedEventId={selectedEvent?.id ?? null}
+              onSelect={setSelectedEvent}
+            />
+          ) : (
+            <DigestView
+              digest={bundle.digest}
+              eventsById={eventsById}
+              onSelect={(e) => {
+                setSelectedEvent(e);
+                setView("timeline");
+              }}
+            />
+          )}
+        </div>
+
+        <EventDetail
+          event={selectedEvent}
+          selectedAssets={selectedAssets}
+          onClose={() => setSelectedEvent(null)}
+        />
+      </div>
 
       <footer className="meta">
         Data generated {new Date(bundle.generatedAt).toLocaleString()} ·{" "}
-        {visible.length} events shown · Not financial advice.
+        {view === "timeline" ? `${visible.length} events shown · ` : ""}
+        Not financial advice.
       </footer>
     </Shell>
   );
@@ -90,14 +150,23 @@ function relevant(event: MarketEvent, selected: Set<string>): boolean {
   return event.links.some((l) => selected.has(l.asset));
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({
+  children,
+  ticker,
+}: {
+  children: React.ReactNode;
+  ticker?: React.ReactNode;
+}) {
   return (
     <div className="app">
       <header className="masthead">
-        <h1>🔮 Crystal-Ball</h1>
-        <p className="tagline">
-          Market-moving events ahead — weighted outcomes &amp; asset correlation.
-        </p>
+        <div>
+          <h1>🔮 Crystal-Ball</h1>
+          <p className="tagline">
+            Market-moving events ahead — weighted outcomes &amp; asset correlation.
+          </p>
+        </div>
+        {ticker}
       </header>
       {children}
     </div>

@@ -1,64 +1,98 @@
-import type { MarketEvent } from "../../shared/schema";
+import { useMemo } from "react";
+import type { MarketEvent, TimelineScaleId } from "../../shared/schema";
+import { CATEGORY_META } from "../../shared/categories";
+import { axisTicks, layoutEvents } from "../timelineLayout";
 
 interface Props {
   events: MarketEvent[];
-  selected: Set<string>;
+  scale: TimelineScaleId;
+  horizonDays: number;
+  selectedAssets: Set<string>;
+  selectedEventId: string | null;
+  onSelect: (event: MarketEvent) => void;
 }
+
+const LANE_HEIGHT = 46;
 
 /**
- * Phase 0/1 timeline: a chronological list of upcoming events with impact and
- * asset-link badges. The richer zoomable axis with weighted outcome fans
- * (PLAN §2.1) arrives in later phases.
+ * Horizontal, zoomable timeline (PLAN §2.1/§2.4). Events are positioned by date
+ * across the window, sized by impact, colored by category, and stacked into
+ * lanes to avoid overlap. Clicking a node opens the detail panel.
  */
-export function Timeline({ events, selected }: Props) {
+export function Timeline({
+  events,
+  scale,
+  horizonDays,
+  selectedAssets,
+  selectedEventId,
+  onSelect,
+}: Props) {
+  const { now, horizon } = useMemo(() => {
+    const n = new Date();
+    return {
+      now: n,
+      horizon: new Date(n.getTime() + horizonDays * 24 * 60 * 60 * 1000),
+    };
+  }, [horizonDays]);
+
+  const ticks = useMemo(() => axisTicks(now, horizon, scale), [now, horizon, scale]);
+  const { positioned, laneCount } = useMemo(
+    () => layoutEvents(events, now, horizon),
+    [events, now, horizon],
+  );
+
   if (events.length === 0) {
-    return <p className="muted empty">No events in this window for the current filter.</p>;
+    return (
+      <p className="muted empty">No events in this window for the current filter.</p>
+    );
   }
 
-  return (
-    <ol className="timeline">
-      {events.map((e) => (
-        <li key={e.id} className="event">
-          <div className="event-date">
-            <time dateTime={e.scheduledAt}>
-              {new Date(e.scheduledAt).toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              })}
-            </time>
-          </div>
-          <div className="event-body">
-            <div className="event-title-row">
-              <span className="event-title">{e.title}</span>
-              <span className={`impact impact-${impactBand(e.expectedImpact)}`}>
-                {impactBand(e.expectedImpact)} impact
-              </span>
-            </div>
-            <div className="event-links">
-              {[...e.links]
-                .sort((a, b) => b.strength - a.strength)
-                .map((l) => (
-                  <span
-                    key={l.asset}
-                    className={
-                      selected.has(l.asset) ? "link-badge hit" : "link-badge"
-                    }
-                    title={`${l.tier} link · strength ${l.strength.toFixed(2)}`}
-                  >
-                    {l.asset}
-                    <i className="link-strength" style={{ opacity: l.strength }} />
-                  </span>
-                ))}
-            </div>
-          </div>
-        </li>
-      ))}
-    </ol>
-  );
-}
+  const height = laneCount * LANE_HEIGHT + 28;
 
-function impactBand(v: number): "low" | "med" | "high" {
-  if (v >= 0.8) return "high";
-  if (v >= 0.5) return "med";
-  return "low";
+  return (
+    <div className="timeline-wrap">
+      <div className="timeline-axis" style={{ height }}>
+        {/* gridlines + tick labels */}
+        {ticks.map((t, i) => (
+          <div key={i} className="tick" style={{ left: `${t.pct}%` }}>
+            <span className="tick-label">{t.label}</span>
+          </div>
+        ))}
+        {/* "now" marker */}
+        <div className="now-marker" style={{ left: 0 }}>
+          <span className="now-label">now</span>
+        </div>
+
+        {/* event nodes */}
+        {positioned.map(({ event, pct, lane }) => {
+          const meta = CATEGORY_META[event.category];
+          const hit =
+            selectedAssets.size > 0 &&
+            event.links.some((l) => selectedAssets.has(l.asset));
+          const size = 12 + event.expectedImpact * 12;
+          return (
+            <button
+              key={event.id}
+              className={
+                "node" +
+                (selectedEventId === event.id ? " selected" : "") +
+                (hit ? " hit" : "")
+              }
+              style={{
+                left: `${pct}%`,
+                top: lane * LANE_HEIGHT + 18,
+                ["--node-color" as string]: meta.color,
+                width: size,
+                height: size,
+              }}
+              title={`${event.title} · ${meta.label}`}
+              onClick={() => onSelect(event)}
+            >
+              <span className="node-label">{event.title}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }

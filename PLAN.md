@@ -250,15 +250,15 @@ Weights must be **honest and sourced**, not vibes:
 - Provider abstraction layer; ingest **FRED release-dates** (economic calendar)
   end-to-end as the first free source, output as static JSON.
 
-### Phase 1 — Timeline MVP + digest (1–2 weeks)
-- Static SPA on Pages with a read-only, **zoomable multi-scale timeline**
+### Phase 1 — Timeline MVP + digest (1–2 weeks) — ✅ done
+- ✅ Static SPA on Pages with a read-only, **zoomable multi-scale timeline**
   (daily → decade, §2.4) reading the precomputed JSON.
-- Static structural correlation map + asset selector (filter by relevance) for
+- ✅ Static structural correlation map + asset selector (filter by relevance) for
   the v1 asset universe.
-- Live client-side crypto (CoinGecko/Binance) + earnings calendar (Finnhub) in
-  the Actions pipeline.
-- Event detail panel + a generated **daily/weekly digest** (`digest.md` →
-  rendered page).
+- ✅ Live client-side crypto (CoinGecko) + earnings calendar (Finnhub) in the
+  Actions pipeline.
+- ✅ Event detail panel + a generated **daily/weekly digest** (`digest.md` +
+  rendered Digest view).
 
 ### Phase 2 — Weighted outcomes (1–2 weeks)
 - Scenario engine: enumerate outcomes; ingest market-implied + consensus inputs.

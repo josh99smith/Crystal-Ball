@@ -5,18 +5,20 @@ import { fileURLToPath } from "node:url";
 import type { DataBundle, MarketEvent } from "../shared/schema";
 import { ASSET_UNIVERSE } from "../shared/assets";
 import { structuralLinksFor } from "./correlation/structural";
+import { buildDigest, digestToMarkdown } from "./digest";
 import { fixtureEvents } from "./fixtures";
 import { FredProvider, fredKindFromId } from "./providers/fred";
+import { FinnhubProvider } from "./providers/finnhub";
 import type { EventProvider } from "./providers/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT = resolve(__dirname, "../public/data/events.json");
+const DATA_DIR = resolve(__dirname, "../public/data");
 
 // How far forward the pipeline ingests scheduled events. Longer horizons
 // (annual/decade) lean on cyclical models added in later phases.
 const HORIZON_DAYS = 730;
 
-const PROVIDERS: EventProvider[] = [new FredProvider()];
+const PROVIDERS: EventProvider[] = [new FredProvider(), new FinnhubProvider()];
 
 /** Recover an event's correlation "kind" from its id (provider-specific). */
 function kindFor(event: MarketEvent): string | undefined {
@@ -26,10 +28,15 @@ function kindFor(event: MarketEvent): string | undefined {
   return undefined;
 }
 
+/**
+ * Attach correlation links. Providers that already know an event's links (e.g.
+ * single-name earnings) keep theirs; otherwise links are looked up by kind.
+ */
 function attachLinks(events: MarketEvent[]): MarketEvent[] {
   return events.map((event) => {
+    if (event.links.length > 0) return event;
     const kind = kindFor(event);
-    return { ...event, links: kind ? structuralLinksFor(kind) : event.links };
+    return { ...event, links: kind ? structuralLinksFor(kind) : [] };
   });
 }
 
@@ -60,15 +67,25 @@ async function main() {
     (a, b) => Date.parse(a.scheduledAt) - Date.parse(b.scheduledAt),
   );
 
+  const digest = buildDigest(events, now);
+
   const bundle: DataBundle = {
     generatedAt: now.toISOString(),
     assets: ASSET_UNIVERSE,
     events,
+    digest,
   };
 
-  await mkdir(dirname(OUTPUT), { recursive: true });
-  await writeFile(OUTPUT, JSON.stringify(bundle, null, 2) + "\n");
-  console.log(`[pipeline] wrote ${events.length} events → ${OUTPUT}`);
+  await mkdir(DATA_DIR, { recursive: true });
+  await writeFile(
+    resolve(DATA_DIR, "events.json"),
+    JSON.stringify(bundle, null, 2) + "\n",
+  );
+  await writeFile(resolve(DATA_DIR, "digest.md"), digestToMarkdown(digest));
+
+  console.log(
+    `[pipeline] wrote ${events.length} events + digest → ${DATA_DIR}`,
+  );
 }
 
 main().catch((err) => {

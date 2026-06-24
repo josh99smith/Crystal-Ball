@@ -1,4 +1,5 @@
 import type { MarketEvent } from "../shared/schema";
+import { earningsLinksFor } from "./correlation/structural";
 
 /**
  * Sample events used when no provider is configured (e.g. local dev without a
@@ -31,11 +32,28 @@ export function fixtureEvents(now: Date): MarketEvent[] {
     };
   };
 
+  const earnings = (ticker: string, days: number): MarketEvent => {
+    const when = at(days);
+    return {
+      id: `finnhub-earnings-${ticker}-${datePart(when)}`,
+      title: `${ticker} earnings (sample)`,
+      category: "earnings",
+      scheduledAt: iso(when),
+      isScheduled: true,
+      expectedImpact: 0.7,
+      source: "fixture",
+      links: earningsLinksFor(ticker),
+    };
+  };
+
   return [
     make("us-cpi", "US CPI", 4, 0.85),
     make("us-nfp", "US Employment Situation (NFP)", 9, 0.85),
+    earnings("NVDA", 12),
     make("us-pce", "US Personal Income & Outlays (PCE)", 17, 0.75),
+    earnings("AAPL", 21),
     make("us-gdp", "US GDP", 26, 0.7),
+    earnings("MSFT", 30),
     make("us-cpi", "US CPI", 34, 0.85),
     make("us-nfp", "US Employment Situation (NFP)", 40, 0.85),
   ];

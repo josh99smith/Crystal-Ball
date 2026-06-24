@@ -49,3 +49,23 @@ export function structuralLinksFor(kind: string): EventAssetLink[] {
     strength,
   }));
 }
+
+/**
+ * Structural links for a single-name earnings event: the ticker itself plus the
+ * indices it carries weight in. Only emits links for assets in the v1 universe.
+ */
+export function earningsLinksFor(ticker: string): EventAssetLink[] {
+  const links: EventAssetLink[] = [
+    { asset: ticker, tier: "structural", strength: 0.95 },
+  ];
+  // Megacaps move the cap-weighted indices.
+  const indexWeight: Record<string, Array<[string, number]>> = {
+    NVDA: [["NDX", 0.55], ["SPX", 0.5]],
+    AAPL: [["NDX", 0.55], ["SPX", 0.5]],
+    MSFT: [["NDX", 0.55], ["SPX", 0.5]],
+  };
+  for (const [asset, strength] of indexWeight[ticker] ?? []) {
+    links.push({ asset, tier: "structural", strength });
+  }
+  return links;
+}

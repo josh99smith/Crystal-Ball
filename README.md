@@ -11,17 +11,22 @@ See [`PLAN.md`](./PLAN.md) for the full product/engineering plan.
 
 ## Status
 
-**Phase 0 — Foundations** (scaffolding). Working today:
+**Phase 1 — Timeline MVP + digest.** Working today:
 
-- Static **Vite + React** SPA shell with an **asset selector** and a
-  **multi-scale** (daily → decade) timeline of upcoming events.
-- A **data pipeline** (`pipeline/`) with a provider abstraction and the first
-  free source, **FRED** (economic-release calendar) → static JSON.
+- Static **Vite + React** SPA with an **asset selector** and a **zoomable,
+  horizontal multi-scale timeline** (daily → decade): events positioned by date,
+  sized by impact, colored by category, stacked into lanes, click for detail.
+- An **event detail panel** (date, impact, correlated assets with tier/strength).
+- A generated **daily/weekly digest** view (and `digest.md`).
+- **Live BTC ticker** fetched client-side (CoinGecko, real-time).
+- **Data pipeline** (`pipeline/`) with a provider abstraction and two free
+  sources — **FRED** (economic-release calendar) and **Finnhub** (earnings) —
+  → static JSON, degrading to sample fixtures without keys.
 - A curated **structural correlation map** (event → asset links).
 - **GitHub Pages + Actions** deployment wiring.
 
-Weighted outcome scenarios (Phase 2) and historical correlation (Phase 3) come
-next per the roadmap in `PLAN.md` §8.
+Weighted outcome scenarios (Phase 2, via the Claude API) and historical
+correlation (Phase 3) come next per the roadmap in `PLAN.md` §8.
 
 ## Architecture (static hosting)
 
