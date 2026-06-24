@@ -11,6 +11,14 @@ import type {
 import { ASSET_IDS, ASSET_UNIVERSE } from "../shared/assets";
 import { structuralLinksFor } from "./correlation/structural";
 import { historicalLinks, sampleHistoricalLinks } from "./correlation/historical";
+import {
+  assetsNeedingResolution,
+  buildPredictions,
+  computeMetrics,
+  mergeLedger,
+  resolveDue,
+  type LedgerRecord,
+} from "./calibration";
 import { buildDigest, digestToMarkdown } from "./digest";
 import { fetchDailyCloses, type PriceBar } from "./marketdata/stooq";
 import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
@@ -211,6 +219,53 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<Historic
   return { events: withLinks, calibration: toCalibration(linksByKind) };
 }
 
+// Published site, used to read the previous predictions ledger so calibration
+// accrues across runs (no source-branch commits needed).
+const SITE_URL = process.env.SITE_URL ?? "https://josh99smith.github.io/Crystal-Ball";
+
+async function loadLedger(): Promise<LedgerRecord[]> {
+  try {
+    const res = await fetch(`${SITE_URL}/data/predictions-log.json`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? (data as LedgerRecord[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Calibration loop (PLAN-V2 §2.4): log directional predictions, resolve due ones
+ * from free prices, score, and persist the ledger to the published bundle.
+ */
+async function runCalibrationLoop(events: MarketEvent[], now: Date) {
+  const prev = await loadLedger();
+  let ledger = mergeLedger(prev, buildPredictions(events, now));
+
+  const need = assetsNeedingResolution(ledger, now);
+  if (need.length) {
+    const from = new Date(now.getTime() - 400 * 24 * 60 * 60 * 1000);
+    const prices = new Map<string, PriceBar[]>();
+    await Promise.all(
+      need.map(async (id) => {
+        const bars = await fetchDailyCloses(id, from, now);
+        if (bars.length) prices.set(id, bars);
+      }),
+    );
+    ledger = resolveDue(ledger, now, prices);
+  }
+
+  const metrics = computeMetrics(ledger, now);
+  await writeFile(
+    resolve(DATA_DIR, "predictions-log.json"),
+    JSON.stringify(ledger, null, 2) + "\n",
+  );
+  console.log(
+    `[pipeline] calibration loop: ${metrics.resolved} resolved, ${metrics.pending} pending (ledger ${ledger.length})`,
+  );
+  return metrics;
+}
+
 async function main() {
   const now = new Date();
   const window = {
@@ -250,6 +305,7 @@ async function main() {
   events = historical.events;
 
   const digest = buildDigest(events, now);
+  const calibrationLoop = await runCalibrationLoop(events, now);
 
   const bundle: DataBundle = {
     generatedAt: now.toISOString(),
@@ -257,6 +313,7 @@ async function main() {
     events,
     digest,
     calibration: historical.calibration,
+    calibrationLoop,
   };
 
   await mkdir(DATA_DIR, { recursive: true });

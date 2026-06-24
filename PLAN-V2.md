@@ -133,8 +133,11 @@
   visible provenance on every weight; heuristic fallback when rate data is
   absent. Remaining: consensus/actual for econ-data outcomes (needs a free
   consensus source) and options-implied earnings magnitude.
-- **v2.3 — Calibration loop:** predictions ledger (persisted + scored),
-  reliability diagram, per-category accuracy.
+- **v2.3 — Calibration loop:** ✅ directional predictions ledger — logs implied
+  P(up) per event-asset ahead of time, resolves from free prices once events
+  pass, and scores into reliability bands + Brier + per-category hit-rate. Ledger
+  persists via the published bundle (read prev → republish), accruing across
+  runs. Surfaced in the Reliability view. Accrues over time as events resolve.
 - **v2.4 — Correlation depth:** multi-window studies, outcome-conditional
   reactions, recency/regime weighting, expected-move magnitudes.
 - **v2.5 — Breadth & surfaces:** more assets / central banks / sector ETFs,

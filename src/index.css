@@ -720,6 +720,19 @@ body {
   color: var(--muted);
   margin: 18px 0 6px;
 }
+.rel-section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  margin: 22px 0 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.rel-loop-summary {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
 .rel-table {
   width: 100%;
   border-collapse: collapse;

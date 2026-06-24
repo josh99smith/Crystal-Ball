@@ -131,7 +131,11 @@ export function App() {
             />
           )}
           {view === "reliability" && (
-            <ReliabilityView rows={bundle.calibration} selected={selectedAssets} />
+            <ReliabilityView
+              rows={bundle.calibration}
+              loop={bundle.calibrationLoop}
+              selected={selectedAssets}
+            />
           )}
         </div>
 
