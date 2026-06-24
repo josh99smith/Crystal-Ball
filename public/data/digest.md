@@ -1,6 +1,6 @@
 # Crystal-Ball Digest
 
-_Generated Wed, 24 Jun 2026 16:38:29 GMT_
+_Generated Wed, 24 Jun 2026 16:48:13 GMT_
 
 **1 notable event in the next 7 days, 1 high-impact.**
 
@@ -15,5 +15,6 @@ _Generated Wed, 24 Jun 2026 16:38:29 GMT_
 - **Wed, Jul 15** — AAPL earnings (sample) (earnings, impact 0.70) · AAPL, NDX, SPX
 - **Mon, Jul 20** — US GDP (sample) (economic-data, impact 0.70) · SPX, US10Y, USD
 - **Fri, Jul 24** — MSFT earnings (sample) (earnings, impact 0.70) · MSFT, NDX, SPX
+- **Fri, Jul 17** — Monthly options expiry (OpEx) (market-structure, impact 0.40) · NDX, SPX, NDX
 
 _Not financial advice._

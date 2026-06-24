@@ -2,7 +2,12 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { DataBundle, MarketEvent } from "../shared/schema";
+import type {
+  CalibrationRow,
+  DataBundle,
+  EventAssetLink,
+  MarketEvent,
+} from "../shared/schema";
 import { ASSET_IDS, ASSET_UNIVERSE } from "../shared/assets";
 import { structuralLinksFor } from "./correlation/structural";
 import { historicalLinks, sampleHistoricalLinks } from "./correlation/historical";
@@ -13,6 +18,7 @@ import { heuristicOutcomes } from "./scenarios/heuristic";
 import { fixtureEvents } from "./fixtures";
 import { FredProvider, fredKindFromId, RELEASES } from "./providers/fred";
 import { FinnhubProvider } from "./providers/finnhub";
+import { MarketStructureProvider } from "./providers/marketstructure";
 import type { EventProvider } from "./providers/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -25,7 +31,11 @@ const HORIZON_DAYS = 730;
 const STUDY_YEARS = 6;
 
 const fred = new FredProvider();
-const PROVIDERS: EventProvider[] = [fred, new FinnhubProvider()];
+// Keyed providers gate on API keys; computed providers are always available.
+const KEYED_PROVIDERS: EventProvider[] = [fred, new FinnhubProvider()];
+const COMPUTED_PROVIDERS: EventProvider[] = [new MarketStructureProvider()];
+
+const KIND_LABEL = new Map(RELEASES.map((r) => [r.kind, r.title]));
 
 /** Recover an event's correlation "kind" from its id (provider-specific). */
 function kindFor(event: MarketEvent): string | undefined {
@@ -78,22 +88,60 @@ async function addScenarios(events: MarketEvent[]): Promise<MarketEvent[]> {
   return out;
 }
 
+interface HistoricalResult {
+  events: MarketEvent[];
+  calibration: CalibrationRow[];
+}
+
+/** Flattens per-kind historical links into calibration scorecard rows. */
+function toCalibration(linksByKind: Map<string, EventAssetLink[]>): CalibrationRow[] {
+  const rows: CalibrationRow[] = [];
+  for (const [kind, links] of linksByKind) {
+    for (const l of links) {
+      if (!l.stats) continue;
+      rows.push({
+        kind,
+        kindLabel: KIND_LABEL.get(kind) ?? kind,
+        asset: l.asset,
+        n: l.stats.n,
+        avgAbsMovePct: l.stats.avgAbsMovePct,
+        directionHitRate: l.stats.directionHitRate,
+        strength: l.strength,
+      });
+    }
+  }
+  return rows.sort((a, b) => b.strength - a.strength);
+}
+
 /**
- * Adds the historical (statistical) correlation tier (PLAN §7). With real data
- * (FRED past dates + Stooq prices) it runs an event study per kind; otherwise it
- * attaches deterministic sample stats so the tier is visible in the demo.
+ * Adds the historical (statistical) correlation tier (PLAN §7) and the
+ * calibration scorecard (Phase 4). With real data (FRED past dates + Stooq
+ * prices) it runs an event study per kind; otherwise it attaches deterministic
+ * sample stats so the tier and scorecard are visible in the demo.
  */
-async function addHistorical(events: MarketEvent[], now: Date): Promise<MarketEvent[]> {
+async function addHistorical(events: MarketEvent[], now: Date): Promise<HistoricalResult> {
   if (!fred.isConfigured()) {
     console.log("[pipeline] historical tier: sample (no FRED key)");
-    return events.map((e) => ({ ...e, links: [...e.links, ...sampleHistoricalLinks(e)] }));
+    const withLinks = events.map((e) => ({
+      ...e,
+      links: [...e.links, ...sampleHistoricalLinks(e)],
+    }));
+    // One representative event per fred-kind seeds the sample scorecard.
+    const byKind = new Map<string, EventAssetLink[]>();
+    for (const e of withLinks) {
+      const kind = fredKindFromId(e.id);
+      if (kind && !byKind.has(kind)) {
+        byKind.set(kind, e.links.filter((l) => l.tier === "historical"));
+      }
+    }
+    return { events: withLinks, calibration: toCalibration(byKind) };
   }
 
   const from = new Date(now.getTime() - STUDY_YEARS * 365 * 24 * 60 * 60 * 1000);
   const kinds = new Set(
     events.map((e) => fredKindFromId(e.id)).filter((k): k is string => !!k),
   );
-  if (kinds.size === 0) return events;
+  if (kinds.size === 0) return { events, calibration: [] };
 
   // Fetch each asset's price history once (reused across kinds).
   const pricesByAsset = new Map<string, PriceBar[]>();
@@ -105,11 +153,11 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<MarketEv
   );
   if (pricesByAsset.size === 0) {
     console.warn("[pipeline] historical tier: no price data — skipping");
-    return events;
+    return { events, calibration: [] };
   }
 
   // Event study per kind.
-  const linksByKind = new Map<string, Awaited<ReturnType<typeof historicalLinks>>>();
+  const linksByKind = new Map<string, EventAssetLink[]>();
   for (const kind of kinds) {
     const rel = RELEASES.find((r) => r.kind === kind);
     if (!rel) continue;
@@ -118,11 +166,12 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<MarketEv
   }
 
   console.log(`[pipeline] historical tier: event study over ${pricesByAsset.size} assets`);
-  return events.map((e) => {
+  const withLinks = events.map((e) => {
     const kind = fredKindFromId(e.id);
     const hist = kind ? linksByKind.get(kind) ?? [] : [];
     return { ...e, links: [...e.links, ...hist] };
   });
+  return { events: withLinks, calibration: toCalibration(linksByKind) };
 }
 
 async function main() {
@@ -132,8 +181,9 @@ async function main() {
     to: new Date(now.getTime() + HORIZON_DAYS * 24 * 60 * 60 * 1000),
   };
 
+  // Keyed providers first; fall back to fixtures if none returned data.
   let events: MarketEvent[] = [];
-  for (const provider of PROVIDERS) {
+  for (const provider of KEYED_PROVIDERS) {
     if (!provider.isConfigured()) {
       console.warn(`[pipeline] provider "${provider.id}" not configured — skipping`);
       continue;
@@ -142,10 +192,16 @@ async function main() {
     console.log(`[pipeline] provider "${provider.id}" returned ${fetched.length} events`);
     events.push(...fetched);
   }
-
   if (events.length === 0) {
-    console.warn("[pipeline] no provider data — using fixtures");
+    console.warn("[pipeline] no keyed provider data — using fixtures");
     events = fixtureEvents(now);
+  }
+
+  // Computed providers (no key) always contribute.
+  for (const provider of COMPUTED_PROVIDERS) {
+    const fetched = await provider.fetchEvents(window);
+    console.log(`[pipeline] provider "${provider.id}" returned ${fetched.length} events`);
+    events.push(...fetched);
   }
 
   events = attachLinks(events).sort(
@@ -153,7 +209,8 @@ async function main() {
   );
 
   events = await addScenarios(events);
-  events = await addHistorical(events, now);
+  const historical = await addHistorical(events, now);
+  events = historical.events;
 
   const digest = buildDigest(events, now);
 
@@ -162,6 +219,7 @@ async function main() {
     assets: ASSET_UNIVERSE,
     events,
     digest,
+    calibration: historical.calibration,
   };
 
   await mkdir(DATA_DIR, { recursive: true });

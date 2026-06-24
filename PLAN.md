@@ -275,9 +275,13 @@ Weights must be **honest and sourced**, not vibes:
   (sample size, avg |move|, same-direction rate). Deterministic sample stats
   when no data access, so the tier is visible in the demo.
 
-### Phase 4 — Calibration & breadth
-- Calibration scoring + reliability surface; more event categories & assets;
-  anticipated (non-scheduled) event detection from news.
+### Phase 4 — Calibration & breadth — ◑ in progress
+- ✅ Reliability/calibration surface: event-study scorecard (per event type ×
+  asset: same-direction rate, avg |move|, sample size, strength), asset-filtered.
+- ✅ Breadth: computed **market-structure** events (monthly OpEx + quarterly
+  triple witching), always available with no API key.
+- ⬜ More categories/assets (FOMC, more tickers); anticipated (non-scheduled)
+  event detection from news (GDELT).
 
 ## 9. Tech Stack (proposed)
 

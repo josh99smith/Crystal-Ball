@@ -11,14 +11,21 @@ See [`PLAN.md`](./PLAN.md) for the full product/engineering plan.
 
 ## Status
 
-**Phase 3 — Historical correlation.** Working today:
+**Phase 4 — Calibration & breadth.** Working today:
+
+- **Reliability** view: an event-study scorecard — per event type × asset, the
+  same-direction rate, avg |move|, sample size, and strength (asset-filterable).
+- **Market-structure** events (monthly OpEx + quarterly triple witching),
+  fully computed — real upcoming events with no API key.
+
+Plus from Phase 3:
 
 - Two-tier **event → asset correlation**: curated **structural** links plus a
   **historical** tier from an event study (how each asset actually reacted to
   past occurrences — sample size, avg |move|, same-direction rate). Free,
   keyless price data from **Stooq**; past event dates from **FRED**.
 
-Plus everything from Phase 2:
+Plus from Phase 2:
 
 - Static **Vite + React** SPA with an **asset selector** and a **zoomable,
   horizontal multi-scale timeline** (daily → decade): events positioned by date,

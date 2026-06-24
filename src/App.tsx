@@ -9,9 +9,10 @@ import { AssetSelector } from "./components/AssetSelector";
 import { Timeline } from "./components/Timeline";
 import { EventDetail } from "./components/EventDetail";
 import { DigestView } from "./components/DigestView";
+import { ReliabilityView } from "./components/ReliabilityView";
 import { CryptoTicker } from "./components/CryptoTicker";
 
-type View = "timeline" | "digest";
+type View = "timeline" | "digest" | "reliability";
 
 export function App() {
   const state = useDataBundle();
@@ -85,6 +86,14 @@ export function App() {
             >
               Digest
             </button>
+            <button
+              role="tab"
+              aria-selected={view === "reliability"}
+              className={view === "reliability" ? "vt active" : "vt"}
+              onClick={() => setView("reliability")}
+            >
+              Reliability
+            </button>
           </div>
 
           {view === "timeline" && (
@@ -107,7 +116,7 @@ export function App() {
 
       <div className="stage">
         <div className="stage-main">
-          {view === "timeline" ? (
+          {view === "timeline" && (
             <Timeline
               events={visible}
               scale={scale}
@@ -116,7 +125,8 @@ export function App() {
               selectedEventId={selectedEvent?.id ?? null}
               onSelect={setSelectedEvent}
             />
-          ) : (
+          )}
+          {view === "digest" && (
             <DigestView
               digest={bundle.digest}
               eventsById={eventsById}
@@ -125,6 +135,9 @@ export function App() {
                 setView("timeline");
               }}
             />
+          )}
+          {view === "reliability" && (
+            <ReliabilityView rows={bundle.calibration} selected={selectedAssets} />
           )}
         </div>
 
