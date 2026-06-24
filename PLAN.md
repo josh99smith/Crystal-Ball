@@ -6,7 +6,7 @@
 > user **select assets** to see which events matter to them — based on both
 > obvious structural links and historical statistical correlation.
 
-**Status:** Draft v0.3 · **Owner:** josh99smith · **Last updated:** 2026-06-24
+**Status:** Draft v0.4 · **Owner:** josh99smith · **Last updated:** 2026-06-24
 
 **Decisions locked (this revision):**
 - **v1 asset universe:** US index + megacap tickers, US rates/USD, gold, crude,
@@ -16,6 +16,9 @@
   for equities).
 - **Timeline:** multi-scale — **daily, weekly, monthly, quarterly, annual, and
   decade** horizons (see §2.4).
+- **Surface:** **web app first, with a generated digest** (daily/weekly).
+- **Hosting:** **GitHub Pages** (static) for now → static SPA + a scheduled
+  **GitHub Actions** data pipeline (see §4 & §9.1).
 
 ---
 
@@ -142,7 +145,37 @@ shown as confidence bands and recurring markers, still asset-filtered.
 3. **Correlation Engine** — produces event→asset links (structural + historical).
 4. **Scenario / Outcome Engine** — enumerates outcomes, assigns weights, maps
    each to per-asset directional impact.
-5. **Web App** — the timeline, asset selector, and event detail surfaces.
+5. **Web App** — the timeline, asset selector, event detail, and digest surfaces.
+
+### Static-hosting model (GitHub Pages)
+
+GitHub Pages serves **static files only** — no always-on backend. So the
+pipeline is split:
+
+```
+  ┌─────────────────────────────────────────────────────────────┐
+  │  GitHub Actions (scheduled cron + on push)  — "the backend"  │
+  │  ingest → normalize → correlate → scenario+weight (Claude)   │
+  │  → emit static JSON (events, links, scenarios) + digest.md   │
+  └───────────────────────────┬─────────────────────────────────┘
+                              │ commit/publish artifacts
+                              ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │  GitHub Pages (static SPA)                                    │
+  │  • loads prebuilt JSON for the timeline / scenarios / digest  │
+  │  • fetches CORS-friendly real-time data client-side           │
+  │    (CoinGecko / Binance crypto) for live price overlays       │
+  └─────────────────────────────────────────────────────────────┘
+```
+
+- **Keyed APIs run only in Actions** (FRED, Finnhub, Alpha Vantage, Anthropic) —
+  secrets stay in GitHub repo secrets, never shipped to the browser.
+- **Keyless, CORS-friendly APIs** (CoinGecko, Binance) can be called **live from
+  the browser** for genuine real-time crypto.
+- **Freshness = cron cadence** for everything precomputed: a frequent schedule
+  (e.g. hourly market hours / daily off-hours) refreshes the JSON; the digest is
+  regenerated daily/weekly. This keeps "real-time where free allows" honest
+  within static-hosting limits.
 
 ## 5. Data Model (draft)
 
@@ -211,17 +244,21 @@ Weights must be **honest and sourced**, not vibes:
 ## 8. Roadmap (phased)
 
 ### Phase 0 — Foundations (1 week)
-- Repo scaffolding, CI, `Event` / `Outcome` / `Link` schemas.
+- Repo scaffolding, Vite SPA shell, `Event` / `Outcome` / `Link` schemas.
+- **GitHub Pages + Actions wiring:** `build-and-deploy.yml` (SPA → Pages) and a
+  stub `refresh-data.yml` cron that writes a sample JSON artifact.
 - Provider abstraction layer; ingest **FRED release-dates** (economic calendar)
-  end-to-end as the first free source.
+  end-to-end as the first free source, output as static JSON.
 
-### Phase 1 — Timeline MVP (1–2 weeks)
-- Web app with a read-only, **zoomable multi-scale timeline** (daily → decade,
-  §2.4) of scheduled events.
+### Phase 1 — Timeline MVP + digest (1–2 weeks)
+- Static SPA on Pages with a read-only, **zoomable multi-scale timeline**
+  (daily → decade, §2.4) reading the precomputed JSON.
 - Static structural correlation map + asset selector (filter by relevance) for
   the v1 asset universe.
-- Add free crypto (CoinGecko/Binance, real-time) + earnings calendar (Finnhub).
-- Event detail panel (no weighted outcomes yet).
+- Live client-side crypto (CoinGecko/Binance) + earnings calendar (Finnhub) in
+  the Actions pipeline.
+- Event detail panel + a generated **daily/weekly digest** (`digest.md` →
+  rendered page).
 
 ### Phase 2 — Weighted outcomes (1–2 weeks)
 - Scenario engine: enumerate outcomes; ingest market-implied + consensus inputs.
@@ -238,14 +275,33 @@ Weights must be **honest and sourced**, not vibes:
 
 ## 9. Tech Stack (proposed)
 
-- **Frontend:** React + TypeScript; timeline/scenario viz with **D3** or
-  **visx** (custom timeline with expandable outcome fans).
-- **Backend:** TypeScript/Node service for ingestion, correlation, scenarios.
+- **Frontend:** React + TypeScript, built with **Vite**; timeline/scenario viz
+  with **D3** or **visx** (custom multi-scale timeline with expandable outcome
+  fans). Deployed as a **static SPA to GitHub Pages**.
+- **"Backend" = GitHub Actions** (scheduled cron + on-push): a TypeScript/Node
+  pipeline for ingestion, correlation, and scenario weighting that emits static
+  JSON + the digest. No always-on server (see §9.1).
 - **LLM:** Claude API (Anthropic SDK), structured output via tool use, for
-  scenario synthesis and weighting rationale.
-- **Storage:** Postgres (events, links, prices, predictions); start simpler
-  (SQLite) if useful for the MVP.
-- **Scheduling:** periodic jobs to refresh calendars, prices, and re-weight.
+  scenario synthesis and weighting rationale — runs **inside Actions** so the
+  key stays secret. Default to the latest capable model (e.g. `claude-opus-4-8`).
+- **Storage:** **committed static JSON** in the repo / Pages artifacts for v1
+  (events, links, scenarios, price snapshots, digest). Revisit a real DB only
+  if data volume outgrows git.
+
+### 9.1 Deployment & data pipeline (GitHub Pages + Actions)
+
+- **`build-and-deploy.yml`** — on push to `main`: build the Vite SPA, deploy to
+  Pages.
+- **`refresh-data.yml`** — scheduled cron: run the ingestion/correlation/scenario
+  pipeline, write JSON artifacts + `digest.md`, publish them to the site (commit
+  to a `data/` path or a `gh-pages` data branch).
+- **Secrets:** `ANTHROPIC_API_KEY`, `FRED_API_KEY`, `FINNHUB_API_KEY`, etc. live
+  in **GitHub Actions secrets** — never bundled into the static site.
+- **Client-side live data:** the SPA augments the precomputed JSON with live
+  keyless crypto quotes (CoinGecko/Binance) fetched in-browser.
+- **Constraints to respect:** Pages is static (no server-side rendering / no
+  secret-bearing client calls); cron is the freshness ceiling for precomputed
+  data; free-API rate limits shape the cron cadence.
 
 ### Free / public data providers (v1)
 
@@ -299,19 +355,24 @@ Weights must be **honest and sourced**, not vibes:
 - ✅ **Data:** free/public APIs only for now; real-time where free tiers allow.
 - ✅ **Timeline:** multi-scale — daily, weekly, monthly, quarterly, annual,
   decade.
+- ✅ **Weighting:** lead with market-implied probabilities where free data
+  allows, else consensus + historical base rates (always label the source).
+- ✅ **Surface:** web app first, with a generated daily/weekly digest.
+- ✅ **Hosting:** GitHub Pages (static SPA) + GitHub Actions data pipeline.
 
 **Still open**
-1. **Weighting emphasis** — lead with market-implied probabilities where free
-   data allows, else consensus + historical base rates? (Proposed: yes.)
-2. **Surface** — web app first (proposed), or also alerts/digest later?
-3. **Hosting** — local-only dev first, or a hosted deployment from the start?
+1. **Cron cadence** — how fresh? (Proposed: hourly during US market hours, daily
+   off-hours; digest regenerated daily, fuller weekly edition.)
+2. **Repo layout for data** — commit JSON under `data/` on `main`, or publish to
+   a separate `gh-pages` data branch? (Proposed: `data/` on the Pages branch.)
 
 ---
 
 ## Next Step
 
-Decisions are locked enough to build. Recommended start: **Phase 0** — scaffold
-the repo, define the `Event` / `Outcome` / `Link` schemas and provider
-abstraction, and ingest **FRED release-dates** as the first free economic
-calendar — then the **Phase 1 multi-scale timeline MVP** with the asset
-selector and structural correlation map.
+All blocking decisions are resolved. Recommended start: **Phase 0** — scaffold
+the Vite SPA, define the `Event` / `Outcome` / `Link` schemas and provider
+abstraction, wire **GitHub Pages + Actions** (build/deploy + a stub data-refresh
+cron), and ingest **FRED release-dates** to static JSON — then the **Phase 1**
+multi-scale timeline MVP with the asset selector, structural correlation map,
+and the first digest.
