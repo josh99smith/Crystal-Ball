@@ -1,204 +1,261 @@
-# Crystal-Ball — Future Events Prediction Plan
+# Crystal-Ball — Market Event Forecasting Plan
 
-> A planning document for **Crystal-Ball**, a system that predicts potential
-> future events by reasoning over a user's data signals (calendar, email,
-> documents, and external context) and surfacing likely upcoming events,
-> deadlines, and opportunities before they happen.
+> A planning document for **Crystal-Ball**, a tool that forecasts upcoming
+> events likely to move financial markets, presents them on an **interactive
+> timeline** with **probability-weighted potential outcomes**, and lets the
+> user **select assets** to see which events matter to them — based on both
+> obvious structural links and historical statistical correlation.
 
-**Status:** Draft v0.1 · **Owner:** josh99smith · **Last updated:** 2026-06-24
+**Status:** Draft v0.2 · **Owner:** josh99smith · **Last updated:** 2026-06-24
 
 ---
 
 ## 1. Vision
 
-Crystal-Ball turns the signals a person already generates — meetings, emails,
-files, recurring patterns, and public events — into **forward-looking
-predictions**. Instead of only recording what *has* happened, it answers:
+Markets move on events: central-bank decisions, economic data releases,
+earnings, elections, OPEC meetings, geopolitical shocks, options expiry. Most
+of these are **known in advance** — what's uncertain is the *outcome* and the
+*reaction*.
 
-- *"What is likely to happen next?"*
-- *"What deadline or commitment is approaching that I haven't noticed?"*
-- *"Given my history, what event is probably coming and when?"*
+Crystal-Ball maps the road ahead. For any asset (or basket), it shows:
 
-The goal is a **calibrated, explainable** prediction engine: every prediction
-ships with a confidence score, a time window, and the evidence behind it.
+- **What's coming** — a timeline of scheduled and anticipated market events.
+- **What might happen** — each event broken into weighted potential outcomes.
+- **Why it matters to *you*** — filtered to the assets you hold or watch, with
+  the strength of each event→asset link shown explicitly.
 
-## 2. Goals & Non-Goals
+The product is **decision support, not advice**: calibrated scenarios and
+evidence, never "buy/sell" calls.
 
-### Goals
-- Predict concrete, near-term future events (days to a few months out).
-- Attach a **confidence level** and **predicted time window** to each event.
-- Make every prediction **explainable** — show the signals it was derived from.
-- Continuously improve calibration by scoring past predictions against reality.
+## 2. The Three Pillars (core requirements)
 
-### Non-Goals (for v1)
-- Long-range / speculative forecasting (years out).
-- Financial-market or trading predictions.
-- Fully autonomous actions (booking, sending, paying) without user confirmation.
+### 2.1 Timeline visual with weighted outcomes
+A horizontal time axis (now → forward). Each event is a node placed at its
+date, sized by expected impact and colored by category. Expanding a node
+reveals its **outcome branches** — a small fan of mutually-exclusive scenarios,
+each with a **probability weight** and a **directional impact** on correlated
+assets.
 
-## 3. What "Future Event" Means
+```
+ NOW ───●──────────●────────────●──────────────●──────────►  time
+       CPI       FOMC         NVDA ER        OPEC
+       │          │             │              │
+       ├ Hot 30% ↓ equities, ↑ USD, ↓ gold
+       ├ Inline 50% → muted
+       └ Cool 20% ↑ equities, ↓ USD, ↑ gold
+```
 
-| Category | Examples | Primary signals |
-|----------|----------|-----------------|
-| **Recurring** | Weekly 1:1, monthly report due, annual renewal | Calendar + email history |
-| **Deadline-driven** | Invoice due, contract expiry, subscription renewal | Documents, email, domain/billing data |
-| **Relationship** | Follow-up owed, reply expected, intro likely | Email threads, response patterns |
-| **Lifecycle** | Project milestone, ship date, review cycle | Issues/PRs, docs, calendar |
-| **External** | Conference, holiday, public release affecting user | Web + calendar correlation |
+### 2.2 Asset selector
+The user picks assets or asset **types** (e.g. SPX, gold, crude, US 10Y, USD,
+BTC, a specific ticker, or a whole class like "energy equities"). The timeline
+then filters/ranks events by relevance to that selection.
+
+### 2.3 Event → asset correlation (two tiers)
+Every event is linked to assets through:
+- **Structural / obvious links** — curated rules (FOMC → rates, USD, gold;
+  OPEC → crude, energy; an earnings event → that ticker + its sector ETF).
+- **Historical / statistical links** — measured from how the asset actually
+  reacted to past instances of that event type (sign, magnitude, hit rate).
+
+Each link carries a **strength score** and a label of which tier it came from,
+so the user can tell "obvious" from "data-says."
+
+## 3. What Counts as a Market Event
+
+| Category | Examples | Typically correlated assets |
+|----------|----------|-----------------------------|
+| **Monetary policy** | FOMC, ECB, BoJ, BoE decisions & minutes | Rates/bonds, USD & FX, gold, equities |
+| **Economic data** | CPI, PCE, NFP/jobs, GDP, PMI, retail sales | Bonds, USD, equities, gold |
+| **Earnings** | Single-name & sector heavyweights | The ticker, sector ETF, suppliers/peers |
+| **Commodity / energy** | OPEC+, EIA inventories, weather | Crude, nat gas, energy equities |
+| **Political** | Elections, debt ceiling, legislation, tariffs | Broad indices, FX, sector rotation |
+| **Geopolitical** | Conflict, sanctions, supply shocks | Oil, gold, defense, safe-haven FX |
+| **Crypto** | ETF flows, regulation, halving, unlocks | BTC, ETH, crypto-linked equities |
+| **Market structure** | Options/futures expiry (OpEx, triple witching), index rebalances | Index level, volatility (VIX), affected names |
 
 ## 4. Architecture (High Level)
 
 ```
-        ┌─────────────┐   ┌──────────────┐   ┌─────────────────┐
-        │  Connectors │ → │  Normalizer  │ → │  Signal Store    │
-        │ (Cal, Mail, │   │ (events into │   │ (timeline of     │
-        │  Drive,     │   │  a common    │   │  normalized      │
-        │  Web)       │   │  schema)     │   │  signals)        │
-        └─────────────┘   └──────────────┘   └────────┬────────┘
-                                                       │
-                                            ┌──────────▼──────────┐
-                                            │  Prediction Engine   │
-                                            │  • pattern detection │
-                                            │  • LLM reasoning      │
-                                            │    (Claude API)       │
-                                            │  • confidence scoring │
-                                            └──────────┬──────────┘
-                                                       │
-                          ┌────────────────────────────▼───────────────┐
-                          │  Predictions Store + Calibration / Scoring  │
-                          └────────────────────────────┬───────────────┘
-                                                       │
-                                            ┌──────────▼──────────┐
-                                            │  Surfaces            │
-                                            │  • API / digest      │
-                                            │  • notifications     │
-                                            └─────────────────────┘
+   ┌──────────────────┐    ┌──────────────┐    ┌────────────────────┐
+   │ Event Ingestion  │ →  │  Normalizer  │ →  │  Event Store        │
+   │ • econ calendars │    │ (common      │    │ (scheduled +        │
+   │ • earnings cals  │    │  Event       │    │  anticipated        │
+   │ • mkt structure  │    │  schema)     │    │  events, timeline)  │
+   │ • news/geopol    │    └──────────────┘    └─────────┬──────────┘
+   └──────────────────┘                                  │
+                                                          │
+   ┌──────────────────┐    ┌──────────────────────┐      │
+   │ Market Data       │ → │ Correlation Engine    │ ◄────┤
+   │ • historical px   │   │ • structural rule map │      │
+   │ • event-study     │   │ • historical event    │      │
+   │   reaction sets   │   │   study (react stats) │      │
+   └──────────────────┘   └───────────┬───────────┘      │
+                                       │                  │
+                          ┌────────────▼──────────────────▼─────────┐
+                          │  Scenario / Outcome Engine               │
+                          │  • enumerate outcomes per event          │
+                          │  • weight (market-implied + consensus +  │
+                          │    Claude reasoning), calibrate          │
+                          │  • map each outcome → per-asset impact    │
+                          └────────────────────┬─────────────────────┘
+                                               │
+                       ┌───────────────────────▼────────────────────────┐
+                       │  Web App                                        │
+                       │  • Timeline visual (weighted outcome fans)      │
+                       │  • Asset selector + relevance filter/ranking    │
+                       │  • Event detail: scenarios, links, evidence     │
+                       └─────────────────────────────────────────────────┘
 ```
 
 ### Components
-1. **Connectors** — pull read-only signals from sources (see §5).
-2. **Normalizer** — map heterogeneous inputs into a single `Signal` schema
-   (`{source, type, timestamp, entities, text, metadata}`).
-3. **Signal Store** — an append-only, time-ordered store of normalized signals.
-4. **Prediction Engine** — the core (see §6).
-5. **Predictions Store** — predictions with status (`pending`, `hit`, `miss`,
-   `expired`) for calibration.
-6. **Surfaces** — how predictions reach the user (digest, API, notifications).
+1. **Event Ingestion** — pull scheduled events (economic & earnings calendars,
+   expiry/rebalance schedules) and detect anticipated events (news-driven).
+2. **Market Data** — historical prices for event-study analysis.
+3. **Correlation Engine** — produces event→asset links (structural + historical).
+4. **Scenario / Outcome Engine** — enumerates outcomes, assigns weights, maps
+   each to per-asset directional impact.
+5. **Web App** — the timeline, asset selector, and event detail surfaces.
 
-## 5. Data Sources (available integrations)
+## 5. Data Model (draft)
 
-This environment already exposes connectors we can build on:
-
-- **Google Calendar** — recurring patterns, gaps, scheduled events.
-- **Gmail / Microsoft 365 mail** — commitments, deadlines, expected replies.
-- **Google Drive / SharePoint** — documents with dates, renewals, milestones.
-- **GoDaddy** — domain expiry / renewal events.
-- **Web search / fetch** — external public events to correlate.
-
-> **Privacy note:** all sources are personal data. v1 is read-only and never
-> sends data to third parties beyond the LLM provider used for reasoning.
-> See §9.
-
-## 6. Prediction Engine
-
-A **hybrid** approach — deterministic pattern detection feeds an LLM reasoning
-layer:
-
-1. **Pattern detection (deterministic)**
-   - Detect periodicity (e.g., "meets every other Tuesday").
-   - Detect open loops (email asked a question, no reply yet).
-   - Detect approaching dated items (renewal in 14 days).
-   - Cheap, explainable, high-precision baseline.
-
-2. **LLM reasoning (Claude API)**
-   - Feed the candidate signals + detected patterns to Claude.
-   - Ask it to propose future events with: title, predicted date/window,
-     confidence (0–1), and the evidence signal IDs it used.
-   - Use **structured output** (tool/JSON schema) so predictions are machine-
-     readable and verifiable.
-   - Default to the latest capable model (e.g., `claude-opus-4-8`); use a
-     faster model for cheap candidate generation if needed.
-
-3. **Confidence scoring & calibration**
-   - Combine pattern strength + LLM confidence into a final score.
-   - Score past predictions against what actually happened; adjust thresholds
-     so a stated "80%" really hits ~80% of the time.
-
-### Prediction schema (draft)
 ```json
+// Event
 {
-  "id": "pred_...",
-  "title": "Quarterly report due",
-  "category": "deadline-driven",
-  "predicted_window": { "start": "2026-07-01", "end": "2026-07-07" },
-  "confidence": 0.82,
-  "evidence": ["sig_123", "sig_456"],
-  "rationale": "Reports were submitted in the first week of each prior quarter.",
-  "status": "pending"
+  "id": "evt_2026q3_cpi_jul",
+  "title": "US CPI (June)",
+  "category": "economic-data",
+  "scheduled_at": "2026-07-10T12:30:00Z",
+  "is_scheduled": true,            // false = anticipated/uncertain timing
+  "expected_impact": 0.78,         // 0–1 magnitude prior
+  "outcomes": [
+    {
+      "id": "hot",
+      "label": "Above consensus (hot)",
+      "weight": 0.30,              // probability
+      "weight_source": "consensus+implied",
+      "asset_impacts": [
+        {"asset": "SPX", "direction": "down", "magnitude": "med"},
+        {"asset": "USD", "direction": "up",   "magnitude": "med"},
+        {"asset": "GOLD","direction": "down", "magnitude": "low"}
+      ]
+    }
+    // ... inline, cool
+  ]
+}
+
+// Event→Asset link (correlation)
+{
+  "event_type": "us-cpi",
+  "asset": "SPX",
+  "tier": "historical",            // "structural" | "historical"
+  "strength": 0.64,                // 0–1
+  "stats": { "n": 36, "avg_abs_move_pct": 0.9, "direction_hit_rate": 0.71 }
 }
 ```
 
-## 7. Roadmap (phased)
+## 6. Scenario Weighting — where the probabilities come from
+
+Weights must be **honest and sourced**, not vibes:
+
+1. **Market-implied** (preferred when available)
+   - Rate decisions → fed funds / overnight-index futures implied probabilities.
+   - Single-name earnings → options-implied move (straddle) for magnitude.
+2. **Consensus / distribution** — economist forecast ranges for data releases.
+3. **Historical base rates** — frequency of each outcome type historically.
+4. **Claude reasoning layer** — synthesizes the above into a coherent scenario
+   set with weights, using **structured output**, and writes a short rationale.
+   It blends sources rather than inventing numbers; every weight cites its
+   basis. Default to the latest capable model (e.g. `claude-opus-4-8`).
+5. **Calibration** — score past weighted predictions vs. realized outcomes;
+   surface reliability per category so "30%" means ~30%.
+
+## 7. Correlation Engine — the asset-selector backbone
+
+- **Structural map (curated):** a maintained ruleset of event-type → asset-class
+  links that are economically obvious. Fast, explainable, high precision.
+- **Historical event study (computed):** for each (event type, asset), measure
+  the price reaction over a window around past occurrences → sign, average
+  absolute move, and direction hit-rate → a **strength score**.
+- **Relevance ranking:** when the user selects assets, rank/filter timeline
+  events by max link strength to the selection, badged by tier so the user
+  knows whether a link is "obvious" or "historically observed."
+
+## 8. Roadmap (phased)
 
 ### Phase 0 — Foundations (1 week)
-- Repo scaffolding, tooling, CI, `Signal`/`Prediction` schemas.
-- One connector end-to-end (Google Calendar) → Signal Store.
+- Repo scaffolding, CI, `Event` / `Outcome` / `Link` schemas.
+- Pick data providers; ingest one calendar (economic) end-to-end.
 
-### Phase 1 — Deterministic baseline (1–2 weeks)
-- Pattern detection: periodicity, open loops, dated items.
-- Predictions Store + a simple "what's coming" digest output.
-- Calibration harness: record outcomes, compute hit/miss.
+### Phase 1 — Timeline MVP (1–2 weeks)
+- Web app with a read-only timeline of scheduled events.
+- Static structural correlation map + asset selector (filter by relevance).
+- Event detail panel (no weighted outcomes yet).
 
-### Phase 2 — LLM reasoning (1–2 weeks)
-- Integrate Claude API with structured-output predictions.
-- Blend deterministic + LLM confidence.
-- Add Gmail + Drive connectors.
+### Phase 2 — Weighted outcomes (1–2 weeks)
+- Scenario engine: enumerate outcomes; ingest market-implied + consensus inputs.
+- Claude reasoning layer for weighting + rationale (structured output).
+- Render the weighted outcome fans on the timeline.
 
-### Phase 3 — Surfaces & feedback (1–2 weeks)
-- Daily/weekly digest; notifications for high-confidence imminent events.
-- User feedback loop ("happened" / "didn't") feeding calibration.
+### Phase 3 — Historical correlation (1–2 weeks)
+- Market-data ingestion + event-study pipeline → historical link strengths.
+- Merge structural + historical links; show tier badges and stats.
 
-### Phase 4 — Breadth & hardening
-- More connectors (M365, GoDaddy, web correlation).
-- Calibration dashboard; per-category accuracy.
-- Security/privacy review before any wider use.
+### Phase 4 — Calibration & breadth
+- Calibration scoring + reliability surface; more event categories & assets;
+  anticipated (non-scheduled) event detection from news.
 
-## 8. Tech Stack (proposed)
+## 9. Tech Stack (proposed)
 
-- **Language/runtime:** TypeScript + Node (matches the integration tooling).
-- **LLM:** Claude API (Anthropic SDK), structured output via tool use.
-- **Storage:** start with SQLite/JSON for the signal & prediction stores;
-  revisit when volume grows.
-- **Scheduling:** a periodic job to refresh signals and re-run predictions.
+- **Frontend:** React + TypeScript; timeline/scenario viz with **D3** or
+  **visx** (custom timeline with expandable outcome fans).
+- **Backend:** TypeScript/Node service for ingestion, correlation, scenarios.
+- **LLM:** Claude API (Anthropic SDK), structured output via tool use, for
+  scenario synthesis and weighting rationale.
+- **Storage:** Postgres (events, links, prices, predictions); start simpler
+  (SQLite) if useful for the MVP.
+- **Data providers (to select):** an economic/earnings calendar API, a market
+  price/history API, and rate-futures / options-implied data for weighting.
+- **Scheduling:** periodic jobs to refresh calendars, prices, and re-weight.
 
-> Stack is a recommendation, not a commitment — confirm before Phase 0.
+> Stack & providers are recommendations — confirm before Phase 0. Provider
+> choice depends on licensing/cost and how much real-time vs. EOD data we need.
 
-## 9. Privacy, Safety & Calibration
+## 10. Risks & Principles
 
-- **Read-only by default.** No writes/sends/payments without explicit confirm.
-- **Data minimization.** Only the signals needed for a prediction reach the LLM.
-- **Explainability.** Every prediction links to its evidence.
-- **Honest confidence.** Calibration is a first-class feature, not an add-on;
-  we measure and publish real hit rates per confidence band.
-- **No silent overreach.** External/public correlation is opt-in.
+- **Not financial advice.** Crystal-Ball presents calibrated scenarios and
+  evidence; it never issues trade recommendations. Clear disclaimer in UI.
+- **Honest probabilities.** Every weight cites a source; calibration is a
+  first-class, measured feature.
+- **Correlation ≠ causation.** Historical links are shown with sample size and
+  hit-rate so users can judge reliability; weak/low-`n` links are flagged.
+- **Data licensing.** Market & calendar data terms must allow our use/display.
+- **Regime change.** Historical correlations decay; weight recent data and show
+  recency. Avoid overfitting to small samples.
 
-## 10. Success Metrics
+## 11. Success Metrics
 
-- **Precision@high-confidence** ≥ 0.8 for predictions ≥0.8 confidence.
-- **Lead time:** median days of advance warning before an event.
-- **Calibration error (ECE):** stated vs. actual probability gap, trending down.
-- **Usefulness:** % of surfaced predictions the user marks helpful.
+- **Outcome calibration (ECE):** stated vs. realized outcome probabilities.
+- **Correlation precision:** do flagged event→asset links show the predicted
+  reaction sign out-of-sample?
+- **Coverage:** % of actual market-moving events that appeared on the timeline
+  beforehand, and median lead time.
+- **Usefulness:** % of surfaced events users mark relevant for their assets.
 
-## 11. Open Questions
+## 12. Open Questions
 
-1. **Scope of "events":** personal-productivity focus, or broader?
-2. **Which sources first?** Calendar + Gmail is the proposed starting pair.
-3. **Surface preference:** digest, notifications, API, or a UI?
-4. **Autonomy ceiling:** predict-only, or eventually suggest/take actions?
-5. **Hosting:** local-only, or a hosted service?
+1. **Asset universe for v1** — which markets first? (Proposed: US equities
+   indices + megacap tickers, US rates/USD, gold, crude, BTC.)
+2. **Data providers & budget** — real-time vs. end-of-day; paid API tolerance?
+3. **Weighting emphasis** — lead with market-implied probabilities where they
+   exist, falling back to consensus/historical? (Proposed: yes.)
+4. **Timeline horizon** — how far forward by default (e.g. next 1–3 months)?
+5. **Surface** — web app first (proposed), or also alerts/digest?
 
 ---
 
 ## Next Step
 
-Confirm the scope (Q11.1–11.2) and the proposed stack (§8), then begin
-**Phase 0** by scaffolding the repo and the first Calendar connector.
+Confirm the v1 asset universe (Q12.1) and data-provider appetite (Q12.2), then
+start **Phase 0**: scaffold the repo and ingest one economic calendar, followed
+by the **Phase 1 timeline MVP** with the asset selector and structural
+correlation map.
