@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   TIMELINE_SCALES,
   type MarketEvent,
@@ -7,6 +7,8 @@ import {
 import { useDataBundle } from "./useDataBundle";
 import { useChartPrices } from "./useChartPrices";
 import { usePastEvents } from "./usePastEvents";
+import { useTheme } from "./useTheme";
+import { readUrlState, writeUrlState } from "./urlState";
 import { AssetSelector } from "./components/AssetSelector";
 import { Timeline } from "./components/Timeline";
 import { EventDetail } from "./components/EventDetail";
@@ -16,16 +18,50 @@ import { AssetChart } from "./components/AssetChart";
 import { CryptoTicker } from "./components/CryptoTicker";
 
 type View = "timeline" | "digest" | "reliability" | "chart";
+const VIEWS: View[] = ["timeline", "digest", "reliability", "chart"];
+const SCALE_IDS = TIMELINE_SCALES.map((s) => s.id);
+
+const initial = readUrlState();
+
+function initialAssets(): Set<string> {
+  if (initial.assets?.length) return new Set(initial.assets);
+  try {
+    const s = localStorage.getItem("cb-assets");
+    if (s) return new Set(JSON.parse(s) as string[]);
+  } catch {
+    /* ignore */
+  }
+  return new Set();
+}
 
 export function App() {
   const state = useDataBundle();
   const prices = useChartPrices();
   const pastEvents = usePastEvents();
-  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
-  const [scale, setScale] = useState<TimelineScaleId>("monthly");
-  const [view, setView] = useState<View>("timeline");
+  const { theme, toggle: toggleTheme } = useTheme();
+  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(initialAssets);
+  const [scale, setScale] = useState<TimelineScaleId>(
+    (SCALE_IDS as string[]).includes(initial.scale ?? "")
+      ? (initial.scale as TimelineScaleId)
+      : "monthly",
+  );
+  const [view, setView] = useState<View>(
+    VIEWS.includes(initial.view as View) ? (initial.view as View) : "timeline",
+  );
   const [selectedEvent, setSelectedEvent] = useState<MarketEvent | null>(null);
-  const [chartAsset, setChartAsset] = useState<string>("SPX");
+  const [chartAsset, setChartAsset] = useState<string>(initial.chart ?? "SPX");
+
+  // Persist watchlist (localStorage) + shareable state (URL hash).
+  useEffect(() => {
+    try {
+      localStorage.setItem("cb-assets", JSON.stringify([...selectedAssets]));
+    } catch {
+      /* ignore */
+    }
+  }, [selectedAssets]);
+  useEffect(() => {
+    writeUrlState({ view, scale, assets: [...selectedAssets], chart: chartAsset });
+  }, [view, scale, selectedAssets, chartAsset]);
 
   const scaleDays = useMemo(
     () => TIMELINE_SCALES.find((s) => s.id === scale)!.days,
@@ -53,7 +89,11 @@ export function App() {
   const eventsById = new Map(bundle.events.map((e) => [e.id, e]));
 
   return (
-    <Shell ticker={<CryptoTicker />}>
+    <Shell
+      ticker={<CryptoTicker />}
+      theme={theme}
+      onToggleTheme={toggleTheme}
+    >
       <div className="controls">
         <AssetSelector
           assets={bundle.assets}
@@ -210,9 +250,13 @@ function relevant(event: MarketEvent, selected: Set<string>): boolean {
 function Shell({
   children,
   ticker,
+  theme,
+  onToggleTheme,
 }: {
   children: React.ReactNode;
   ticker?: React.ReactNode;
+  theme?: "dark" | "light";
+  onToggleTheme?: () => void;
 }) {
   return (
     <div className="app">
@@ -223,7 +267,19 @@ function Shell({
             Market-moving events ahead — weighted outcomes &amp; asset correlation.
           </p>
         </div>
-        {ticker}
+        <div className="masthead-right">
+          {ticker}
+          {onToggleTheme && (
+            <button
+              className="theme-toggle"
+              onClick={onToggleTheme}
+              aria-label="Toggle light/dark theme"
+              title="Toggle light/dark theme"
+            >
+              {theme === "light" ? "🌙" : "☀️"}
+            </button>
+          )}
+        </div>
       </header>
       {children}
     </div>

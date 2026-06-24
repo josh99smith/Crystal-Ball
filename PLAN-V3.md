@@ -88,8 +88,11 @@ Seven pillars:
 
 ## 3. Proposed v3 roadmap
 
-- **v3.0 — Platform base:** theming, mobile/a11y, shareable URL state, PWA,
-  watchlist persistence. (Visible, unblocks personalization.)
+- **v3.0 — Platform base:** ◑ light/dark theme toggle (system-aware, persisted);
+  shareable URL state (view/scale/assets/chart in the hash); watchlist
+  persistence (localStorage); installable PWA (manifest, icon, offline service
+  worker with safe network-first caching). Remaining: deeper mobile/a11y polish,
+  asset-centric pages, command palette.
 - **v3.1 — Intelligence (static):** Claude daily/weekly brief + per-event
   narratives + anomaly callouts, generated in Actions, published static.
 - **v3.2 — Personalization & delivery:** portfolio + event-risk exposure;

@@ -14,6 +14,22 @@
   color-scheme: dark;
 }
 
+/* Light theme overrides */
+:root[data-theme="light"] {
+  --bg: #f5f7fc;
+  --panel: #ffffff;
+  --panel-2: #eef1f8;
+  --border: #d6deec;
+  --text: #161d2c;
+  --muted: #5b6678;
+  --accent: #6a45ff;
+  --accent-2: #0f9b8e;
+  --hit: #b8860b;
+}
+:root[data-theme="light"] body {
+  background: radial-gradient(1200px 600px at 70% -10%, #e7ecfa 0%, var(--bg) 60%);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -38,6 +54,23 @@ body {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 24px;
+}
+.masthead-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.theme-toggle {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  line-height: 1;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
 }
 .masthead h1 {
   margin: 0;
