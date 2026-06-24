@@ -15,10 +15,11 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment; let in-progress runs finish.
+# Only the latest deploy matters — cancel superseded/queued runs so they don't
+# pile up in the Pages backend queue (which causes deploy-pages timeouts).
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-deploy:
@@ -58,5 +59,9 @@ jobs:
         with:
           path: dist
 
+      # Raise the timeout: the Pages backend queue can sit in "deployment_queued"
+      # for well over the 10-minute default, causing spurious failures.
       - id: deploy
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 1200000
