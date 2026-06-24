@@ -1,6 +1,6 @@
 # Crystal-Ball Digest
 
-_Generated Wed, 24 Jun 2026 19:05:35 GMT_
+_Generated Wed, 24 Jun 2026 19:10:29 GMT_
 
 **2 notable events in the next 7 days, 1 high-impact.**
 

@@ -5,21 +5,25 @@ import {
   type TimelineScaleId,
 } from "../shared/schema";
 import { useDataBundle } from "./useDataBundle";
+import { useChartPrices } from "./useChartPrices";
 import { AssetSelector } from "./components/AssetSelector";
 import { Timeline } from "./components/Timeline";
 import { EventDetail } from "./components/EventDetail";
 import { DigestView } from "./components/DigestView";
 import { ReliabilityView } from "./components/ReliabilityView";
+import { AssetChart } from "./components/AssetChart";
 import { CryptoTicker } from "./components/CryptoTicker";
 
-type View = "timeline" | "digest" | "reliability";
+type View = "timeline" | "digest" | "reliability" | "chart";
 
 export function App() {
   const state = useDataBundle();
+  const prices = useChartPrices();
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
   const [scale, setScale] = useState<TimelineScaleId>("monthly");
   const [view, setView] = useState<View>("timeline");
   const [selectedEvent, setSelectedEvent] = useState<MarketEvent | null>(null);
+  const [chartAsset, setChartAsset] = useState<string>("SPX");
 
   const scaleDays = useMemo(
     () => TIMELINE_SCALES.find((s) => s.id === scale)!.days,
@@ -88,7 +92,30 @@ export function App() {
             >
               Reliability
             </button>
+            <button
+              role="tab"
+              aria-selected={view === "chart"}
+              className={view === "chart" ? "vt active" : "vt"}
+              onClick={() => setView("chart")}
+            >
+              Chart
+            </button>
           </div>
+
+          {view === "chart" && (
+            <select
+              className="chart-asset-select"
+              value={chartAsset}
+              onChange={(e) => setChartAsset(e.target.value)}
+              aria-label="Chart asset"
+            >
+              {bundle.assets.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.id} — {a.label}
+                </option>
+              ))}
+            </select>
+          )}
 
           {view === "timeline" && (
             <div className="scales" role="tablist" aria-label="Timeline scale">
@@ -135,6 +162,16 @@ export function App() {
               rows={bundle.calibration}
               loop={bundle.calibrationLoop}
               selected={selectedAssets}
+            />
+          )}
+          {view === "chart" && (
+            <AssetChart
+              asset={chartAsset}
+              series={prices?.[chartAsset] ?? []}
+              events={bundle.events.filter((e) =>
+                e.links.some((l) => l.asset === chartAsset),
+              )}
+              onSelect={setSelectedEvent}
             />
           )}
         </div>

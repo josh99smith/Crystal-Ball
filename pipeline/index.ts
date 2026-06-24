@@ -280,6 +280,24 @@ async function runCalibrationLoop(events: MarketEvent[], now: Date) {
   return metrics;
 }
 
+/** Publish a recent daily price series per asset for the in-app chart. */
+async function writeChartPrices(now: Date) {
+  const from = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+  const out: Record<string, Array<{ t: number; c: number }>> = {};
+  await Promise.all(
+    ASSET_IDS.map(async (id) => {
+      const bars = await fetchDailyCloses(id, from, now);
+      if (bars.length) {
+        out[id] = bars
+          .slice(-250)
+          .map((b) => ({ t: Math.floor(Date.parse(`${b.date}T00:00:00Z`) / 1000), c: b.close }));
+      }
+    }),
+  );
+  await writeFile(resolve(DATA_DIR, "prices.json"), JSON.stringify(out) + "\n");
+  console.log(`[pipeline] wrote price series for ${Object.keys(out).length} assets`);
+}
+
 async function main() {
   const now = new Date();
   const window = {
@@ -337,6 +355,7 @@ async function main() {
     JSON.stringify(bundle, null, 2) + "\n",
   );
   await writeFile(resolve(DATA_DIR, "digest.md"), digestToMarkdown(digest));
+  await writeChartPrices(now);
 
   console.log(
     `[pipeline] wrote ${events.length} events + digest → ${DATA_DIR}`,

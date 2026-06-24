@@ -710,6 +710,30 @@ body {
   font-size: 12px;
 }
 
+/* Asset chart (lightweight-charts) */
+.asset-chart {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.asset-chart-canvas {
+  width: 100%;
+  height: 360px;
+}
+.chart-note {
+  font-size: 11px;
+  margin: 8px 2px 0;
+}
+.chart-asset-select {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
 /* Reliability / calibration */
 .reliability {
   background: var(--panel);

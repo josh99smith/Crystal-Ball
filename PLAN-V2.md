@@ -160,6 +160,13 @@ data/calibration depth can be reprioritized.)
 
 ---
 
+### v2.7 — Asset chart ✅
+TradingView **Lightweight Charts** (MIT) integrated as a "Chart" view: each asset
+renders its price series (published per-asset by the pipeline from Stooq) with
+**our events overlaid as markers** (colored by category, ▢ = anticipated, click
+for detail; future events extend the axis via whitespace). An asset picker maps
+any asset onto the chart.
+
 ## 6. Risks & principles (unchanged, reinforced)
 - **Not financial advice** — calibrated scenarios + evidence only.
 - **Honest probabilities** — every weight cites a source; calibration is
