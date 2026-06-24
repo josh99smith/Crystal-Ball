@@ -149,9 +149,15 @@ export function App() {
       </div>
 
       <footer className="meta">
-        Data generated {new Date(bundle.generatedAt).toLocaleString()} ·{" "}
-        {view === "timeline" ? `${visible.length} events shown · ` : ""}
-        Not financial advice.
+        <div>
+          Data generated {new Date(bundle.generatedAt).toLocaleString()} ·{" "}
+          {view === "timeline" ? `${visible.length} events shown · ` : ""}
+          Not financial advice.
+        </div>
+        <div className="build-stamp">
+          Build #{__BUILD_NUMBER__} ({__BUILD_SHA__}) · built{" "}
+          {new Date(__BUILD_TIME__).toLocaleString()}
+        </div>
       </footer>
     </Shell>
   );

@@ -626,6 +626,14 @@ body {
   margin-top: 32px;
   color: var(--muted);
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.build-stamp {
+  font-size: 11px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
 }
 .muted {
   color: var(--muted);
