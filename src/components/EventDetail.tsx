@@ -53,15 +53,23 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
           .sort((a, b) => b.strength - a.strength)
           .map((l) => (
             <li
-              key={l.asset}
+              key={`${l.asset}-${l.tier}`}
               className={selectedAssets.has(l.asset) ? "detail-link hit" : "detail-link"}
             >
-              <span className="dl-asset">{l.asset}</span>
-              <span className={`dl-tier tier-${l.tier}`}>{l.tier}</span>
-              <div className="dl-bar">
-                <div className="dl-fill" style={{ width: `${l.strength * 100}%` }} />
+              <div className="dl-row">
+                <span className="dl-asset">{l.asset}</span>
+                <span className={`dl-tier tier-${l.tier}`}>{l.tier}</span>
+                <div className="dl-bar">
+                  <div className="dl-fill" style={{ width: `${l.strength * 100}%` }} />
+                </div>
+                <span className="dl-strength">{l.strength.toFixed(2)}</span>
               </div>
-              <span className="dl-strength">{l.strength.toFixed(2)}</span>
+              {l.stats && (
+                <div className="dl-stats">
+                  n={l.stats.n} · avg |move| {l.stats.avgAbsMovePct}% · same-dir{" "}
+                  {Math.round(l.stats.directionHitRate * 100)}%
+                </div>
+              )}
             </li>
           ))}
       </ul>

@@ -24,7 +24,7 @@ interface ReleaseConfig {
 }
 
 // Curated high-impact economic releases (expand later).
-const RELEASES: ReleaseConfig[] = [
+export const RELEASES: ReleaseConfig[] = [
   { releaseId: 10, kind: "us-cpi", title: "US CPI", category: "economic-data", expectedImpact: 0.85 },
   { releaseId: 50, kind: "us-nfp", title: "US Employment Situation (NFP)", category: "economic-data", expectedImpact: 0.85 },
   { releaseId: 53, kind: "us-gdp", title: "US GDP", category: "economic-data", expectedImpact: 0.7 },
@@ -50,47 +50,56 @@ export class FredProvider implements EventProvider {
     return this.apiKey.length > 0;
   }
 
+  /** Release dates (YYYY-MM-DD) for a release within [from, to]. Future or past. */
+  async releaseDates(releaseId: number, from: Date, to: Date): Promise<string[]> {
+    if (!this.isConfigured()) return [];
+    const url = new URL(`${FRED_BASE}/release/dates`);
+    url.searchParams.set("release_id", String(releaseId));
+    url.searchParams.set("api_key", this.apiKey);
+    url.searchParams.set("file_type", "json");
+    url.searchParams.set("include_release_dates_with_no_data", "true");
+    url.searchParams.set("sort_order", "asc");
+    url.searchParams.set("realtime_start", isoDate(from));
+    url.searchParams.set("realtime_end", isoDate(to));
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn(`[fred] release ${releaseId}: HTTP ${res.status}`);
+        return [];
+      }
+      const body = (await res.json()) as FredReleaseDatesResponse;
+      return (body.release_dates ?? [])
+        .map((rd) => rd.date)
+        .filter((d) => {
+          const t = new Date(`${d}T12:30:00Z`);
+          return t >= from && t <= to;
+        });
+    } catch (err) {
+      console.warn(`[fred] release ${releaseId}: ${(err as Error).message}`);
+      return [];
+    }
+  }
+
   async fetchEvents(window: FetchWindow): Promise<MarketEvent[]> {
     if (!this.isConfigured()) return [];
 
     const events: MarketEvent[] = [];
-
     for (const release of RELEASES) {
-      const url = new URL(`${FRED_BASE}/release/dates`);
-      url.searchParams.set("release_id", String(release.releaseId));
-      url.searchParams.set("api_key", this.apiKey);
-      url.searchParams.set("file_type", "json");
-      url.searchParams.set("include_release_dates_with_no_data", "true");
-      url.searchParams.set("sort_order", "asc");
-      url.searchParams.set("realtime_start", isoDate(window.from));
-      url.searchParams.set("realtime_end", isoDate(window.to));
-
-      try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          console.warn(`[fred] ${release.kind}: HTTP ${res.status}`);
-          continue;
-        }
-        const body = (await res.json()) as FredReleaseDatesResponse;
-        for (const rd of body.release_dates ?? []) {
-          const when = new Date(`${rd.date}T12:30:00Z`); // releases are typically 8:30am ET
-          if (when < window.from || when > window.to) continue;
-          events.push({
-            id: `fred-${release.kind}-${rd.date}`,
-            title: release.title,
-            category: release.category,
-            scheduledAt: when.toISOString(),
-            isScheduled: true,
-            expectedImpact: release.expectedImpact,
-            source: this.id,
-            links: [], // attached by the pipeline (kind is recovered from the id)
-          });
-        }
-      } catch (err) {
-        console.warn(`[fred] ${release.kind}: ${(err as Error).message}`);
+      const dates = await this.releaseDates(release.releaseId, window.from, window.to);
+      for (const date of dates) {
+        events.push({
+          id: `fred-${release.kind}-${date}`,
+          title: release.title,
+          category: release.category,
+          scheduledAt: new Date(`${date}T12:30:00Z`).toISOString(), // ~8:30am ET
+          isScheduled: true,
+          expectedImpact: release.expectedImpact,
+          source: this.id,
+          links: [], // attached by the pipeline (kind is recovered from the id)
+        });
       }
     }
-
     return events;
   }
 }

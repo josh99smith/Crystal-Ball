@@ -268,9 +268,12 @@ Weights must be **honest and sourced**, not vibes:
 - ✅ Render the weighted outcome fans on the timeline + full breakdown in the
   detail panel.
 
-### Phase 3 — Historical correlation (1–2 weeks)
-- Market-data ingestion + event-study pipeline → historical link strengths.
-- Merge structural + historical links; show tier badges and stats.
+### Phase 3 — Historical correlation (1–2 weeks) — ✅ done
+- ✅ Market-data ingestion (Stooq, free/keyless) + event-study pipeline
+  (FRED past release dates) → historical link strengths.
+- ✅ Merge structural + historical links; show tier badges and stats
+  (sample size, avg |move|, same-direction rate). Deterministic sample stats
+  when no data access, so the tier is visible in the demo.
 
 ### Phase 4 — Calibration & breadth
 - Calibration scoring + reliability surface; more event categories & assets;

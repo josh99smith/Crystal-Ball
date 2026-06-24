@@ -339,11 +339,21 @@ body {
   gap: 8px;
 }
 .detail-link {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+}
+.dl-row {
   display: grid;
   grid-template-columns: 52px auto 1fr auto;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+}
+.dl-stats {
+  font-size: 10.5px;
+  color: var(--muted);
+  padding-left: 52px;
 }
 .detail-link.hit .dl-asset {
   color: var(--hit);
