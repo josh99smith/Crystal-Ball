@@ -20,6 +20,7 @@ import { FredProvider, fredKindFromId, RELEASES } from "./providers/fred";
 import { FinnhubProvider } from "./providers/finnhub";
 import { MarketStructureProvider } from "./providers/marketstructure";
 import { FomcProvider, FOMC_DECISION_DATES } from "./providers/fomc";
+import { GdeltProvider } from "./providers/gdelt";
 import type { EventProvider } from "./providers/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -37,6 +38,7 @@ const KEYED_PROVIDERS: EventProvider[] = [fred, new FinnhubProvider()];
 const COMPUTED_PROVIDERS: EventProvider[] = [
   new MarketStructureProvider(),
   new FomcProvider(),
+  new GdeltProvider(),
 ];
 
 const KIND_LABEL = new Map<string, string>([

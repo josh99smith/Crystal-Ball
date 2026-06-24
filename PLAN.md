@@ -275,13 +275,14 @@ Weights must be **honest and sourced**, not vibes:
   (sample size, avg |move|, same-direction rate). Deterministic sample stats
   when no data access, so the tier is visible in the demo.
 
-### Phase 4 — Calibration & breadth — ◑ in progress
+### Phase 4 — Calibration & breadth — ✅ done
 - ✅ Reliability/calibration surface: event-study scorecard (per event type ×
   asset: same-direction rate, avg |move|, sample size, strength), asset-filtered.
-- ✅ Breadth: computed **market-structure** events (monthly OpEx + quarterly
-  triple witching) and **FOMC** rate decisions (curated dates), both keyless,
-  with structural + historical correlation and hike/hold/cut scenarios.
-- ⬜ More tickers; anticipated (non-scheduled) event detection from news (GDELT).
+- ✅ Breadth: computed **market-structure** events (OpEx + triple witching) and
+  **FOMC** rate decisions (curated dates), keyless, with structural + historical
+  correlation and weighted scenarios.
+- ✅ Anticipated (non-scheduled) **news-driven events** via GDELT (free, keyless):
+  curated market themes scored by recent news volume, shown as watch items.
 
 ## 9. Tech Stack (proposed)
 

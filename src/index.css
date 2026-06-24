@@ -246,6 +246,12 @@ body {
 .node.hit {
   border-color: var(--hit);
 }
+/* anticipated (news-driven, uncertain timing) events: hollow + dashed */
+.node.anticipated {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--node-color, var(--accent));
+}
 .node-label {
   position: absolute;
   left: 50%;

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-24T17:53:43.776Z",
+  "generatedAt": "2026-06-24T18:07:20.978Z",
   "assets": [
     {
       "id": "SPX",
@@ -57,7 +57,7 @@
       "id": "fred-us-cpi-2026-06-28",
       "title": "US CPI (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-06-28T17:53:43.776Z",
+      "scheduledAt": "2026-06-28T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -246,7 +246,7 @@
       "id": "fred-us-nfp-2026-07-03",
       "title": "US Employment Situation (NFP) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-03T17:53:43.776Z",
+      "scheduledAt": "2026-07-03T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -410,7 +410,7 @@
       "id": "finnhub-earnings-NVDA-2026-07-06",
       "title": "NVDA earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-06T17:53:43.776Z",
+      "scheduledAt": "2026-07-06T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -524,7 +524,7 @@
       "id": "fred-us-pce-2026-07-11",
       "title": "US Personal Income & Outlays (PCE) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-11T17:53:43.776Z",
+      "scheduledAt": "2026-07-11T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.75,
       "source": "fixture",
@@ -663,7 +663,7 @@
       "id": "finnhub-earnings-AAPL-2026-07-15",
       "title": "AAPL earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-15T17:53:43.776Z",
+      "scheduledAt": "2026-07-15T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -836,7 +836,7 @@
       "id": "fred-us-gdp-2026-07-20",
       "title": "US GDP (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-20T17:53:43.776Z",
+      "scheduledAt": "2026-07-20T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -950,7 +950,7 @@
       "id": "finnhub-earnings-MSFT-2026-07-24",
       "title": "MSFT earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-24T17:53:43.776Z",
+      "scheduledAt": "2026-07-24T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -1054,7 +1054,7 @@
       "id": "fred-us-cpi-2026-07-28",
       "title": "US CPI (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-28T17:53:43.776Z",
+      "scheduledAt": "2026-07-28T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -1432,7 +1432,7 @@
       "id": "fred-us-nfp-2026-08-03",
       "title": "US Employment Situation (NFP) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-08-03T17:53:43.776Z",
+      "scheduledAt": "2026-08-03T18:07:20.978Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -5030,13 +5030,13 @@
     }
   ],
   "digest": {
-    "generatedAt": "2026-06-24T17:53:43.776Z",
+    "generatedAt": "2026-06-24T18:07:20.978Z",
     "headline": "1 notable event in the next 7 days, 1 high-impact.",
     "daily": [
       {
         "eventId": "fred-us-cpi-2026-06-28",
         "title": "US CPI (sample)",
-        "scheduledAt": "2026-06-28T17:53:43.776Z",
+        "scheduledAt": "2026-06-28T18:07:20.978Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -5050,7 +5050,7 @@
       {
         "eventId": "fred-us-cpi-2026-06-28",
         "title": "US CPI (sample)",
-        "scheduledAt": "2026-06-28T17:53:43.776Z",
+        "scheduledAt": "2026-06-28T18:07:20.978Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -5062,7 +5062,7 @@
       {
         "eventId": "fred-us-nfp-2026-07-03",
         "title": "US Employment Situation (NFP) (sample)",
-        "scheduledAt": "2026-07-03T17:53:43.776Z",
+        "scheduledAt": "2026-07-03T18:07:20.978Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -5074,7 +5074,7 @@
       {
         "eventId": "fred-us-pce-2026-07-11",
         "title": "US Personal Income & Outlays (PCE) (sample)",
-        "scheduledAt": "2026-07-11T17:53:43.776Z",
+        "scheduledAt": "2026-07-11T18:07:20.978Z",
         "category": "economic-data",
         "expectedImpact": 0.75,
         "topAssets": [
@@ -5086,7 +5086,7 @@
       {
         "eventId": "finnhub-earnings-NVDA-2026-07-06",
         "title": "NVDA earnings (sample)",
-        "scheduledAt": "2026-07-06T17:53:43.776Z",
+        "scheduledAt": "2026-07-06T18:07:20.978Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -5098,7 +5098,7 @@
       {
         "eventId": "finnhub-earnings-AAPL-2026-07-15",
         "title": "AAPL earnings (sample)",
-        "scheduledAt": "2026-07-15T17:53:43.776Z",
+        "scheduledAt": "2026-07-15T18:07:20.978Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -5110,7 +5110,7 @@
       {
         "eventId": "fred-us-gdp-2026-07-20",
         "title": "US GDP (sample)",
-        "scheduledAt": "2026-07-20T17:53:43.776Z",
+        "scheduledAt": "2026-07-20T18:07:20.978Z",
         "category": "economic-data",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -5122,7 +5122,7 @@
       {
         "eventId": "finnhub-earnings-MSFT-2026-07-24",
         "title": "MSFT earnings (sample)",
-        "scheduledAt": "2026-07-24T17:53:43.776Z",
+        "scheduledAt": "2026-07-24T18:07:20.978Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [

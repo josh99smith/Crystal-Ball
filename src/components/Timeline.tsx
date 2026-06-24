@@ -80,7 +80,8 @@ export function Timeline({
               className={
                 "node" +
                 (selectedEventId === event.id ? " selected" : "") +
-                (hit ? " hit" : "")
+                (hit ? " hit" : "") +
+                (event.isScheduled ? "" : " anticipated")
               }
               style={{
                 left: `${pct}%`,
