@@ -9,10 +9,10 @@ import { fredKindFromId } from "../providers/fred";
 
 /**
  * Deterministic scenario generator — the honest fallback used when the Claude
- * reasoning layer is unavailable (no ANTHROPIC_API_KEY). Outcomes use historical
- * base-rate weights and per-asset directions from a curated template; magnitudes
- * derive from the event's correlation strengths. Clearly labeled weightSource:
- * "historical" so the UI never overstates confidence (PLAN §6).
+ * reasoning layer is unavailable. Outcomes use historical base-rate weights and
+ * per-asset directions from a curated template; magnitudes derive from the
+ * event's correlation strengths. Labeled weightSource "historical" so the UI
+ * never overstates confidence.
  */
 
 interface OutcomeTemplate {
@@ -24,30 +24,67 @@ interface OutcomeTemplate {
   dir: Record<string, Direction>;
 }
 
-// Direction templates keyed by event "kind".
+// Common risk-off / risk-on direction sets reused across templates.
+const RISK_OFF: Record<string, Direction> = {
+  SPX: "down", NDX: "down", XLK: "down", SMH: "down", VIX: "up", BTC: "down",
+};
+const RISK_ON: Record<string, Direction> = {
+  SPX: "up", NDX: "up", XLK: "up", SMH: "up", VIX: "down", BTC: "up",
+};
+
 const TEMPLATES: Record<string, OutcomeTemplate[]> = {
-  // FOMC rate decision: hawkish (or hike) = risk-off; dovish (or cut) = risk-on.
+  // FOMC: hawkish/hike = risk-off + USD up; dovish/cut = risk-on + USD down.
   fomc: [
     {
       id: "hawkish",
       label: "Hawkish / hike",
       weight: 0.25,
       rationale: "Hawkish surprise: yields & USD up, risk assets and gold fall.",
-      dir: { US10Y: "up", USD: "up", SPX: "down", NDX: "down", GOLD: "down", BTC: "down" },
+      dir: { ...RISK_OFF, US10Y: "up", US2Y: "up", USD: "up", EURUSD: "down", GOLD: "down" },
     },
-    {
-      id: "hold",
-      label: "Hold as expected",
-      weight: 0.5,
-      rationale: "Hold; reaction driven by the statement and dot plot.",
-      dir: {},
-    },
+    { id: "hold", label: "Hold as expected", weight: 0.5, rationale: "Hold; reaction driven by the statement and dot plot.", dir: {} },
     {
       id: "dovish",
       label: "Dovish / cut",
       weight: 0.25,
       rationale: "Dovish surprise: yields & USD fall, risk assets and gold rally.",
-      dir: { US10Y: "down", USD: "down", SPX: "up", NDX: "up", GOLD: "up", BTC: "up" },
+      dir: { ...RISK_ON, US10Y: "down", US2Y: "down", USD: "down", EURUSD: "up", GOLD: "up" },
+    },
+  ],
+  // ECB: hawkish = euro up, USD down; mildly risk-off.
+  ecb: [
+    {
+      id: "hawkish",
+      label: "Hawkish",
+      weight: 0.25,
+      rationale: "Hawkish ECB: euro strengthens, USD eases, risk mildly off.",
+      dir: { EURUSD: "up", USD: "down", GOLD: "down", SPX: "down", XLK: "down", VIX: "up" },
+    },
+    { id: "hold", label: "Hold", weight: 0.5, rationale: "Hold; statement/projections drive the reaction.", dir: {} },
+    {
+      id: "dovish",
+      label: "Dovish",
+      weight: 0.25,
+      rationale: "Dovish ECB: euro weakens, USD firms, risk mildly on.",
+      dir: { EURUSD: "down", USD: "up", GOLD: "up", SPX: "up", XLK: "up", VIX: "down" },
+    },
+  ],
+  // BoJ: hawkish = stronger yen / carry unwind → global risk-off.
+  boj: [
+    {
+      id: "hawkish",
+      label: "Hawkish",
+      weight: 0.25,
+      rationale: "Hawkish BoJ: yen firms, carry unwinds, global risk-off.",
+      dir: { USD: "down", SPX: "down", NDX: "down", XLK: "down", SMH: "down", GOLD: "up", VIX: "up" },
+    },
+    { id: "hold", label: "Hold", weight: 0.5, rationale: "Hold; guidance on policy normalization is the focus.", dir: {} },
+    {
+      id: "dovish",
+      label: "Dovish",
+      weight: 0.25,
+      rationale: "Dovish BoJ: yen softens, carry resumes, global risk-on.",
+      dir: { USD: "up", SPX: "up", NDX: "up", XLK: "up", SMH: "up", GOLD: "down", VIX: "down" },
     },
   ],
   // Inflation prints (CPI, PCE): hot = hawkish/risk-off.
@@ -56,22 +93,16 @@ const TEMPLATES: Record<string, OutcomeTemplate[]> = {
       id: "hot",
       label: "Above consensus (hot)",
       weight: 0.3,
-      rationale: "Hotter inflation → higher-for-longer rates; risk assets sell off, USD firms.",
-      dir: { SPX: "down", NDX: "down", US10Y: "up", USD: "up", GOLD: "down", BTC: "down" },
+      rationale: "Hotter inflation → higher-for-longer rates; risk sells off, USD firms.",
+      dir: { ...RISK_OFF, US10Y: "up", US2Y: "up", USD: "up", EURUSD: "down", GOLD: "down" },
     },
-    {
-      id: "inline",
-      label: "In line",
-      weight: 0.45,
-      rationale: "In-line print; muted, mechanical reaction.",
-      dir: {},
-    },
+    { id: "inline", label: "In line", weight: 0.45, rationale: "In-line print; muted, mechanical reaction.", dir: {} },
     {
       id: "cool",
       label: "Below consensus (cool)",
       weight: 0.25,
       rationale: "Softer inflation → rate-cut hopes; risk rallies, USD eases.",
-      dir: { SPX: "up", NDX: "up", US10Y: "down", USD: "down", GOLD: "up", BTC: "up" },
+      dir: { ...RISK_ON, US10Y: "down", US2Y: "down", USD: "down", EURUSD: "up", GOLD: "up" },
     },
   ],
   // Jobs report.
@@ -80,8 +111,8 @@ const TEMPLATES: Record<string, OutcomeTemplate[]> = {
       id: "strong",
       label: "Strong payrolls",
       weight: 0.35,
-      rationale: "Strong labor market: yields & USD up on a hawkish Fed; equities firm on growth.",
-      dir: { US10Y: "up", USD: "up", SPX: "up", NDX: "up", GOLD: "down" },
+      rationale: "Strong labor market: yields & USD up; equities firm on growth.",
+      dir: { SPX: "up", NDX: "up", XLK: "up", SMH: "up", VIX: "down", US10Y: "up", US2Y: "up", USD: "up", GOLD: "down" },
     },
     { id: "inline", label: "In line", weight: 0.4, rationale: "In-line jobs; limited reaction.", dir: {} },
     {
@@ -89,7 +120,7 @@ const TEMPLATES: Record<string, OutcomeTemplate[]> = {
       label: "Weak payrolls",
       weight: 0.25,
       rationale: "Weak jobs: growth worry; yields & USD fall, equities slip, gold bid.",
-      dir: { US10Y: "down", USD: "down", SPX: "down", NDX: "down", GOLD: "up" },
+      dir: { SPX: "down", NDX: "down", XLK: "down", SMH: "down", VIX: "up", US10Y: "down", US2Y: "down", USD: "down", GOLD: "up" },
     },
   ],
   // Growth (GDP).
@@ -99,7 +130,7 @@ const TEMPLATES: Record<string, OutcomeTemplate[]> = {
       label: "Above consensus",
       weight: 0.4,
       rationale: "Stronger growth lifts equities; yields and USD firm.",
-      dir: { SPX: "up", NDX: "up", US10Y: "up", USD: "up" },
+      dir: { SPX: "up", NDX: "up", XLK: "up", SMH: "up", XLE: "up", VIX: "down", US10Y: "up", US2Y: "up", USD: "up" },
     },
     { id: "inline", label: "In line", weight: 0.35, rationale: "Growth as expected; muted.", dir: {} },
     {
@@ -107,7 +138,7 @@ const TEMPLATES: Record<string, OutcomeTemplate[]> = {
       label: "Below consensus",
       weight: 0.25,
       rationale: "Weaker growth weighs on equities; yields and USD ease.",
-      dir: { SPX: "down", NDX: "down", US10Y: "down", USD: "down" },
+      dir: { SPX: "down", NDX: "down", XLK: "down", SMH: "down", XLE: "down", VIX: "up", US10Y: "down", US2Y: "down", USD: "down" },
     },
   ],
 };
@@ -221,7 +252,11 @@ function genericOutcomes(): Outcome[] {
 
 export function heuristicOutcomes(event: MarketEvent): Outcome[] {
   if (event.category === "earnings") return earningsOutcomes(event);
-  if (event.category === "monetary-policy") return fromTemplates(event, TEMPLATES.fomc);
+  if (event.category === "monetary-policy") {
+    if (event.id.startsWith("ecb-")) return fromTemplates(event, TEMPLATES.ecb);
+    if (event.id.startsWith("boj-")) return fromTemplates(event, TEMPLATES.boj);
+    return fromTemplates(event, TEMPLATES.fomc);
+  }
   const kind = fredKindFromId(event.id);
   const templateKey = kind ? KIND_TO_TEMPLATE[kind] : undefined;
   if (templateKey) return fromTemplates(event, TEMPLATES[templateKey]);

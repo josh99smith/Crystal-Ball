@@ -3,11 +3,13 @@
 
 export type AssetClass =
   | "equity-index"
+  | "equity-sector"
   | "equity-single"
   | "rates"
   | "fx"
   | "metal"
   | "energy"
+  | "volatility"
   | "crypto";
 
 export interface Asset {

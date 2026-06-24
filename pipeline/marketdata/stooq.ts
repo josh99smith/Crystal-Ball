@@ -19,11 +19,21 @@ export interface PriceBar {
 const STOOQ_SYMBOL: Record<string, string> = {
   SPX: "^spx",
   NDX: "^ndx",
+  VIX: "^vix",
+  XLK: "xlk.us",
+  SMH: "smh.us",
+  XLE: "xle.us",
   NVDA: "nvda.us",
   AAPL: "aapl.us",
   MSFT: "msft.us",
+  GOOGL: "googl.us",
+  AMZN: "amzn.us",
+  META: "meta.us",
+  TSLA: "tsla.us",
   US10Y: "^tnx", // 10Y yield index
+  US2Y: "^ust2y", // 2Y yield (best-effort symbol; skipped if unavailable)
   USD: "dx.f", // US Dollar index futures
+  EURUSD: "eurusd",
   GOLD: "xauusd",
   CRUDE: "cl.f", // WTI futures
   BTC: "btcusd",

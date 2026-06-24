@@ -10,8 +10,8 @@ import type { EventProvider, FetchWindow } from "./types";
  * Docs: https://finnhub.io/docs/api/earnings-calendar
  */
 
-// v1 single-name tickers we track earnings for.
-const TICKERS = ["NVDA", "AAPL", "MSFT"];
+// Single-name tickers we track earnings for (v2.5).
+const TICKERS = ["NVDA", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA"];
 
 const FINNHUB_BASE = "https://finnhub.io/api/v1";
 

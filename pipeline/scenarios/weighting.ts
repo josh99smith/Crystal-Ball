@@ -31,8 +31,14 @@ export async function fetchRateContext(fred: FredProvider): Promise<RateContext 
 }
 
 const FOMC_DIR: Record<"hike" | "cut", Record<string, Direction>> = {
-  hike: { US10Y: "up", USD: "up", SPX: "down", NDX: "down", GOLD: "down", BTC: "down" },
-  cut: { US10Y: "down", USD: "down", SPX: "up", NDX: "up", GOLD: "up", BTC: "up" },
+  hike: {
+    US10Y: "up", US2Y: "up", USD: "up", EURUSD: "down", SPX: "down", NDX: "down",
+    XLK: "down", SMH: "down", VIX: "up", GOLD: "down", BTC: "down",
+  },
+  cut: {
+    US10Y: "down", US2Y: "down", USD: "down", EURUSD: "up", SPX: "up", NDX: "up",
+    XLK: "up", SMH: "up", VIX: "down", GOLD: "up", BTC: "up",
+  },
 };
 
 function magnitudeFor(strength: number): Magnitude {

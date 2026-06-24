@@ -30,6 +30,7 @@ import { FinnhubProvider } from "./providers/finnhub";
 import { MarketStructureProvider } from "./providers/marketstructure";
 import { FomcProvider, FOMC_DECISION_DATES } from "./providers/fomc";
 import { GdeltProvider } from "./providers/gdelt";
+import { CentralBankProvider, bankPastDates, BANK_LABELS } from "./providers/centralbanks";
 import type { EventProvider } from "./providers/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -47,17 +48,21 @@ const KEYED_PROVIDERS: EventProvider[] = [fred, new FinnhubProvider()];
 const COMPUTED_PROVIDERS: EventProvider[] = [
   new MarketStructureProvider(),
   new FomcProvider(),
+  new CentralBankProvider(),
   new GdeltProvider(),
 ];
 
 const KIND_LABEL = new Map<string, string>([
   ...RELEASES.map((r) => [r.kind, r.title] as [string, string]),
   ["fomc", "FOMC rate decision"],
+  ...Object.entries(BANK_LABELS),
 ]);
 
-/** Correlation "kind" for an event (FRED releases, fixtures, and FOMC). */
+/** Correlation "kind" for an event (FRED releases, fixtures, FOMC, ECB, BoJ). */
 function kindOf(event: MarketEvent): string | undefined {
   if (event.id.startsWith("fomc-")) return "fomc";
+  if (event.id.startsWith("ecb-")) return "ecb";
+  if (event.id.startsWith("boj-")) return "boj";
   return fredKindFromId(event.id);
 }
 
@@ -69,6 +74,7 @@ async function pastDatesFor(kind: string, from: Date, to: Date): Promise<string[
       return t >= from && t <= to;
     });
   }
+  if (kind === "ecb" || kind === "boj") return bankPastDates(kind, from, to);
   const rel = RELEASES.find((r) => r.kind === kind);
   return rel ? fred.releaseDates(rel.releaseId, from, to) : [];
 }

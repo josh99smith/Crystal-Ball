@@ -143,8 +143,11 @@
   (2-yr half-life), expected-move magnitude, and a sample-size significance flag;
   surfaced in the detail panel. Remaining: outcome-conditional reactions (needs a
   free consensus/actual source) and explicit regime segmentation.
-- **v2.5 — Breadth & surfaces:** more assets / central banks / sector ETFs,
-  asset-centric view, alerts, richer digest.
+- **v2.5 — Breadth & surfaces:** ◑ expanded universe to 20 assets (VIX, US2Y,
+  EUR/USD, sector ETFs XLK/SMH/XLE, megacaps GOOGL/AMZN/META/TSLA); added ECB +
+  BoJ rate decisions with euro/yen-aware scenarios; wired all new assets into
+  correlation + scenarios; earnings now cover 7 tickers. Remaining: asset-centric
+  view, alerts, richer per-asset digest.
 - **v2.6 — Quality:** tests, lint, CI gate, caching, schema versioning.
 
 (Order is a recommendation — UI-first so improvements are visible immediately;
