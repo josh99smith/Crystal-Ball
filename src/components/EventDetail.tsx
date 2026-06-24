@@ -5,6 +5,7 @@ import { OutcomeFan, OutcomeList } from "./Outcomes";
 interface Props {
   event: MarketEvent | null;
   selectedAssets: Set<string>;
+  narrative?: string;
   onClose: () => void;
 }
 
@@ -19,7 +20,7 @@ const SIG_LABEL: Record<string, string> = {
 };
 
 /** Detail panel for a selected event, with inline explanations of each metric. */
-export function EventDetail({ event, selectedAssets, onClose }: Props) {
+export function EventDetail({ event, selectedAssets, narrative, onClose }: Props) {
   if (!event) return null;
   const meta = CATEGORY_META[event.category];
   const when = new Date(event.scheduledAt);
@@ -45,6 +46,12 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
         })}
         {event.isScheduled ? "" : " · estimated timing (anticipated event)"}
       </p>
+
+      {narrative && (
+        <p className="detail-narrative">
+          <span className="dn-label">What to watch</span> {narrative}
+        </p>
+      )}
 
       <div className="detail-impact" title="How market-moving this type of event tends to be">
         <span className="muted">Expected impact</span>

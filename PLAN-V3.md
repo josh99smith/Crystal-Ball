@@ -93,8 +93,11 @@ Seven pillars:
   persistence (localStorage); installable PWA (manifest, icon, offline service
   worker with safe network-first caching). Remaining: deeper mobile/a11y polish,
   asset-centric pages, command palette.
-- **v3.1 — Intelligence (static):** Claude daily/weekly brief + per-event
-  narratives + anomaly callouts, generated in Actions, published static.
+- **v3.1 — Intelligence (static):** ✅ Claude-written brief + per-event "what to
+  watch" narratives + deterministic anomaly callouts (clusters, calibration
+  drift), generated in CI and published static; honest heuristic fallback +
+  "AI / auto" provenance badge. New "Brief" tab; narratives in the detail panel.
+  Live Q&A deferred to v3.6 (serverless proxy).
 - **v3.2 — Personalization & delivery:** portfolio + event-risk exposure;
   calendar (.ics) export; personalized digest; scheduled email brief.
 - **v3.3 — Strategy lab:** client-side event-rule backtester + EV calculator,

@@ -13,12 +13,13 @@ import { AssetSelector } from "./components/AssetSelector";
 import { Timeline } from "./components/Timeline";
 import { EventDetail } from "./components/EventDetail";
 import { DigestView } from "./components/DigestView";
+import { BriefView } from "./components/BriefView";
 import { ReliabilityView } from "./components/ReliabilityView";
 import { AssetChart } from "./components/AssetChart";
 import { CryptoTicker } from "./components/CryptoTicker";
 
-type View = "timeline" | "digest" | "reliability" | "chart";
-const VIEWS: View[] = ["timeline", "digest", "reliability", "chart"];
+type View = "timeline" | "brief" | "digest" | "reliability" | "chart";
+const VIEWS: View[] = ["timeline", "brief", "digest", "reliability", "chart"];
 const SCALE_IDS = TIMELINE_SCALES.map((s) => s.id);
 
 const initial = readUrlState();
@@ -120,6 +121,14 @@ export function App() {
             </button>
             <button
               role="tab"
+              aria-selected={view === "brief"}
+              className={view === "brief" ? "vt active" : "vt"}
+              onClick={() => setView("brief")}
+            >
+              Brief
+            </button>
+            <button
+              role="tab"
               aria-selected={view === "digest"}
               className={view === "digest" ? "vt active" : "vt"}
               onClick={() => setView("digest")}
@@ -189,6 +198,17 @@ export function App() {
               onSelect={setSelectedEvent}
             />
           )}
+          {view === "brief" && (
+            <BriefView
+              intelligence={bundle.intelligence}
+              digest={bundle.digest}
+              eventsById={eventsById}
+              onSelect={(e) => {
+                setSelectedEvent(e);
+                setView("timeline");
+              }}
+            />
+          )}
           {view === "digest" && (
             <DigestView
               digest={bundle.digest}
@@ -222,6 +242,7 @@ export function App() {
         <EventDetail
           event={selectedEvent}
           selectedAssets={selectedAssets}
+          narrative={selectedEvent ? bundle.intelligence?.narratives[selectedEvent.id] : undefined}
           onClose={() => setSelectedEvent(null)}
         />
       </div>

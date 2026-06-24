@@ -816,6 +816,90 @@ body {
   font-size: 13px;
 }
 
+/* Brief (intelligence) */
+.brief {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.brief-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brief-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+.brief-by {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.by-claude {
+  background: rgba(124, 92, 255, 0.18);
+  color: #b3a4ff;
+}
+.by-heuristic {
+  background: var(--panel-2);
+  color: var(--muted);
+}
+.brief-para {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.brief-anomalies {
+  background: var(--panel-2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 14px 0;
+}
+.brief-anomalies h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.brief-anomalies ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+.brief-anomalies li {
+  margin: 3px 0;
+}
+.brief-digest-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  margin: 22px 0 4px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.detail-narrative {
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+.dn-label {
+  display: inline-block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-2);
+  margin-right: 6px;
+  font-weight: 700;
+}
+
 /* Reliability / calibration */
 .reliability {
   background: var(--panel);

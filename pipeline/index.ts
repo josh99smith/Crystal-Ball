@@ -21,6 +21,7 @@ import {
   type LedgerRecord,
 } from "./calibration";
 import { buildDigest, digestToMarkdown } from "./digest";
+import { buildIntelligence } from "./intelligence";
 import type { PriceBar } from "./marketdata/stooq";
 import { fetchDailyCloses } from "./marketdata/yahoo";
 import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
@@ -367,6 +368,7 @@ async function main() {
 
   const digest = buildDigest(events, now);
   const calibrationLoop = await runCalibrationLoop(events, now);
+  const intelligence = await buildIntelligence(events, digest, now, calibrationLoop);
 
   const bundle: DataBundle = {
     schemaVersion: SCHEMA_VERSION,
@@ -376,6 +378,7 @@ async function main() {
     digest,
     calibration: historical.calibration,
     calibrationLoop,
+    intelligence,
   };
 
   await mkdir(DATA_DIR, { recursive: true });

@@ -154,6 +154,19 @@ export interface CalibrationMetrics {
 /** Bumped when the bundle shape changes incompatibly; the SPA guards on it. */
 export const SCHEMA_VERSION = 1;
 
+/** AI/heuristic intelligence layer (v3.1) — narrative brief + callouts. */
+export interface Intelligence {
+  /** Narrative "week ahead" (paragraphs separated by blank lines). */
+  brief: string;
+  generatedBy: "claude" | "heuristic";
+  model?: string;
+  /** Notable structural callouts (clusters, calibration drift, etc.). */
+  anomalies: string[];
+  /** Per-event "what to watch" lines, keyed by event id. */
+  narratives: Record<string, string>;
+  updatedAt: string;
+}
+
 /** The single artifact the SPA loads (data/events.json). */
 export interface DataBundle {
   /** Bundle schema version (see SCHEMA_VERSION). */
@@ -167,6 +180,8 @@ export interface DataBundle {
   calibration: CalibrationRow[];
   /** Live calibration from the predictions ledger (v2.3). */
   calibrationLoop?: CalibrationMetrics;
+  /** Narrative brief + per-event narratives + anomalies (v3.1). */
+  intelligence?: Intelligence;
 }
 
 /** Multi-scale timeline horizons (PLAN §2.4). */
