@@ -146,8 +146,10 @@
 - **v2.5 — Breadth & surfaces:** ◑ expanded universe to 20 assets (VIX, US2Y,
   EUR/USD, sector ETFs XLK/SMH/XLE, megacaps GOOGL/AMZN/META/TSLA); added ECB +
   BoJ rate decisions with euro/yen-aware scenarios; wired all new assets into
-  correlation + scenarios; earnings now cover 7 tickers. Remaining: asset-centric
-  view, alerts, richer per-asset digest.
+  correlation + scenarios; earnings now cover 7 tickers. Also added computed
+  **lunar-phase** events (new/full moon) — run through the same event study +
+  calibration so the (weak) lunar correlation is measured, not asserted.
+  Remaining: asset-centric view, alerts, richer per-asset digest.
 - **v2.6 — Quality:** ◑ Vitest suite (22 tests across timeline scale, scenarios,
   weighting, calibration, event study, digest); CI gate workflow (typecheck +
   test + build on push/PR); schema versioning with an SPA guard. Remaining:

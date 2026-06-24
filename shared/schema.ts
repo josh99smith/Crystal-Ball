@@ -27,7 +27,8 @@ export type EventCategory =
   | "political"
   | "geopolitical"
   | "crypto"
-  | "market-structure";
+  | "market-structure"
+  | "lunar";
 
 export type Direction = "up" | "down" | "neutral";
 export type Magnitude = "low" | "med" | "high";

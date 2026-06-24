@@ -123,6 +123,18 @@ const TEMPLATES: Record<string, OutcomeTemplate[]> = {
       dir: { SPX: "down", NDX: "down", XLK: "down", SMH: "down", VIX: "up", US10Y: "down", US2Y: "down", USD: "down", GOLD: "up" },
     },
   ],
+  // Lunar phases (folklore: full moon ~ mild risk-off, new moon ~ mild risk-on).
+  // Weighted heavily toward "no clear effect" — the honest prior.
+  "lunar-full": [
+    { id: "risk-off", label: "Risk-off bias", weight: 0.25, rationale: "Full-moon folklore: a mild risk-off tilt.", dir: { SPX: "down", NDX: "down", BTC: "down" } },
+    { id: "none", label: "No clear effect", weight: 0.55, rationale: "Most likely: no meaningful lunar effect.", dir: {} },
+    { id: "risk-on", label: "Risk-on bias", weight: 0.2, rationale: "Occasionally the opposite of the folklore.", dir: { SPX: "up", NDX: "up", BTC: "up" } },
+  ],
+  "lunar-new": [
+    { id: "risk-on", label: "Risk-on bias", weight: 0.25, rationale: "New-moon folklore: a mild risk-on tilt.", dir: { SPX: "up", NDX: "up", BTC: "up" } },
+    { id: "none", label: "No clear effect", weight: 0.55, rationale: "Most likely: no meaningful lunar effect.", dir: {} },
+    { id: "risk-off", label: "Risk-off bias", weight: 0.2, rationale: "Occasionally the opposite of the folklore.", dir: { SPX: "down", NDX: "down", BTC: "down" } },
+  ],
   // Growth (GDP).
   growth: [
     {
@@ -252,6 +264,13 @@ function genericOutcomes(): Outcome[] {
 
 export function heuristicOutcomes(event: MarketEvent): Outcome[] {
   if (event.category === "earnings") return earningsOutcomes(event);
+  if (event.category === "lunar") {
+    const tpl = event.id.startsWith("lunar-full") ? TEMPLATES["lunar-full"] : TEMPLATES["lunar-new"];
+    return fromTemplates(event, tpl).map((o) => ({
+      ...o,
+      provenance: "Lunar-cycle folklore — low evidence; see historical significance",
+    }));
+  }
   if (event.category === "monetary-policy") {
     if (event.id.startsWith("ecb-")) return fromTemplates(event, TEMPLATES.ecb);
     if (event.id.startsWith("boj-")) return fromTemplates(event, TEMPLATES.boj);

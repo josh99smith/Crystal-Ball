@@ -73,6 +73,19 @@ const STRUCTURAL_LINKS: Record<string, Array<[asset: string, strength: number]>>
     ["US2Y", 0.55],
     ["USD", 0.5],
   ],
+  // Lunar phases (folklore; low strengths — the event study downgrades further
+  // if there's no real signal).
+  "lunar-full": [
+    ["SPX", 0.3],
+    ["NDX", 0.3],
+    ["BTC", 0.35],
+    ["GOLD", 0.3],
+  ],
+  "lunar-new": [
+    ["SPX", 0.3],
+    ["NDX", 0.3],
+    ["BTC", 0.35],
+  ],
   // Personal Income & Outlays (contains PCE, the Fed's preferred inflation gauge).
   "us-pce": [
     ["US10Y", 0.78],

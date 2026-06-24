@@ -15,4 +15,5 @@ export const CATEGORY_META: Record<EventCategory, CategoryMeta> = {
   geopolitical: { label: "Geopolitical", color: "#ff6b6b" },
   crypto: { label: "Crypto", color: "#f7931a" },
   "market-structure": { label: "Market structure", color: "#9aa7c7" },
+  lunar: { label: "Lunar cycle", color: "#c7ccd9" },
 };

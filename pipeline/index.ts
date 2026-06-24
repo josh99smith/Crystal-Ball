@@ -32,6 +32,7 @@ import { MarketStructureProvider } from "./providers/marketstructure";
 import { FomcProvider, FOMC_DECISION_DATES } from "./providers/fomc";
 import { GdeltProvider } from "./providers/gdelt";
 import { CentralBankProvider, bankPastDates, BANK_LABELS } from "./providers/centralbanks";
+import { LunarProvider, lunarPastDates } from "./providers/lunar";
 import type { EventProvider } from "./providers/types";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -50,6 +51,7 @@ const COMPUTED_PROVIDERS: EventProvider[] = [
   new MarketStructureProvider(),
   new FomcProvider(),
   new CentralBankProvider(),
+  new LunarProvider(),
   new GdeltProvider(),
 ];
 
@@ -57,13 +59,17 @@ const KIND_LABEL = new Map<string, string>([
   ...RELEASES.map((r) => [r.kind, r.title] as [string, string]),
   ["fomc", "FOMC rate decision"],
   ...Object.entries(BANK_LABELS),
+  ["lunar-new", "New moon"],
+  ["lunar-full", "Full moon"],
 ]);
 
-/** Correlation "kind" for an event (FRED releases, fixtures, FOMC, ECB, BoJ). */
+/** Correlation "kind" for an event (FRED releases, fixtures, FOMC, ECB, BoJ, lunar). */
 function kindOf(event: MarketEvent): string | undefined {
   if (event.id.startsWith("fomc-")) return "fomc";
   if (event.id.startsWith("ecb-")) return "ecb";
   if (event.id.startsWith("boj-")) return "boj";
+  if (event.id.startsWith("lunar-new-")) return "lunar-new";
+  if (event.id.startsWith("lunar-full-")) return "lunar-full";
   return fredKindFromId(event.id);
 }
 
@@ -76,6 +82,7 @@ async function pastDatesFor(kind: string, from: Date, to: Date): Promise<string[
     });
   }
   if (kind === "ecb" || kind === "boj") return bankPastDates(kind, from, to);
+  if (kind === "lunar-new" || kind === "lunar-full") return lunarPastDates(kind, from, to);
   const rel = RELEASES.find((r) => r.kind === kind);
   return rel ? fred.releaseDates(rel.releaseId, from, to) : [];
 }

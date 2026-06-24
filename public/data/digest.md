@@ -1,11 +1,12 @@
 # Crystal-Ball Digest
 
-_Generated Wed, 24 Jun 2026 19:01:11 GMT_
+_Generated Wed, 24 Jun 2026 19:05:35 GMT_
 
-**1 notable event in the next 7 days, 1 high-impact.**
+**2 notable events in the next 7 days, 1 high-impact.**
 
 ## Next 7 days
 - **Sun, Jun 28** — US CPI (sample) (economic-data, impact 0.85) · US10Y, US2Y, SPX
+- **Mon, Jun 29** — Full moon (lunar, impact 0.25) · SPX, BTC, GOLD
 
 ## Next 30 days
 - **Sun, Jun 28** — US CPI (sample) (economic-data, impact 0.85) · US10Y, US2Y, SPX
@@ -17,5 +18,6 @@ _Generated Wed, 24 Jun 2026 19:01:11 GMT_
 - **Mon, Jul 20** — US GDP (sample) (economic-data, impact 0.70) · NDX, US2Y, SPX
 - **Fri, Jul 24** — MSFT earnings (sample) (earnings, impact 0.70) · MSFT, NDX, SPX
 - **Fri, Jul 17** — Monthly options expiry (OpEx) (market-structure, impact 0.40) · NDX, SPX, NDX
+- **Mon, Jun 29** — Full moon (lunar, impact 0.25) · SPX, BTC, GOLD
 
 _Not financial advice._
