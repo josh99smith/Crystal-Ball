@@ -1,8 +1,12 @@
 name: Build and deploy
 
-# Builds the SPA (regenerating data first) and deploys it to GitHub Pages.
-# Reusable: refresh-data.yml calls this on a schedule so deploys always carry
-# fresh data without committing JSON back to the repo.
+# Builds the SPA (regenerating data first) and publishes it to the gh-pages
+# branch with a plain git force-push. This avoids actions/deploy-pages entirely
+# (no github-pages environment gate, no artifact step, no deployment queue) —
+# the failure modes that previously blocked deploys.
+#
+# One-time setup: Settings → Pages → Source → "Deploy from a branch" →
+# Branch: gh-pages, Folder: / (root).
 
 on:
   push:
@@ -11,22 +15,15 @@ on:
   workflow_call:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write # push to gh-pages
 
-# Only the latest deploy matters — cancel superseded/queued runs so they don't
-# pile up in the Pages backend queue (which causes deploy-pages timeouts).
 concurrency:
-  group: pages
+  group: gh-pages-deploy
   cancel-in-progress: true
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,20 +45,20 @@ jobs:
 
       - run: npm run build
 
-      # enablement: true sets the Pages build type to "GitHub Actions" via the
-      # API, so this works even if Pages was first enabled as "Deploy from a
-      # branch" (the usual cause of deploys hanging on "deployment_queued").
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-      # Raise the timeout: the Pages backend queue can sit in "deployment_queued"
-      # for well over the 10-minute default, causing spurious failures.
-      - id: deploy
-        uses: actions/deploy-pages@v4
-        with:
-          timeout: 1200000
+      - name: Publish to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          touch dist/.nojekyll
+          cd dist
+          git init -q
+          git checkout -q -b gh-pages
+          git -c user.name="github-actions[bot]" \
+              -c user.email="github-actions[bot]@users.noreply.github.com" \
+              add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="github-actions[bot]@users.noreply.github.com" \
+              commit -qm "Deploy ${GITHUB_SHA} (run ${GITHUB_RUN_NUMBER})"
+          git push -f \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            gh-pages

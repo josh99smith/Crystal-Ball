@@ -87,12 +87,17 @@ the app still renders. For real data set environment variables (locally in a
 
 ## Deploy (GitHub Pages)
 
-1. Repo **Settings → Pages → Source: GitHub Actions**.
-2. Add the API keys above under **Settings → Secrets and variables → Actions**.
-3. Push to `main` → `build-and-deploy.yml` builds and publishes.
+The workflow builds the SPA and force-pushes it to the **`gh-pages`** branch.
+
+1. Add the API keys above under **Settings → Secrets and variables → Actions**.
+2. Push to `main` → `build-and-deploy.yml` builds and publishes to `gh-pages`.
+3. One-time: **Settings → Pages → Source: Deploy from a branch →
+   Branch: `gh-pages`, Folder: `/ (root)`**.
 4. `refresh-data.yml` re-runs on a schedule to keep data fresh.
 
-The Vite `base` is `/Crystal-Ball/` to match the repo-name path on Pages.
+This branch-based deploy avoids the `actions/deploy-pages` environment gate,
+artifact step, and deployment queue. The Vite `base` is `/Crystal-Ball/` to
+match the repo-name path on Pages.
 
 ## Layout
 
