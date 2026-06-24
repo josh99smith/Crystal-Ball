@@ -11,11 +11,16 @@ See [`PLAN.md`](./PLAN.md) for the full product/engineering plan.
 
 ## Status
 
-**Phase 1 — Timeline MVP + digest.** Working today:
+**Phase 2 — Weighted outcomes.** Working today:
 
 - Static **Vite + React** SPA with an **asset selector** and a **zoomable,
   horizontal multi-scale timeline** (daily → decade): events positioned by date,
   sized by impact, colored by category, stacked into lanes, click for detail.
+- **Weighted outcome scenarios** per event — a probability **fan** on the
+  timeline and a full breakdown (weight, source, rationale, per-asset impact
+  arrows) in the detail panel.
+- Scenarios from the **Claude API** (structured output) when `ANTHROPIC_API_KEY`
+  is set, with a deterministic **heuristic fallback** otherwise.
 - An **event detail panel** (date, impact, correlated assets with tier/strength).
 - A generated **daily/weekly digest** view (and `digest.md`).
 - **Live BTC ticker** fetched client-side (CoinGecko, real-time).
@@ -23,10 +28,10 @@ See [`PLAN.md`](./PLAN.md) for the full product/engineering plan.
   sources — **FRED** (economic-release calendar) and **Finnhub** (earnings) —
   → static JSON, degrading to sample fixtures without keys.
 - A curated **structural correlation map** (event → asset links).
-- **GitHub Pages + Actions** deployment wiring.
+- **GitHub Pages + Actions** deployment (live at the Pages URL).
 
-Weighted outcome scenarios (Phase 2, via the Claude API) and historical
-correlation (Phase 3) come next per the roadmap in `PLAN.md` §8.
+Historical/statistical correlation (Phase 3) and calibration (Phase 4) come next
+per the roadmap in `PLAN.md` §8.
 
 ## Architecture (static hosting)
 

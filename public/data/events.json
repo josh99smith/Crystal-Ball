@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-24T14:47:13.232Z",
+  "generatedAt": "2026-06-24T15:14:53.286Z",
   "assets": [
     {
       "id": "SPX",
@@ -57,7 +57,7 @@
       "id": "fred-us-cpi-2026-06-28",
       "title": "US CPI (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-06-28T14:47:13.232Z",
+      "scheduledAt": "2026-06-28T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -92,13 +92,101 @@
           "tier": "structural",
           "strength": 0.4
         }
+      ],
+      "outcomes": [
+        {
+          "id": "hot",
+          "label": "Above consensus (hot)",
+          "weight": 0.3,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hotter inflation → higher-for-longer rates; risk assets sell off, USD firms."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.45,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "In-line print; muted, mechanical reaction."
+        },
+        {
+          "id": "cool",
+          "label": "Below consensus (cool)",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Softer inflation → rate-cut hopes; risk rallies, USD eases."
+        }
       ]
     },
     {
       "id": "fred-us-nfp-2026-07-03",
       "title": "US Employment Situation (NFP) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-03T14:47:13.232Z",
+      "scheduledAt": "2026-07-03T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -128,13 +216,91 @@
           "tier": "structural",
           "strength": 0.55
         }
+      ],
+      "outcomes": [
+        {
+          "id": "strong",
+          "label": "Strong payrolls",
+          "weight": 0.35,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            }
+          ],
+          "rationale": "Strong labor market: yields & USD up on a hawkish Fed; equities firm on growth."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.4,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "In-line jobs; limited reaction."
+        },
+        {
+          "id": "weak",
+          "label": "Weak payrolls",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            }
+          ],
+          "rationale": "Weak jobs: growth worry; yields & USD fall, equities slip, gold bid."
+        }
       ]
     },
     {
       "id": "finnhub-earnings-NVDA-2026-07-06",
       "title": "NVDA earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-06T14:47:13.232Z",
+      "scheduledAt": "2026-07-06T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -154,13 +320,71 @@
           "tier": "structural",
           "strength": 0.5
         }
+      ],
+      "outcomes": [
+        {
+          "id": "beat",
+          "label": "Beat & raise",
+          "weight": 0.45,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "NVDA",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "low"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "NVDA tops estimates / lifts guidance — stock gaps up, modest index lift."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Results roughly in line; reaction driven by guidance nuance."
+        },
+        {
+          "id": "miss",
+          "label": "Miss / soft guide",
+          "weight": 0.3,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "NVDA",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "low"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "NVDA disappoints — stock sells off, small index drag."
+        }
       ]
     },
     {
       "id": "fred-us-pce-2026-07-11",
       "title": "US Personal Income & Outlays (PCE) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-11T14:47:13.232Z",
+      "scheduledAt": "2026-07-11T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.75,
       "source": "fixture",
@@ -185,13 +409,81 @@
           "tier": "structural",
           "strength": 0.55
         }
+      ],
+      "outcomes": [
+        {
+          "id": "hot",
+          "label": "Above consensus (hot)",
+          "weight": 0.3,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            }
+          ],
+          "rationale": "Hotter inflation → higher-for-longer rates; risk assets sell off, USD firms."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.45,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "In-line print; muted, mechanical reaction."
+        },
+        {
+          "id": "cool",
+          "label": "Below consensus (cool)",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            }
+          ],
+          "rationale": "Softer inflation → rate-cut hopes; risk rallies, USD eases."
+        }
       ]
     },
     {
       "id": "finnhub-earnings-AAPL-2026-07-15",
       "title": "AAPL earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-15T14:47:13.232Z",
+      "scheduledAt": "2026-07-15T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -211,13 +503,71 @@
           "tier": "structural",
           "strength": 0.5
         }
+      ],
+      "outcomes": [
+        {
+          "id": "beat",
+          "label": "Beat & raise",
+          "weight": 0.45,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "AAPL",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "low"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "AAPL tops estimates / lifts guidance — stock gaps up, modest index lift."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Results roughly in line; reaction driven by guidance nuance."
+        },
+        {
+          "id": "miss",
+          "label": "Miss / soft guide",
+          "weight": 0.3,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "AAPL",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "low"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "AAPL disappoints — stock sells off, small index drag."
+        }
       ]
     },
     {
       "id": "fred-us-gdp-2026-07-20",
       "title": "US GDP (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-20T14:47:13.232Z",
+      "scheduledAt": "2026-07-20T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -237,13 +587,71 @@
           "tier": "structural",
           "strength": 0.5
         }
+      ],
+      "outcomes": [
+        {
+          "id": "strong",
+          "label": "Above consensus",
+          "weight": 0.4,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Stronger growth lifts equities; yields and USD firm."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.35,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Growth as expected; muted."
+        },
+        {
+          "id": "weak",
+          "label": "Below consensus",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Weaker growth weighs on equities; yields and USD ease."
+        }
       ]
     },
     {
       "id": "finnhub-earnings-MSFT-2026-07-24",
       "title": "MSFT earnings (sample)",
       "category": "earnings",
-      "scheduledAt": "2026-07-24T14:47:13.232Z",
+      "scheduledAt": "2026-07-24T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.7,
       "source": "fixture",
@@ -263,13 +671,71 @@
           "tier": "structural",
           "strength": 0.5
         }
+      ],
+      "outcomes": [
+        {
+          "id": "beat",
+          "label": "Beat & raise",
+          "weight": 0.45,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "MSFT",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "low"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "MSFT tops estimates / lifts guidance — stock gaps up, modest index lift."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "Results roughly in line; reaction driven by guidance nuance."
+        },
+        {
+          "id": "miss",
+          "label": "Miss / soft guide",
+          "weight": 0.3,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "MSFT",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "low"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "MSFT disappoints — stock sells off, small index drag."
+        }
       ]
     },
     {
       "id": "fred-us-cpi-2026-07-28",
       "title": "US CPI (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-07-28T14:47:13.232Z",
+      "scheduledAt": "2026-07-28T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -304,13 +770,101 @@
           "tier": "structural",
           "strength": 0.4
         }
+      ],
+      "outcomes": [
+        {
+          "id": "hot",
+          "label": "Above consensus (hot)",
+          "weight": 0.3,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "down",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Hotter inflation → higher-for-longer rates; risk assets sell off, USD firms."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.45,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "In-line print; muted, mechanical reaction."
+        },
+        {
+          "id": "cool",
+          "label": "Below consensus (cool)",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "BTC",
+              "direction": "up",
+              "magnitude": "low"
+            }
+          ],
+          "rationale": "Softer inflation → rate-cut hopes; risk rallies, USD eases."
+        }
       ]
     },
     {
       "id": "fred-us-nfp-2026-08-03",
       "title": "US Employment Situation (NFP) (sample)",
       "category": "economic-data",
-      "scheduledAt": "2026-08-03T14:47:13.232Z",
+      "scheduledAt": "2026-08-03T15:14:53.286Z",
       "isScheduled": true,
       "expectedImpact": 0.85,
       "source": "fixture",
@@ -340,17 +894,95 @@
           "tier": "structural",
           "strength": 0.55
         }
+      ],
+      "outcomes": [
+        {
+          "id": "strong",
+          "label": "Strong payrolls",
+          "weight": 0.35,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "up",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "NDX",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "up",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "down",
+              "magnitude": "med"
+            }
+          ],
+          "rationale": "Strong labor market: yields & USD up on a hawkish Fed; equities firm on growth."
+        },
+        {
+          "id": "inline",
+          "label": "In line",
+          "weight": 0.4,
+          "weightSource": "historical",
+          "assetImpacts": [],
+          "rationale": "In-line jobs; limited reaction."
+        },
+        {
+          "id": "weak",
+          "label": "Weak payrolls",
+          "weight": 0.25,
+          "weightSource": "historical",
+          "assetImpacts": [
+            {
+              "asset": "US10Y",
+              "direction": "down",
+              "magnitude": "high"
+            },
+            {
+              "asset": "SPX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "NDX",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "USD",
+              "direction": "down",
+              "magnitude": "med"
+            },
+            {
+              "asset": "GOLD",
+              "direction": "up",
+              "magnitude": "med"
+            }
+          ],
+          "rationale": "Weak jobs: growth worry; yields & USD fall, equities slip, gold bid."
+        }
       ]
     }
   ],
   "digest": {
-    "generatedAt": "2026-06-24T14:47:13.232Z",
+    "generatedAt": "2026-06-24T15:14:53.286Z",
     "headline": "1 notable event in the next 7 days, 1 high-impact.",
     "daily": [
       {
         "eventId": "fred-us-cpi-2026-06-28",
         "title": "US CPI (sample)",
-        "scheduledAt": "2026-06-28T14:47:13.232Z",
+        "scheduledAt": "2026-06-28T15:14:53.286Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -364,7 +996,7 @@
       {
         "eventId": "fred-us-cpi-2026-06-28",
         "title": "US CPI (sample)",
-        "scheduledAt": "2026-06-28T14:47:13.232Z",
+        "scheduledAt": "2026-06-28T15:14:53.286Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -376,7 +1008,7 @@
       {
         "eventId": "fred-us-nfp-2026-07-03",
         "title": "US Employment Situation (NFP) (sample)",
-        "scheduledAt": "2026-07-03T14:47:13.232Z",
+        "scheduledAt": "2026-07-03T15:14:53.286Z",
         "category": "economic-data",
         "expectedImpact": 0.85,
         "topAssets": [
@@ -388,7 +1020,7 @@
       {
         "eventId": "fred-us-pce-2026-07-11",
         "title": "US Personal Income & Outlays (PCE) (sample)",
-        "scheduledAt": "2026-07-11T14:47:13.232Z",
+        "scheduledAt": "2026-07-11T15:14:53.286Z",
         "category": "economic-data",
         "expectedImpact": 0.75,
         "topAssets": [
@@ -400,7 +1032,7 @@
       {
         "eventId": "finnhub-earnings-NVDA-2026-07-06",
         "title": "NVDA earnings (sample)",
-        "scheduledAt": "2026-07-06T14:47:13.232Z",
+        "scheduledAt": "2026-07-06T15:14:53.286Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -412,7 +1044,7 @@
       {
         "eventId": "finnhub-earnings-AAPL-2026-07-15",
         "title": "AAPL earnings (sample)",
-        "scheduledAt": "2026-07-15T14:47:13.232Z",
+        "scheduledAt": "2026-07-15T15:14:53.286Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -424,7 +1056,7 @@
       {
         "eventId": "fred-us-gdp-2026-07-20",
         "title": "US GDP (sample)",
-        "scheduledAt": "2026-07-20T14:47:13.232Z",
+        "scheduledAt": "2026-07-20T15:14:53.286Z",
         "category": "economic-data",
         "expectedImpact": 0.7,
         "topAssets": [
@@ -436,7 +1068,7 @@
       {
         "eventId": "finnhub-earnings-MSFT-2026-07-24",
         "title": "MSFT earnings (sample)",
-        "scheduledAt": "2026-07-24T14:47:13.232Z",
+        "scheduledAt": "2026-07-24T15:14:53.286Z",
         "category": "earnings",
         "expectedImpact": 0.7,
         "topAssets": [

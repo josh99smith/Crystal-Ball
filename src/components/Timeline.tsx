@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { MarketEvent, TimelineScaleId } from "../../shared/schema";
 import { CATEGORY_META } from "../../shared/categories";
 import { axisTicks, layoutEvents } from "../timelineLayout";
+import { OutcomeFan } from "./Outcomes";
 
 interface Props {
   events: MarketEvent[];
@@ -92,6 +93,19 @@ export function Timeline({
             </button>
           );
         })}
+
+        {/* weighted outcome fan beneath the selected node */}
+        {positioned.map(({ event, pct, lane }) =>
+          event.id === selectedEventId && event.outcomes?.length ? (
+            <div
+              key={`fan-${event.id}`}
+              className="node-fan"
+              style={{ left: `${pct}%`, top: lane * LANE_HEIGHT + 40 }}
+            >
+              <OutcomeFan outcomes={event.outcomes} selected={selectedAssets} />
+            </div>
+          ) : null,
+        )}
       </div>
     </div>
   );

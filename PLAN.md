@@ -260,10 +260,13 @@ Weights must be **honest and sourced**, not vibes:
 - ✅ Event detail panel + a generated **daily/weekly digest** (`digest.md` +
   rendered Digest view).
 
-### Phase 2 — Weighted outcomes (1–2 weeks)
-- Scenario engine: enumerate outcomes; ingest market-implied + consensus inputs.
-- Claude reasoning layer for weighting + rationale (structured output).
-- Render the weighted outcome fans on the timeline.
+### Phase 2 — Weighted outcomes (1–2 weeks) — ✅ done
+- ✅ Scenario engine: enumerate mutually-exclusive outcomes with weights +
+  per-asset impacts; honest weightSource labels.
+- ✅ Claude reasoning layer for weighting + rationale (structured output via
+  forced tool use), with a deterministic heuristic fallback when no key.
+- ✅ Render the weighted outcome fans on the timeline + full breakdown in the
+  detail panel.
 
 ### Phase 3 — Historical correlation (1–2 weeks)
 - Market-data ingestion + event-study pipeline → historical link strengths.

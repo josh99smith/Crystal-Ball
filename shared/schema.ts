@@ -51,6 +51,8 @@ export interface Outcome {
   weight: number; // probability, 0..1
   weightSource: WeightSource;
   assetImpacts: AssetImpact[];
+  /** One-line explanation of the scenario and its market reaction. */
+  rationale?: string;
 }
 
 export type LinkTier = "structural" | "historical";

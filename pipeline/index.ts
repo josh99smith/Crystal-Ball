@@ -6,6 +6,8 @@ import type { DataBundle, MarketEvent } from "../shared/schema";
 import { ASSET_UNIVERSE } from "../shared/assets";
 import { structuralLinksFor } from "./correlation/structural";
 import { buildDigest, digestToMarkdown } from "./digest";
+import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
+import { heuristicOutcomes } from "./scenarios/heuristic";
 import { fixtureEvents } from "./fixtures";
 import { FredProvider, fredKindFromId } from "./providers/fred";
 import { FinnhubProvider } from "./providers/finnhub";
@@ -40,6 +42,37 @@ function attachLinks(events: MarketEvent[]): MarketEvent[] {
   });
 }
 
+/**
+ * Adds weighted outcome scenarios to each event. Uses the Claude reasoning layer
+ * when configured (falling back to the heuristic generator per-event on error),
+ * otherwise the heuristic generator. Claude calls run with bounded concurrency.
+ */
+async function addScenarios(events: MarketEvent[]): Promise<MarketEvent[]> {
+  const useClaude = claudeConfigured();
+  console.log(
+    `[pipeline] scenarios via ${useClaude ? "Claude" : "heuristic"} for ${events.length} events`,
+  );
+
+  const generate = async (event: MarketEvent) => {
+    if (useClaude) {
+      try {
+        return { ...event, outcomes: await claudeOutcomes(event) };
+      } catch (err) {
+        console.warn(`[pipeline] Claude scenarios failed for ${event.id}: ${(err as Error).message} — heuristic`);
+      }
+    }
+    return { ...event, outcomes: heuristicOutcomes(event) };
+  };
+
+  // Bounded concurrency to respect rate limits.
+  const LIMIT = 4;
+  const out: MarketEvent[] = [];
+  for (let i = 0; i < events.length; i += LIMIT) {
+    out.push(...(await Promise.all(events.slice(i, i + LIMIT).map(generate))));
+  }
+  return out;
+}
+
 async function main() {
   const now = new Date();
   const window = {
@@ -66,6 +99,8 @@ async function main() {
   events = attachLinks(events).sort(
     (a, b) => Date.parse(a.scheduledAt) - Date.parse(b.scheduledAt),
   );
+
+  events = await addScenarios(events);
 
   const digest = buildDigest(events, now);
 

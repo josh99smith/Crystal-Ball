@@ -1,5 +1,6 @@
 import type { MarketEvent } from "../../shared/schema";
 import { CATEGORY_META } from "../../shared/categories";
+import { OutcomeFan, OutcomeList } from "./Outcomes";
 
 interface Props {
   event: MarketEvent | null;
@@ -68,19 +69,11 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
       {event.outcomes && event.outcomes.length > 0 ? (
         <>
           <h3 className="detail-sub">Weighted outcomes</h3>
-          <ul className="detail-outcomes">
-            {event.outcomes.map((o) => (
-              <li key={o.id}>
-                <span className="oc-weight">{Math.round(o.weight * 100)}%</span>
-                <span className="oc-label">{o.label}</span>
-              </li>
-            ))}
-          </ul>
+          <OutcomeFan outcomes={event.outcomes} selected={selectedAssets} />
+          <OutcomeList outcomes={event.outcomes} selected={selectedAssets} />
         </>
       ) : (
-        <p className="muted detail-note">
-          Weighted outcome scenarios arrive in Phase 2.
-        </p>
+        <p className="muted detail-note">No scenarios available for this event.</p>
       )}
     </aside>
   );
