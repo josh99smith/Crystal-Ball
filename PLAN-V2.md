@@ -124,8 +124,10 @@
 
 - **v2.0 — UI foundation:** design tokens/theme, responsive layout, shareable URL
   state, watchlist persistence, loading/empty/error states, a11y pass.
-- **v2.1 — Timeline upgrade:** real zoom/pan timeline (visx), clustering,
-  upgraded outcome fan, decade cyclical bands.
+- **v2.1 — Timeline upgrade:** ✅ real zoom/pan timeline (pure React + time-domain
+  math — scroll to zoom, drag to pan), density clustering, generalized axis ticks,
+  selected-node outcome fan, decade cyclical markers (BTC halvings + US
+  elections). Remaining: recession-probability band (needs a data source).
 - **v2.2 — Trustworthy weights:** market-implied FOMC odds, consensus/actual for
   econ data, blended weighting with provenance.
 - **v2.3 — Calibration loop:** predictions ledger (persisted + scored),

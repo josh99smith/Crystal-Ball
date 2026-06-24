@@ -40,16 +40,10 @@ export function App() {
   }
 
   const { bundle } = state;
-  const now = Date.now();
-  const horizon = now + scaleDays * 24 * 60 * 60 * 1000;
 
-  const visible = bundle.events
-    .filter((e) => {
-      const t = Date.parse(e.scheduledAt);
-      return t >= now && t <= horizon;
-    })
-    .filter((e) => relevant(e, selectedAssets));
-
+  // The interactive timeline owns its time window (zoom/pan); we only filter by
+  // asset relevance here.
+  const assetFiltered = bundle.events.filter((e) => relevant(e, selectedAssets));
   const eventsById = new Map(bundle.events.map((e) => [e.id, e]));
 
   return (
@@ -118,7 +112,7 @@ export function App() {
         <div className="stage-main">
           {view === "timeline" && (
             <Timeline
-              events={visible}
+              events={assetFiltered}
               scale={scale}
               horizonDays={scaleDays}
               selectedAssets={selectedAssets}
@@ -151,7 +145,7 @@ export function App() {
       <footer className="meta">
         <div>
           Data generated {new Date(bundle.generatedAt).toLocaleString()} ·{" "}
-          {view === "timeline" ? `${visible.length} events shown · ` : ""}
+          {view === "timeline" ? `${assetFiltered.length} events tracked · ` : ""}
           Not financial advice.
         </div>
         <div className="build-stamp">

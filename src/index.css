@@ -270,6 +270,142 @@ body {
   color: var(--text);
 }
 
+/* Interactive timeline (v2.1) */
+.tl-canvas {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.tl-canvas:active {
+  cursor: grabbing;
+}
+.tl-axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border);
+}
+.tl-tick {
+  position: absolute;
+  border-left: 1px dashed rgba(138, 151, 176, 0.16);
+  pointer-events: none;
+}
+.tl-tick-label {
+  position: absolute;
+  left: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.tl-now {
+  position: absolute;
+  top: 0;
+  border-left: 2px solid var(--accent-2);
+  pointer-events: none;
+}
+.tl-now-label {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+.tl-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid rgba(124, 92, 255, 0.4);
+  pointer-events: none;
+}
+.tl-marker.halving {
+  border-color: rgba(247, 147, 26, 0.5);
+}
+.tl-marker.election {
+  border-color: rgba(91, 140, 255, 0.5);
+}
+.tl-marker-label {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.tl-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  background: var(--node-color, var(--accent));
+  cursor: pointer;
+  padding: 0;
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+.tl-node:hover,
+.tl-node.selected {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-color, var(--accent)) 35%, transparent);
+}
+.tl-node.selected {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+.tl-node.hit {
+  border-color: var(--hit);
+}
+.tl-node.anticipated {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--node-color, var(--accent));
+}
+.tl-node-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.tl-cluster {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tl-cluster:hover {
+  border-color: var(--accent);
+}
+.tl-fan {
+  position: absolute;
+  transform: translateX(-50%);
+  width: 150px;
+  pointer-events: none;
+}
+.tl-fan .fan {
+  height: 10px;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.tl-hint {
+  font-size: 11px;
+  margin-top: 8px;
+}
+
 /* Detail panel */
 .detail {
   background: var(--panel);
