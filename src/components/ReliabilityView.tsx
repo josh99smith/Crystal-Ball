@@ -107,6 +107,11 @@ export function ReliabilityView({ rows, loop, selected }: Props) {
       <LoopSection loop={loop} />
 
       <h3 className="rel-section-title">Event-study scorecard</h3>
+      <p className="field-hint">
+        For each event type × asset: how often the asset moved the same direction
+        ("same-dir"), the average move size, the sample size (n), and an overall
+        strength score. High same-dir = a reliable directional reaction.
+      </p>
       <div className="rel-summary">
         <div>
           <span className="rel-big">{Math.round(weightedHit * 100)}%</span>

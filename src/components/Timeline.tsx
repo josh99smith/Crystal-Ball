@@ -241,6 +241,12 @@ export function Timeline({
         {totalVisible} of {events.length} events in view · scroll to zoom, drag to
         pan, click a number to expand a cluster
       </div>
+      <div className="tl-legend muted">
+        <span><i className="lg-dot scheduled" /> scheduled</span>
+        <span><i className="lg-dot anticipated" /> anticipated (uncertain timing)</span>
+        <span><i className="lg-dot cluster" /> number = multiple events</span>
+        <span>dot size = expected impact · color = category</span>
+      </div>
     </div>
   );
 }

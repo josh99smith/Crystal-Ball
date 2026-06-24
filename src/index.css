@@ -405,6 +405,55 @@ body {
   font-size: 11px;
   margin-top: 8px;
 }
+.tl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.tl-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.lg-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid var(--bg);
+}
+.lg-dot.anticipated {
+  background: transparent;
+  border: 1px dashed var(--accent);
+}
+.lg-dot.cluster {
+  border-radius: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+
+/* Inline field hints / captions */
+.field-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 2px 0 10px;
+  line-height: 1.45;
+}
+.field-hint b {
+  color: var(--text);
+  font-weight: 600;
+}
+.legend-up {
+  color: var(--low);
+}
+.legend-down {
+  color: var(--high);
+}
+.asset-selector-hint {
+  font-size: 11px;
+}
 
 /* Detail panel */
 .detail {

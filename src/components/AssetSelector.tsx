@@ -13,6 +13,9 @@ export function AssetSelector({ assets, selected, onToggle, onClear }: Props) {
     <div className="asset-selector">
       <div className="asset-selector-head">
         <span className="label">Assets</span>
+        <span className="asset-selector-hint muted">
+          tap to filter events to assets you care about
+        </span>
         {selected.size > 0 && (
           <button className="clear" onClick={onClear}>
             Clear ({selected.size})

@@ -1,4 +1,4 @@
-import type { AssetImpact, Direction, Outcome } from "../../shared/schema";
+import type { AssetImpact, Direction, Outcome, WeightSource } from "../../shared/schema";
 
 const DIR_COLOR: Record<Direction, string> = {
   up: "#5bd6a0",
@@ -6,7 +6,15 @@ const DIR_COLOR: Record<Direction, string> = {
   neutral: "#6b7690",
 };
 const DIR_GLYPH: Record<Direction, string> = { up: "▲", down: "▼", neutral: "–" };
+const DIR_WORD: Record<Direction, string> = { up: "up", down: "down", neutral: "flat" };
 const MAG_WEIGHT = { low: 1, med: 2, high: 3 } as const;
+
+const SOURCE_TIP: Record<WeightSource, string> = {
+  "market-implied": "Probability implied by market prices (e.g. rate futures / Treasuries)",
+  consensus: "Based on analyst / economist consensus expectations",
+  historical: "Based on how often each outcome has occurred historically",
+  model: "Estimated by the model",
+};
 
 /** Net direction of an outcome, optionally biased to the user's selected assets. */
 export function netDirection(o: Outcome, selected: Set<string>): Direction {
@@ -52,7 +60,10 @@ export function OutcomeFan({
 
 function ImpactChip({ impact, hit }: { impact: AssetImpact; hit: boolean }) {
   return (
-    <span className={hit ? "impact-chip hit" : "impact-chip"}>
+    <span
+      className={hit ? "impact-chip hit" : "impact-chip"}
+      title={`${impact.asset}: expected ${DIR_WORD[impact.direction]} move, ${impact.magnitude} magnitude`}
+    >
       <span style={{ color: DIR_COLOR[impact.direction] }}>
         {DIR_GLYPH[impact.direction]}
       </span>
@@ -83,7 +94,9 @@ export function OutcomeList({
                   {Math.round(o.weight * 100)}%
                 </span>
                 <span className="oc-label">{o.label}</span>
-                <span className={`oc-src src-${o.weightSource}`}>{o.weightSource}</span>
+                <span className={`oc-src src-${o.weightSource}`} title={SOURCE_TIP[o.weightSource]}>
+                  {o.weightSource}
+                </span>
               </div>
               {o.rationale && <p className="oc-rationale">{o.rationale}</p>}
               {o.provenance && <p className="oc-provenance">basis: {o.provenance}</p>}

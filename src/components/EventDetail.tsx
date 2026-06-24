@@ -8,7 +8,17 @@ interface Props {
   onClose: () => void;
 }
 
-/** Detail panel for a selected event (PLAN §2.1 — outcomes arrive in Phase 2). */
+const TIER_TIP: Record<string, string> = {
+  structural: "Structural: a curated, economically-obvious link.",
+  historical: "Historical: measured from how the asset actually reacted to past occurrences of this event.",
+};
+const SIG_LABEL: Record<string, string> = {
+  low: "low confidence",
+  medium: "medium confidence",
+  high: "high confidence",
+};
+
+/** Detail panel for a selected event, with inline explanations of each metric. */
 export function EventDetail({ event, selectedAssets, onClose }: Props) {
   if (!event) return null;
   const meta = CATEGORY_META[event.category];
@@ -33,21 +43,23 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
           hour: "2-digit",
           minute: "2-digit",
         })}
-        {event.isScheduled ? "" : " (estimated)"}
+        {event.isScheduled ? "" : " · estimated timing (anticipated event)"}
       </p>
 
-      <div className="detail-impact">
+      <div className="detail-impact" title="How market-moving this type of event tends to be">
         <span className="muted">Expected impact</span>
         <div className="impact-bar">
-          <div
-            className="impact-fill"
-            style={{ width: `${event.expectedImpact * 100}%` }}
-          />
+          <div className="impact-fill" style={{ width: `${event.expectedImpact * 100}%` }} />
         </div>
         <span>{Math.round(event.expectedImpact * 100)}%</span>
       </div>
+      <p className="field-hint">How market-moving this event tends to be (0–100%).</p>
 
       <h3 className="detail-sub">Correlated assets</h3>
+      <p className="field-hint">
+        Assets this event tends to move. Each shows up to two links — a{" "}
+        <b>structural</b> (curated) and a <b>historical</b> (measured) strength, 0–1.
+      </p>
       <ul className="detail-links">
         {[...event.links]
           .sort((a, b) => b.strength - a.strength)
@@ -58,8 +70,10 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
             >
               <div className="dl-row">
                 <span className="dl-asset">{l.asset}</span>
-                <span className={`dl-tier tier-${l.tier}`}>{l.tier}</span>
-                <div className="dl-bar">
+                <span className={`dl-tier tier-${l.tier}`} title={TIER_TIP[l.tier]}>
+                  {l.tier}
+                </span>
+                <div className="dl-bar" title={`Link strength ${l.strength.toFixed(2)} of 1`}>
                   <div className="dl-fill" style={{ width: `${l.strength * 100}%` }} />
                 </div>
                 <span className="dl-strength">{l.strength.toFixed(2)}</span>
@@ -67,25 +81,31 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
               {l.stats && (
                 <div className="dl-stats">
                   <span>
-                    n={l.stats.n} · exp move {l.stats.avgAbsMovePct}% · same-dir{" "}
+                    {l.stats.n} past events · avg move ±{l.stats.avgAbsMovePct}% · moved
+                    same direction{" "}
                     {Math.round(
                       (l.stats.recencyWeightedHitRate ?? l.stats.directionHitRate) * 100,
                     )}
-                    %
+                    % of the time
                     {l.stats.significance && (
-                      <span className={`sig sig-${l.stats.significance}`}>
-                        {l.stats.significance}
+                      <span
+                        className={`sig sig-${l.stats.significance}`}
+                        title="Confidence based on how many past occurrences were sampled"
+                      >
+                        {SIG_LABEL[l.stats.significance]}
                       </span>
                     )}
                   </span>
-                  {(l.stats.intradayHitRate != null ||
-                    l.stats.threeDayDriftPct != null) && (
-                    <span className="dl-stats-windows">
+                  {(l.stats.intradayHitRate != null || l.stats.threeDayDriftPct != null) && (
+                    <span
+                      className="dl-stats-windows"
+                      title="Reaction at different horizons around the event"
+                    >
                       {l.stats.intradayHitRate != null && (
-                        <>intraday {Math.round(l.stats.intradayHitRate * 100)}% · </>
+                        <>same-day (open→close) {Math.round(l.stats.intradayHitRate * 100)}% · </>
                       )}
                       {l.stats.threeDayDriftPct != null && (
-                        <>3d drift {l.stats.threeDayDriftPct > 0 ? "+" : ""}
+                        <>3-day drift {l.stats.threeDayDriftPct > 0 ? "+" : ""}
                         {l.stats.threeDayDriftPct}%</>
                       )}
                     </span>
@@ -99,6 +119,11 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
       {event.outcomes && event.outcomes.length > 0 ? (
         <>
           <h3 className="detail-sub">Weighted outcomes</h3>
+          <p className="field-hint">
+            Possible scenarios and their odds. Bar width = probability; color = net
+            effect on {selectedAssets.size > 0 ? "your selected assets" : "linked assets"}{" "}
+            (<span className="legend-up">▲ up</span> / <span className="legend-down">▼ down</span>).
+          </p>
           <OutcomeFan outcomes={event.outcomes} selected={selectedAssets} />
           <OutcomeList outcomes={event.outcomes} selected={selectedAssets} />
         </>
