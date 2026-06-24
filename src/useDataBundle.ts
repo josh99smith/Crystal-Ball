@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { DataBundle } from "../shared/schema";
+import { SCHEMA_VERSION, type DataBundle } from "../shared/schema";
 
 type State =
   | { status: "loading" }
@@ -17,7 +17,14 @@ export function useDataBundle(): State {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json() as Promise<DataBundle>;
       })
-      .then((bundle) => setState({ status: "ready", bundle }))
+      .then((bundle) => {
+        if (bundle.schemaVersion !== SCHEMA_VERSION) {
+          console.warn(
+            `Data schema v${bundle.schemaVersion} ≠ app v${SCHEMA_VERSION}; some fields may be missing.`,
+          );
+        }
+        setState({ status: "ready", bundle });
+      })
       .catch((err: Error) => setState({ status: "error", error: err.message }));
   }, []);
 

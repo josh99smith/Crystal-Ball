@@ -8,6 +8,7 @@ import type {
   EventAssetLink,
   MarketEvent,
 } from "../shared/schema";
+import { SCHEMA_VERSION } from "../shared/schema";
 import { ASSET_IDS, ASSET_UNIVERSE } from "../shared/assets";
 import { structuralLinksFor } from "./correlation/structural";
 import { historicalLinks, sampleHistoricalLinks } from "./correlation/historical";
@@ -314,6 +315,7 @@ async function main() {
   const calibrationLoop = await runCalibrationLoop(events, now);
 
   const bundle: DataBundle = {
+    schemaVersion: SCHEMA_VERSION,
     generatedAt: now.toISOString(),
     assets: ASSET_UNIVERSE,
     events,

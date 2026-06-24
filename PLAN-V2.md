@@ -148,7 +148,10 @@
   BoJ rate decisions with euro/yen-aware scenarios; wired all new assets into
   correlation + scenarios; earnings now cover 7 tickers. Remaining: asset-centric
   view, alerts, richer per-asset digest.
-- **v2.6 — Quality:** tests, lint, CI gate, caching, schema versioning.
+- **v2.6 — Quality:** ◑ Vitest suite (22 tests across timeline scale, scenarios,
+  weighting, calibration, event study, digest); CI gate workflow (typecheck +
+  test + build on push/PR); schema versioning with an SPA guard. Remaining:
+  ESLint/Prettier and price-cache persistence.
 
 (Order is a recommendation — UI-first so improvements are visible immediately;
 data/calibration depth can be reprioritized.)
