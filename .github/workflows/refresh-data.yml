@@ -1,0 +1,23 @@
+name: Refresh data
+
+# Keeps the published forecasts fresh on a schedule. It re-runs build-and-deploy,
+# which regenerates the static JSON and redeploys (PLAN §9.1). Cron is the
+# freshness ceiling for precomputed data; live crypto is fetched client-side.
+#
+# Cadence: every 6 hours. Tune toward the PLAN §12 proposal (hourly during US
+# market hours, daily off-hours) once free-API rate limits are measured.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  refresh:
+    uses: ./.github/workflows/build-and-deploy.yml
+    secrets: inherit

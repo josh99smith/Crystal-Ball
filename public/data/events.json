@@ -1,0 +1,268 @@
+{
+  "generatedAt": "2026-06-24T14:35:45.770Z",
+  "assets": [
+    {
+      "id": "SPX",
+      "label": "S&P 500",
+      "class": "equity-index"
+    },
+    {
+      "id": "NDX",
+      "label": "Nasdaq 100",
+      "class": "equity-index"
+    },
+    {
+      "id": "NVDA",
+      "label": "NVIDIA",
+      "class": "equity-single"
+    },
+    {
+      "id": "AAPL",
+      "label": "Apple",
+      "class": "equity-single"
+    },
+    {
+      "id": "MSFT",
+      "label": "Microsoft",
+      "class": "equity-single"
+    },
+    {
+      "id": "US10Y",
+      "label": "US 10Y Treasury",
+      "class": "rates"
+    },
+    {
+      "id": "USD",
+      "label": "US Dollar (DXY)",
+      "class": "fx"
+    },
+    {
+      "id": "GOLD",
+      "label": "Gold",
+      "class": "metal"
+    },
+    {
+      "id": "CRUDE",
+      "label": "Crude Oil (WTI)",
+      "class": "energy"
+    },
+    {
+      "id": "BTC",
+      "label": "Bitcoin",
+      "class": "crypto"
+    }
+  ],
+  "events": [
+    {
+      "id": "fred-us-cpi-2026-06-28",
+      "title": "US CPI (sample)",
+      "category": "economic-data",
+      "scheduledAt": "2026-06-28T14:35:45.770Z",
+      "isScheduled": true,
+      "expectedImpact": 0.85,
+      "source": "fixture",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.85
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.7
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.6
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.4
+        }
+      ]
+    },
+    {
+      "id": "fred-us-nfp-2026-07-03",
+      "title": "US Employment Situation (NFP) (sample)",
+      "category": "economic-data",
+      "scheduledAt": "2026-07-03T14:35:45.770Z",
+      "isScheduled": true,
+      "expectedImpact": 0.85,
+      "source": "fixture",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.75
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.72
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.7
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.55
+        }
+      ]
+    },
+    {
+      "id": "fred-us-pce-2026-07-11",
+      "title": "US Personal Income & Outlays (PCE) (sample)",
+      "category": "economic-data",
+      "scheduledAt": "2026-07-11T14:35:45.770Z",
+      "isScheduled": true,
+      "expectedImpact": 0.75,
+      "source": "fixture",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.7
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.65
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.55
+        }
+      ]
+    },
+    {
+      "id": "fred-us-gdp-2026-07-20",
+      "title": "US GDP (sample)",
+      "category": "economic-data",
+      "scheduledAt": "2026-07-20T14:35:45.770Z",
+      "isScheduled": true,
+      "expectedImpact": 0.7,
+      "source": "fixture",
+      "links": [
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.6
+        },
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.6
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.5
+        }
+      ]
+    },
+    {
+      "id": "fred-us-cpi-2026-07-28",
+      "title": "US CPI (sample)",
+      "category": "economic-data",
+      "scheduledAt": "2026-07-28T14:35:45.770Z",
+      "isScheduled": true,
+      "expectedImpact": 0.85,
+      "source": "fixture",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.85
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.78
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.7
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.6
+        },
+        {
+          "asset": "BTC",
+          "tier": "structural",
+          "strength": 0.4
+        }
+      ]
+    },
+    {
+      "id": "fred-us-nfp-2026-08-03",
+      "title": "US Employment Situation (NFP) (sample)",
+      "category": "economic-data",
+      "scheduledAt": "2026-08-03T14:35:45.770Z",
+      "isScheduled": true,
+      "expectedImpact": 0.85,
+      "source": "fixture",
+      "links": [
+        {
+          "asset": "US10Y",
+          "tier": "structural",
+          "strength": 0.8
+        },
+        {
+          "asset": "SPX",
+          "tier": "structural",
+          "strength": 0.75
+        },
+        {
+          "asset": "NDX",
+          "tier": "structural",
+          "strength": 0.72
+        },
+        {
+          "asset": "USD",
+          "tier": "structural",
+          "strength": 0.7
+        },
+        {
+          "asset": "GOLD",
+          "tier": "structural",
+          "strength": 0.55
+        }
+      ]
+    }
+  ]
+}
