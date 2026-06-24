@@ -6,6 +6,7 @@ import {
 } from "../shared/schema";
 import { useDataBundle } from "./useDataBundle";
 import { useChartPrices } from "./useChartPrices";
+import { usePastEvents } from "./usePastEvents";
 import { AssetSelector } from "./components/AssetSelector";
 import { Timeline } from "./components/Timeline";
 import { EventDetail } from "./components/EventDetail";
@@ -19,6 +20,7 @@ type View = "timeline" | "digest" | "reliability" | "chart";
 export function App() {
   const state = useDataBundle();
   const prices = useChartPrices();
+  const pastEvents = usePastEvents();
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
   const [scale, setScale] = useState<TimelineScaleId>("monthly");
   const [view, setView] = useState<View>("timeline");
@@ -171,6 +173,7 @@ export function App() {
               events={bundle.events.filter((e) =>
                 e.links.some((l) => l.asset === chartAsset),
               )}
+              pastMarkers={pastEvents}
               onSelect={setSelectedEvent}
             />
           )}

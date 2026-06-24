@@ -12,30 +12,32 @@ import {
 } from "lightweight-charts";
 import type { MarketEvent } from "../../shared/schema";
 import { CATEGORY_META } from "../../shared/categories";
+import type { PastMarker } from "../usePastEvents";
 
 interface Props {
   asset: string;
   series: Array<{ t: number; c: number }>;
-  events: MarketEvent[]; // events linked to this asset
+  events: MarketEvent[]; // future events linked to this asset
+  pastMarkers: PastMarker[]; // past occurrences (all assets)
   onSelect: (event: MarketEvent) => void;
 }
 
 const DAY = 86400;
 const floorDay = (sec: number) => Math.floor(sec / DAY) * DAY;
-
-// Crypto can be fetched live, client-side (keyless, CORS-friendly) — no CI needed.
 const COINGECKO_ID: Record<string, string> = { BTC: "bitcoin" };
 
-/**
- * TradingView Lightweight Charts (MIT) rendering an asset's price series with our
- * events overlaid as markers. Future events extend the axis via whitespace so
- * their markers render beyond the last price bar.
- */
-export function AssetChart({ asset, series, events, onSelect }: Props) {
+interface MarkerInfo {
+  category: MarketEvent["category"];
+  title: string;
+  scheduled: boolean;
+  event?: MarketEvent; // present for future events (click → detail)
+}
+
+export function AssetChart({ asset, series, events, pastMarkers, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [live, setLive] = useState<Array<{ t: number; c: number }> | null>(null);
 
-  // If the pipeline has no series for a crypto asset, fetch it live (CoinGecko).
+  // Crypto: fetch live client-side (CoinGecko) when the pipeline has no series.
   useEffect(() => {
     setLive(null);
     if (series.length > 0 || !COINGECKO_ID[asset]) return;
@@ -90,47 +92,67 @@ export function AssetChart({ asset, series, events, onSelect }: Props) {
     for (const p of effective) {
       byTime.set(floorDay(p.t), { time: floorDay(p.t) as UTCTimestamp, value: p.c });
     }
+    const firstTime = Math.min(...effective.map((p) => floorDay(p.t)));
     const lastPrice = Math.max(...effective.map((p) => floorDay(p.t)));
 
-    // Whitespace for event times not already present (lets future markers show).
-    const markerTimes = new Map<number, MarketEvent[]>();
+    // Collect markers: past occurrences (for this asset) + future events.
+    const atTime = new Map<number, MarkerInfo[]>();
+    const add = (sec: number, info: MarkerInfo) => {
+      const t = floorDay(sec);
+      const arr = atTime.get(t) ?? [];
+      arr.push(info);
+      atTime.set(t, arr);
+    };
+    for (const m of pastMarkers) {
+      if (m.assets.includes(asset)) {
+        add(m.t, { category: m.category, title: m.title, scheduled: m.scheduled });
+      }
+    }
     for (const e of events) {
-      const t = floorDay(Math.floor(Date.parse(e.scheduledAt) / 1000));
-      if (!byTime.has(t)) byTime.set(t, { time: t as UTCTimestamp });
-      const arr = markerTimes.get(t) ?? [];
-      arr.push(e);
-      markerTimes.set(t, arr);
+      add(Math.floor(Date.parse(e.scheduledAt) / 1000), {
+        category: e.category,
+        title: e.title,
+        scheduled: e.isScheduled,
+        event: e,
+      });
     }
 
-    const data = [...byTime.values()].sort(
-      (a, b) => (a.time as number) - (b.time as number),
-    );
-    area.setData(data);
+    // Whitespace so markers outside the price range still render.
+    for (const t of atTime.keys()) if (!byTime.has(t)) byTime.set(t, { time: t as UTCTimestamp });
 
-    const markers: SeriesMarker<Time>[] = [...markerTimes.entries()]
+    area.setData(
+      [...byTime.values()].sort((a, b) => (a.time as number) - (b.time as number)),
+    );
+
+    const markers: SeriesMarker<Time>[] = [...atTime.entries()]
       .sort((a, b) => a[0] - b[0])
-      .map(([t, evs]) => {
-        const top = [...evs].sort((a, b) => b.expectedImpact - a.expectedImpact)[0];
+      .map(([t, infos]) => {
+        const top = [...infos].sort(
+          (a, b) => (b.event?.expectedImpact ?? 0.4) - (a.event?.expectedImpact ?? 0.4),
+        )[0];
         const meta = CATEGORY_META[top.category];
         return {
           time: t as UTCTimestamp,
           position: t > lastPrice ? "aboveBar" : "belowBar",
           color: meta.color,
-          shape: top.isScheduled ? "circle" : "square",
-          text: evs.length > 1 ? `${evs.length}` : top.title.slice(0, 14),
+          shape: top.scheduled ? "circle" : "square",
+          text: infos.length > 1 ? `${infos.length}` : top.title.slice(0, 12),
         };
       });
     area.setMarkers(markers);
 
-    chart.timeScale().fitContent();
+    // Show ~1y of history + ~4 months forward so events fan out either side.
+    const nowDay = floorDay(Date.now() / 1000);
+    chart.timeScale().setVisibleRange({
+      from: firstTime as UTCTimestamp,
+      to: (nowDay + 120 * DAY) as UTCTimestamp,
+    });
 
-    // Click a marker → open the highest-impact event at that time.
     chart.subscribeClick((param) => {
       if (param.time == null) return;
-      const evs = markerTimes.get(param.time as number);
-      if (evs?.length) {
-        onSelect([...evs].sort((a, b) => b.expectedImpact - a.expectedImpact)[0]);
-      }
+      const infos = atTime.get(param.time as number);
+      const ev = infos?.map((i) => i.event).filter(Boolean)[0];
+      if (ev) onSelect(ev);
     });
 
     const ro = new ResizeObserver((entries) => {
@@ -144,7 +166,7 @@ export function AssetChart({ asset, series, events, onSelect }: Props) {
       chart.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asset, effective]);
+  }, [asset, effective, events, pastMarkers]);
 
   if (effective.length === 0) {
     return (
@@ -160,8 +182,8 @@ export function AssetChart({ asset, series, events, onSelect }: Props) {
     <div className="asset-chart">
       <div className="asset-chart-canvas" ref={containerRef} />
       <p className="muted chart-note">
-        {asset} price (last ~1y) · markers = our events (▢ = anticipated). Click a
-        marker for details. Not financial advice.
+        {asset} price (~1y) · markers = our events, past &amp; future (▢ =
+        anticipated). Scroll/drag to explore; click a future marker for details.
       </p>
     </div>
   );

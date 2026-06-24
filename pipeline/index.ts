@@ -299,6 +299,34 @@ async function writeChartPrices(now: Date) {
   console.log(`[pipeline] wrote price series for ${Object.keys(out).length} assets`);
 }
 
+/** Publish the past year of recurring events as slim markers for the chart. */
+async function writePastEvents(now: Date) {
+  const window = { from: new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000), to: now };
+  const providers = [
+    ...KEYED_PROVIDERS,
+    ...COMPUTED_PROVIDERS.filter((p) => p.id !== "gdelt"), // news isn't recurring
+  ];
+  let evs: MarketEvent[] = [];
+  for (const p of providers) {
+    if (!p.isConfigured()) continue;
+    try {
+      evs.push(...(await p.fetchEvents(window)));
+    } catch {
+      /* skip provider on error */
+    }
+  }
+  evs = attachLinks(evs);
+  const markers = evs.map((e) => ({
+    t: Math.floor(Date.parse(e.scheduledAt) / 1000),
+    category: e.category,
+    title: e.title,
+    assets: e.links.map((l) => l.asset),
+    scheduled: e.isScheduled,
+  }));
+  await writeFile(resolve(DATA_DIR, "past-events.json"), JSON.stringify(markers) + "\n");
+  console.log(`[pipeline] wrote ${markers.length} past markers`);
+}
+
 async function main() {
   const now = new Date();
   const window = {
@@ -357,6 +385,7 @@ async function main() {
   );
   await writeFile(resolve(DATA_DIR, "digest.md"), digestToMarkdown(digest));
   await writeChartPrices(now);
+  await writePastEvents(now);
 
   console.log(
     `[pipeline] wrote ${events.length} events + digest → ${DATA_DIR}`,
