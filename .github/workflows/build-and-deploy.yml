@@ -47,7 +47,12 @@ jobs:
 
       - run: npm run build
 
+      # enablement: true sets the Pages build type to "GitHub Actions" via the
+      # API, so this works even if Pages was first enabled as "Deploy from a
+      # branch" (the usual cause of deploys hanging on "deployment_queued").
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
