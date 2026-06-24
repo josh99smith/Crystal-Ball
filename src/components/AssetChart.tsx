@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createChart,
   ColorType,
@@ -23,6 +23,9 @@ interface Props {
 const DAY = 86400;
 const floorDay = (sec: number) => Math.floor(sec / DAY) * DAY;
 
+// Crypto can be fetched live, client-side (keyless, CORS-friendly) — no CI needed.
+const COINGECKO_ID: Record<string, string> = { BTC: "bitcoin" };
+
 /**
  * TradingView Lightweight Charts (MIT) rendering an asset's price series with our
  * events overlaid as markers. Future events extend the axis via whitespace so
@@ -30,12 +33,32 @@ const floorDay = (sec: number) => Math.floor(sec / DAY) * DAY;
  */
 export function AssetChart({ asset, series, events, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const eventsRef = useRef(events);
-  eventsRef.current = events;
+  const [live, setLive] = useState<Array<{ t: number; c: number }> | null>(null);
+
+  // If the pipeline has no series for a crypto asset, fetch it live (CoinGecko).
+  useEffect(() => {
+    setLive(null);
+    if (series.length > 0 || !COINGECKO_ID[asset]) return;
+    let active = true;
+    fetch(
+      `https://api.coingecko.com/api/v3/coins/${COINGECKO_ID[asset]}/market_chart?vs_currency=usd&days=365&interval=daily`,
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const pts: Array<[number, number]> | undefined = d?.prices;
+        if (active && pts) setLive(pts.map(([ms, c]) => ({ t: Math.floor(ms / 1000), c })));
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [asset, series]);
+
+  const effective = series.length > 0 ? series : live ?? [];
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el || series.length === 0) return;
+    if (!el || effective.length === 0) return;
 
     const chart: IChartApi = createChart(el, {
       width: el.clientWidth,
@@ -64,10 +87,10 @@ export function AssetChart({ asset, series, events, onSelect }: Props) {
 
     // Price points (day-floored, deduped, ascending).
     const byTime = new Map<number, LineData<Time> | WhitespaceData<Time>>();
-    for (const p of series) {
+    for (const p of effective) {
       byTime.set(floorDay(p.t), { time: floorDay(p.t) as UTCTimestamp, value: p.c });
     }
-    const lastPrice = Math.max(...series.map((p) => floorDay(p.t)));
+    const lastPrice = Math.max(...effective.map((p) => floorDay(p.t)));
 
     // Whitespace for event times not already present (lets future markers show).
     const markerTimes = new Map<number, MarketEvent[]>();
@@ -121,13 +144,14 @@ export function AssetChart({ asset, series, events, onSelect }: Props) {
       chart.remove();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asset, series]);
+  }, [asset, effective]);
 
-  if (series.length === 0) {
+  if (effective.length === 0) {
     return (
       <p className="muted empty">
-        Price series for {asset} isn't available yet (it's published by the data
-        pipeline in CI). Try BTC/SPX, or check back after the next refresh.
+        Price series for {asset} isn't available yet. Crypto (BTC) loads live;
+        other assets are published by the pipeline — check back after the next
+        refresh.
       </p>
     );
   }

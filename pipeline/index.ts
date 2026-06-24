@@ -21,7 +21,8 @@ import {
   type LedgerRecord,
 } from "./calibration";
 import { buildDigest, digestToMarkdown } from "./digest";
-import { fetchDailyCloses, type PriceBar } from "./marketdata/stooq";
+import type { PriceBar } from "./marketdata/stooq";
+import { fetchDailyCloses } from "./marketdata/yahoo";
 import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
 import { heuristicOutcomes } from "./scenarios/heuristic";
 import { fetchRateContext, fomcOutcomesFromRates } from "./scenarios/weighting";
