@@ -53,14 +53,21 @@ export class FredProvider implements EventProvider {
   /** Release dates (YYYY-MM-DD) for a release within [from, to]. Future or past. */
   async releaseDates(releaseId: number, from: Date, to: Date): Promise<string[]> {
     if (!this.isConfigured()) return [];
+
+    // FRED "realtime" bounds refer to data vintages, which can never be in the
+    // future — so clamp them to today. Upcoming scheduled dates still come back
+    // via include_release_dates_with_no_data=true; we filter to [from, to] below.
+    const today = new Date();
+    const rtStart = from < today ? from : today;
+
     const url = new URL(`${FRED_BASE}/release/dates`);
     url.searchParams.set("release_id", String(releaseId));
     url.searchParams.set("api_key", this.apiKey);
     url.searchParams.set("file_type", "json");
     url.searchParams.set("include_release_dates_with_no_data", "true");
     url.searchParams.set("sort_order", "asc");
-    url.searchParams.set("realtime_start", isoDate(from));
-    url.searchParams.set("realtime_end", isoDate(to));
+    url.searchParams.set("realtime_start", isoDate(rtStart));
+    url.searchParams.set("realtime_end", isoDate(today));
 
     try {
       const res = await fetch(url);

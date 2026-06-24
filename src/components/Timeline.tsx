@@ -44,7 +44,10 @@ export function Timeline({
 
   if (events.length === 0) {
     return (
-      <p className="muted empty">No events in this window for the current filter.</p>
+      <p className="muted empty">
+        No events in this window for the current filter. Try a longer scale
+        (e.g. Monthly / Quarterly) or clear the asset selection.
+      </p>
     );
   }
 
