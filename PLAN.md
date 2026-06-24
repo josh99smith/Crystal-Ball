@@ -6,7 +6,16 @@
 > user **select assets** to see which events matter to them — based on both
 > obvious structural links and historical statistical correlation.
 
-**Status:** Draft v0.2 · **Owner:** josh99smith · **Last updated:** 2026-06-24
+**Status:** Draft v0.3 · **Owner:** josh99smith · **Last updated:** 2026-06-24
+
+**Decisions locked (this revision):**
+- **v1 asset universe:** US index + megacap tickers, US rates/USD, gold, crude,
+  BTC — *expand later*.
+- **Data:** free / publicly available APIs only for now; **real-time where the
+  free tier allows** (truly real-time for crypto; typically delayed/rate-limited
+  for equities).
+- **Timeline:** multi-scale — **daily, weekly, monthly, quarterly, annual, and
+  decade** horizons (see §2.4).
 
 ---
 
@@ -59,6 +68,25 @@ Every event is linked to assets through:
 
 Each link carries a **strength score** and a label of which tier it came from,
 so the user can tell "obvious" from "data-says."
+
+### 2.4 Multi-scale timeline horizons
+The timeline is **zoomable across six scales**, each surfacing the events and
+patterns that matter at that resolution:
+
+| Scale | Default window | What dominates |
+|-------|----------------|----------------|
+| **Daily** | next ~5 days | data releases, single-name earnings, EIA, expiry day |
+| **Weekly** | next ~4 weeks | FOMC week, jobs week, earnings clusters, OpEx |
+| **Monthly** | next ~3 months | full FOMC/CPI/NFP cycle, earnings season, quarterly expiry |
+| **Quarterly** | next ~4 quarters | GDP, quarter-end rebalances, guidance, elections |
+| **Annual** | next ~2–3 years | elections, policy regimes, annual cycles, halvings |
+| **Decade** | ~10 years | cyclical/structural patterns: rate & business cycles, recession odds, presidential cycle, BTC ~4yr halving rhythm |
+
+At short scales, nodes are **discrete scheduled events** with weighted outcome
+fans (§2.1). At the **annual/decade** scales the view shifts toward **cyclical
+and probabilistic bands** (e.g. recession-probability over the cycle, rate-cycle
+phase, recurring seasonal/halving rhythms) rather than precise dated events —
+shown as confidence bands and recurring markers, still asset-filtered.
 
 ## 3. What Counts as a Market Event
 
@@ -184,11 +212,15 @@ Weights must be **honest and sourced**, not vibes:
 
 ### Phase 0 — Foundations (1 week)
 - Repo scaffolding, CI, `Event` / `Outcome` / `Link` schemas.
-- Pick data providers; ingest one calendar (economic) end-to-end.
+- Provider abstraction layer; ingest **FRED release-dates** (economic calendar)
+  end-to-end as the first free source.
 
 ### Phase 1 — Timeline MVP (1–2 weeks)
-- Web app with a read-only timeline of scheduled events.
-- Static structural correlation map + asset selector (filter by relevance).
+- Web app with a read-only, **zoomable multi-scale timeline** (daily → decade,
+  §2.4) of scheduled events.
+- Static structural correlation map + asset selector (filter by relevance) for
+  the v1 asset universe.
+- Add free crypto (CoinGecko/Binance, real-time) + earnings calendar (Finnhub).
 - Event detail panel (no weighted outcomes yet).
 
 ### Phase 2 — Weighted outcomes (1–2 weeks)
@@ -213,12 +245,30 @@ Weights must be **honest and sourced**, not vibes:
   scenario synthesis and weighting rationale.
 - **Storage:** Postgres (events, links, prices, predictions); start simpler
   (SQLite) if useful for the MVP.
-- **Data providers (to select):** an economic/earnings calendar API, a market
-  price/history API, and rate-futures / options-implied data for weighting.
 - **Scheduling:** periodic jobs to refresh calendars, prices, and re-weight.
 
-> Stack & providers are recommendations — confirm before Phase 0. Provider
-> choice depends on licensing/cost and how much real-time vs. EOD data we need.
+### Free / public data providers (v1)
+
+| Need | Provider(s) | Notes |
+|------|-------------|-------|
+| Macro data + **release calendar** | **FRED** (incl. releases & release-dates API), **BLS**, **BEA**, **US Treasury** | Free keys; gov data. FRED's release-dates endpoint gives *upcoming* scheduled releases (CPI, PCE, NFP, GDP, rates). |
+| FOMC / central-bank schedule | Fed, ECB, BoJ, BoE published calendars + RSS | Dates are public; scrape/ingest. |
+| Earnings / IPO calendar | **Finnhub** (free tier), **Financial Modeling Prep** (free tier), **SEC EDGAR** | Free tiers cover US earnings & IPO dates. |
+| Equity / index / FX prices | **Stooq** (free CSV), **Alpha Vantage** (free key, rate-limited), **Finnhub** (free tier), **yfinance**/Yahoo (unofficial) | Equity "real-time" on free tiers is usually delayed (~15 min) / rate-limited. |
+| Crypto prices | **CoinGecko** (no key) , **Binance** public API | **Genuinely real-time & free.** |
+| News / geopolitical events | **GDELT** (free, near real-time), central-bank & gov RSS | For anticipated, non-scheduled events. |
+| Market structure (OpEx, triple witching, rebalances) | *computed from calendar rules* | No API needed (e.g. 3rd-Friday logic). |
+
+**Known free-data gaps (handle gracefully):**
+- **Market-implied probabilities** (CME FedWatch-style fed-funds odds,
+  options-implied straddles) are not cleanly available free in real time. v1
+  approximates: derive rate odds from Treasury/fed-funds futures proxies where
+  possible, otherwise fall back to **consensus + historical base rates** for
+  weighting (§6) and clearly label the weight source.
+
+> Providers are recommendations — confirm before Phase 0. All are free-tier;
+> we abstract behind a provider interface so paid/real-time sources can drop in
+> later without touching the rest of the system.
 
 ## 10. Risks & Principles
 
@@ -241,21 +291,27 @@ Weights must be **honest and sourced**, not vibes:
   beforehand, and median lead time.
 - **Usefulness:** % of surfaced events users mark relevant for their assets.
 
-## 12. Open Questions
+## 12. Decisions & Open Questions
 
-1. **Asset universe for v1** — which markets first? (Proposed: US equities
-   indices + megacap tickers, US rates/USD, gold, crude, BTC.)
-2. **Data providers & budget** — real-time vs. end-of-day; paid API tolerance?
-3. **Weighting emphasis** — lead with market-implied probabilities where they
-   exist, falling back to consensus/historical? (Proposed: yes.)
-4. **Timeline horizon** — how far forward by default (e.g. next 1–3 months)?
-5. **Surface** — web app first (proposed), or also alerts/digest?
+**Resolved**
+- ✅ **Asset universe (v1):** US index + megacaps, US rates/USD, gold, crude,
+  BTC — expand later.
+- ✅ **Data:** free/public APIs only for now; real-time where free tiers allow.
+- ✅ **Timeline:** multi-scale — daily, weekly, monthly, quarterly, annual,
+  decade.
+
+**Still open**
+1. **Weighting emphasis** — lead with market-implied probabilities where free
+   data allows, else consensus + historical base rates? (Proposed: yes.)
+2. **Surface** — web app first (proposed), or also alerts/digest later?
+3. **Hosting** — local-only dev first, or a hosted deployment from the start?
 
 ---
 
 ## Next Step
 
-Confirm the v1 asset universe (Q12.1) and data-provider appetite (Q12.2), then
-start **Phase 0**: scaffold the repo and ingest one economic calendar, followed
-by the **Phase 1 timeline MVP** with the asset selector and structural
-correlation map.
+Decisions are locked enough to build. Recommended start: **Phase 0** — scaffold
+the repo, define the `Event` / `Outcome` / `Link` schemas and provider
+abstraction, and ingest **FRED release-dates** as the first free economic
+calendar — then the **Phase 1 multi-scale timeline MVP** with the asset
+selector and structural correlation map.
