@@ -66,8 +66,30 @@ export function EventDetail({ event, selectedAssets, onClose }: Props) {
               </div>
               {l.stats && (
                 <div className="dl-stats">
-                  n={l.stats.n} · avg |move| {l.stats.avgAbsMovePct}% · same-dir{" "}
-                  {Math.round(l.stats.directionHitRate * 100)}%
+                  <span>
+                    n={l.stats.n} · exp move {l.stats.avgAbsMovePct}% · same-dir{" "}
+                    {Math.round(
+                      (l.stats.recencyWeightedHitRate ?? l.stats.directionHitRate) * 100,
+                    )}
+                    %
+                    {l.stats.significance && (
+                      <span className={`sig sig-${l.stats.significance}`}>
+                        {l.stats.significance}
+                      </span>
+                    )}
+                  </span>
+                  {(l.stats.intradayHitRate != null ||
+                    l.stats.threeDayDriftPct != null) && (
+                    <span className="dl-stats-windows">
+                      {l.stats.intradayHitRate != null && (
+                        <>intraday {Math.round(l.stats.intradayHitRate * 100)}% · </>
+                      )}
+                      {l.stats.threeDayDriftPct != null && (
+                        <>3d drift {l.stats.threeDayDriftPct > 0 ? "+" : ""}
+                        {l.stats.threeDayDriftPct}%</>
+                      )}
+                    </span>
+                  )}
                 </div>
               )}
             </li>

@@ -496,7 +496,24 @@ body {
   font-size: 10.5px;
   color: var(--muted);
   padding-left: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
+.dl-stats-windows {
+  opacity: 0.8;
+}
+.sig {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.sig-high { background: rgba(91, 214, 160, 0.2); color: var(--low); }
+.sig-medium { background: rgba(255, 180, 84, 0.2); color: var(--med); }
+.sig-low { background: rgba(138, 151, 176, 0.2); color: var(--muted); }
 .detail-link.hit .dl-asset {
   color: var(--hit);
 }

@@ -9,6 +9,9 @@
 
 export interface PriceBar {
   date: string; // YYYY-MM-DD
+  open: number;
+  high: number;
+  low: number;
   close: number;
 }
 
@@ -58,8 +61,19 @@ export async function fetchDailyCloses(
     for (const line of lines.slice(1)) {
       const cols = line.split(",");
       const date = cols[0];
+      const open = Number(cols[1]);
+      const high = Number(cols[2]);
+      const low = Number(cols[3]);
       const close = Number(cols[4]);
-      if (date && Number.isFinite(close)) bars.push({ date, close });
+      if (date && Number.isFinite(close)) {
+        bars.push({
+          date,
+          open: Number.isFinite(open) ? open : close,
+          high: Number.isFinite(high) ? high : close,
+          low: Number.isFinite(low) ? low : close,
+          close,
+        });
+      }
     }
     bars.sort((a, b) => a.date.localeCompare(b.date));
     return bars;

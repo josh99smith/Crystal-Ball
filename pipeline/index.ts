@@ -207,7 +207,7 @@ async function addHistorical(events: MarketEvent[], now: Date): Promise<Historic
   const linksByKind = new Map<string, EventAssetLink[]>();
   for (const kind of kinds) {
     const dates = await pastDatesFor(kind, from, now);
-    if (dates.length) linksByKind.set(kind, historicalLinks(dates, pricesByAsset));
+    if (dates.length) linksByKind.set(kind, historicalLinks(dates, pricesByAsset, now));
   }
 
   console.log(`[pipeline] historical tier: event study over ${pricesByAsset.size} assets`);

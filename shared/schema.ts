@@ -59,15 +59,23 @@ export interface Outcome {
 
 export type LinkTier = "structural" | "historical";
 
-/** A correlation link between an event and an asset (PLAN §7). */
+/** A correlation link between an event and an asset (PLAN §7, v2.4). */
 export interface EventAssetLink {
   asset: string; // Asset.id
   tier: LinkTier;
   strength: number; // 0..1
   stats?: {
     n: number;
-    avgAbsMovePct: number;
-    directionHitRate: number;
+    avgAbsMovePct: number; // expected move, 1-day close-to-close
+    directionHitRate: number; // same-direction share, 1-day
+    /** Recency-weighted same-direction share (recent events count more). */
+    recencyWeightedHitRate?: number;
+    /** Same-direction consistency of the intraday (open→close) reaction. */
+    intradayHitRate?: number;
+    /** Average signed 3-day follow-through (drift after the reaction day), %. */
+    threeDayDriftPct?: number;
+    /** Sample-size confidence in the estimate. */
+    significance?: "low" | "medium" | "high";
   };
 }
 

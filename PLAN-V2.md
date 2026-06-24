@@ -138,8 +138,11 @@
   pass, and scores into reliability bands + Brier + per-category hit-rate. Ledger
   persists via the published bundle (read prev → republish), accruing across
   runs. Surfaced in the Reliability view. Accrues over time as events resolve.
-- **v2.4 — Correlation depth:** multi-window studies, outcome-conditional
-  reactions, recency/regime weighting, expected-move magnitudes.
+- **v2.4 — Correlation depth:** ✅ multi-window event studies (intraday open→close,
+  1-day, 3-day follow-through) from Stooq OHLC, recency-weighted hit-rate
+  (2-yr half-life), expected-move magnitude, and a sample-size significance flag;
+  surfaced in the detail panel. Remaining: outcome-conditional reactions (needs a
+  free consensus/actual source) and explicit regime segmentation.
 - **v2.5 — Breadth & surfaces:** more assets / central banks / sector ETFs,
   asset-centric view, alerts, richer digest.
 - **v2.6 — Quality:** tests, lint, CI gate, caching, schema versioning.

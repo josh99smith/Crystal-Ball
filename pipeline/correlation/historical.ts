@@ -19,41 +19,94 @@ function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
+const DAY = 24 * 60 * 60 * 1000;
+const RECENCY_HALFLIFE_YEARS = 2; // recent occurrences count more
+
 interface StudyResult {
   n: number;
   avgAbsMovePct: number;
   directionHitRate: number; // dominant-direction share, 0.5..1
+  recencyWeightedHitRate: number;
+  intradayHitRate: number;
+  threeDayDriftPct: number;
+  significance: "low" | "medium" | "high";
 }
 
-/** Close-to-close reaction (%) on the first trading day on/after each event date. */
-function eventStudy(dates: string[], bars: PriceBar[]): StudyResult | null {
+interface Reaction {
+  oneDay: number; // close[i-1] → close[i], %
+  intraday: number; // open[i] → close[i], %
+  threeDay: number; // close[i-1] → close[i+3], %
+  weight: number; // recency weight
+}
+
+/** Multi-window event study around the first trading day on/after each date. */
+function eventStudy(dates: string[], bars: PriceBar[], now: Date): StudyResult | null {
   if (bars.length < 2) return null;
-  const reactions: number[] = [];
+  const reactions: Reaction[] = [];
 
   for (const date of dates) {
     const i = bars.findIndex((b) => b.date >= date);
     if (i <= 0) continue; // need a prior close
     const prev = bars[i - 1].close;
-    if (!prev) continue;
-    reactions.push(((bars[i].close - prev) / prev) * 100);
+    const bar = bars[i];
+    if (!prev || !bar.open) continue;
+    const ageYears = (now.getTime() - Date.parse(`${date}T00:00:00Z`)) / (365 * DAY);
+    const fwd = bars[i + 3]?.close;
+    reactions.push({
+      oneDay: ((bar.close - prev) / prev) * 100,
+      intraday: ((bar.close - bar.open) / bar.open) * 100,
+      threeDay: fwd ? ((fwd - prev) / prev) * 100 : ((bar.close - prev) / prev) * 100,
+      weight: Math.pow(0.5, Math.max(0, ageYears) / RECENCY_HALFLIFE_YEARS),
+    });
   }
 
   const n = reactions.length;
   if (n < MIN_SAMPLE) return null;
 
-  const ups = reactions.filter((r) => r > 0).length;
-  const downs = reactions.filter((r) => r < 0).length;
-  const avgAbsMovePct = reactions.reduce((s, r) => s + Math.abs(r), 0) / n;
+  const ups = reactions.filter((r) => r.oneDay > 0).length;
+  const downs = reactions.filter((r) => r.oneDay < 0).length;
+  const dominantUp = ups >= downs;
+  const avgAbsMovePct = mean(reactions.map((r) => Math.abs(r.oneDay)));
   const directionHitRate = Math.max(ups, downs) / n;
 
-  return { n, avgAbsMovePct, directionHitRate };
+  // Recency-weighted: share of weight agreeing with the dominant direction.
+  const totalW = reactions.reduce((s, r) => s + r.weight, 0);
+  const agreeW = reactions
+    .filter((r) => (dominantUp ? r.oneDay > 0 : r.oneDay < 0))
+    .reduce((s, r) => s + r.weight, 0);
+  const recencyWeightedHitRate = totalW ? agreeW / totalW : directionHitRate;
+
+  const intUp = reactions.filter((r) => r.intraday > 0).length;
+  const intDown = reactions.filter((r) => r.intraday < 0).length;
+  const intradayHitRate = Math.max(intUp, intDown) / n;
+
+  const threeDayDriftPct = mean(reactions.map((r) => r.threeDay));
+  const significance = n >= 20 ? "high" : n >= 10 ? "medium" : "low";
+
+  return {
+    n,
+    avgAbsMovePct,
+    directionHitRate,
+    recencyWeightedHitRate,
+    intradayHitRate,
+    threeDayDriftPct,
+    significance,
+  };
 }
 
-function strengthFrom({ n, avgAbsMovePct, directionHitRate }: StudyResult): number {
-  const consistency = (directionHitRate - 0.5) * 2; // 0..1
-  const magnitude = Math.min(1, avgAbsMovePct / 1.5); // 1.5% ≈ strong
-  const confidence = Math.min(1, n / 8); // ramp with sample size
+function strengthFrom(s: {
+  n: number;
+  avgAbsMovePct: number;
+  recencyWeightedHitRate: number;
+}): number {
+  const consistency = (s.recencyWeightedHitRate - 0.5) * 2; // 0..1
+  const magnitude = Math.min(1, s.avgAbsMovePct / 1.5); // 1.5% ≈ strong
+  const confidence = Math.min(1, s.n / 8); // ramp with sample size
   return clamp01((0.6 * consistency + 0.4 * magnitude) * confidence);
+}
+
+function mean(xs: number[]): number {
+  return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0;
 }
 
 /**
@@ -63,10 +116,11 @@ function strengthFrom({ n, avgAbsMovePct, directionHitRate }: StudyResult): numb
 export function historicalLinks(
   dates: string[],
   pricesByAsset: Map<string, PriceBar[]>,
+  now: Date,
 ): EventAssetLink[] {
   const links: EventAssetLink[] = [];
   for (const [asset, bars] of pricesByAsset) {
-    const study = eventStudy(dates, bars);
+    const study = eventStudy(dates, bars, now);
     if (!study) continue;
     const strength = strengthFrom(study);
     if (strength < MIN_STRENGTH) continue;
@@ -78,6 +132,10 @@ export function historicalLinks(
         n: study.n,
         avgAbsMovePct: round2(study.avgAbsMovePct),
         directionHitRate: round2(study.directionHitRate),
+        recencyWeightedHitRate: round2(study.recencyWeightedHitRate),
+        intradayHitRate: round2(study.intradayHitRate),
+        threeDayDriftPct: round2(study.threeDayDriftPct),
+        significance: study.significance,
       },
     });
   }
@@ -104,15 +162,29 @@ export function sampleHistoricalLinks(event: MarketEvent): EventAssetLink[] {
       const h = hashStr(`${event.title}:${l.asset}`);
       const n = 12 + (h % 24); // 12..35
       const directionHitRate = round2(0.55 + (h % 30) / 100); // 0.55..0.84
+      const recencyWeightedHitRate = round2(
+        Math.min(0.95, directionHitRate + ((h % 7) - 3) / 100),
+      );
       const avgAbsMovePct = round2(0.3 + (h % 18) / 10); // 0.3..2.0
+      const intradayHitRate = round2(Math.min(0.95, directionHitRate - (h % 5) / 100));
+      const threeDayDriftPct = round2((((h % 21) - 10) / 10)); // -1.0..1.0
+      const significance = n >= 20 ? "high" : n >= 10 ? "medium" : "low";
       const strength = round2(
-        strengthFrom({ n, avgAbsMovePct, directionHitRate }),
+        strengthFrom({ n, avgAbsMovePct, recencyWeightedHitRate }),
       );
       return {
         asset: l.asset,
         tier: "historical" as const,
         strength,
-        stats: { n, avgAbsMovePct, directionHitRate },
+        stats: {
+          n,
+          avgAbsMovePct,
+          directionHitRate,
+          recencyWeightedHitRate,
+          intradayHitRate,
+          threeDayDriftPct,
+          significance: significance as "low" | "medium" | "high",
+        },
       };
     })
     .filter((l) => l.strength >= MIN_STRENGTH);
