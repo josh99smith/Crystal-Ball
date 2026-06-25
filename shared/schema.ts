@@ -119,6 +119,18 @@ export interface MarketEvent {
   outcomes?: Outcome[];
   /** Recent actual readings of the underlying data series (v3.4, FRED). */
   econPrints?: EconPrint[];
+  /** Options-implied move for an earnings event (v4.4, ATM straddle). */
+  impliedMove?: ImpliedMove;
+}
+
+/** Options-implied expected move around an earnings event (v4.4). */
+export interface ImpliedMove {
+  /** Expected absolute move, % of spot, from the ATM straddle. */
+  movePct: number;
+  /** Option expiry the straddle was read from (YYYY-MM-DD). */
+  expiry: string;
+  /** How it was derived, for the UI (e.g. "nearest-expiry ATM straddle, Yahoo"). */
+  basis: string;
 }
 
 /** One line of the generated digest (PLAN §2 surface). */

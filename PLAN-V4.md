@@ -123,8 +123,14 @@ feedback**.
   PWA push; optional Actions email brief. *(One delivery decision — §4.)*
 - **v4.3 — Autonomous analyst:** scheduled Claude-in-Actions dossiers (sourced,
   optional web search); multi-step BYOK deep-dive in the app.
-- **v4.4 — Deeper & more-real data:** fed-funds-futures FOMC odds; options-implied
-  magnitude and real consensus where free; intraday reactions; more breadth.
+- **v4.4 — Deeper & more-real data:** ✅ **fed-funds-futures-implied FOMC odds** —
+  front-month CME ZQ via Yahoo (implied = 100 − price) replaces the Treasury-spread
+  proxy for hike/hold/cut weighting, with the T-bill spread as labeled fallback;
+  **options-implied earnings moves** — nearest-expiry ATM straddle (Yahoo) attached
+  to earnings events and shown in the detail panel. Pure calcs unit-tested; both
+  degrade gracefully. Honestly deferred (paid/limited free data): clean per-meeting
+  FedWatch contracts, true analyst consensus (we still show actual-vs-prior), and
+  sub-daily intraday reactions.
 - **v4.5 — Model rigor II:** regime segmentation; multi-event de-overlap;
   calibration→weights feedback; CI-aware EV; multi-leg strategies.
 - **v4.6 — Platform & trust:** command palette; asset-centric pages; embeddable

@@ -102,3 +102,31 @@ export async function fetchDailyCloses(
   }
   return stooqFetch(assetId, from, to); // fallback
 }
+
+/**
+ * Most recent daily close for a raw Yahoo symbol (e.g. "ZQ=F" fed funds
+ * futures). Used for market-implied signals that aren't part of the asset
+ * universe. null if unavailable.
+ */
+export async function fetchYahooLastClose(symbol: string): Promise<number | null> {
+  const url =
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
+    `?range=10d&interval=1d`;
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+    if (!res.ok) {
+      console.warn(`[yahoo] ${symbol}: HTTP ${res.status}`);
+      return null;
+    }
+    const body = (await res.json()) as YahooChart;
+    const closes = body.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+    if (!closes) return null;
+    for (let i = closes.length - 1; i >= 0; i--) {
+      if (closes[i] != null) return closes[i] as number;
+    }
+    return null;
+  } catch (err) {
+    console.warn(`[yahoo] ${symbol}: ${(err as Error).message}`);
+    return null;
+  }
+}

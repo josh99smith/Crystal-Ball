@@ -62,6 +62,16 @@ export function EventDetail({ event, selectedAssets, narrative, onClose }: Props
       </div>
       <p className="field-hint">How market-moving this event tends to be (0–100%).</p>
 
+      {event.impliedMove && (
+        <div className="implied-move">
+          <span className="im-label">Options-implied move</span>
+          <span className="im-value">±{event.impliedMove.movePct}%</span>
+          <span className="im-basis">
+            by {event.impliedMove.expiry} · {event.impliedMove.basis}
+          </span>
+        </div>
+      )}
+
       {event.econPrints && event.econPrints.length > 0 && (
         <>
           <h3 className="detail-sub">Recent actuals</h3>

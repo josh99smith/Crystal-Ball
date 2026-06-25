@@ -25,6 +25,7 @@ import { buildDigest, digestToMarkdown } from "./digest";
 import { buildIntelligence } from "./intelligence";
 import type { PriceBar } from "./marketdata/stooq";
 import { fetchDailyCloses } from "./marketdata/yahoo";
+import { fetchImpliedMove } from "./marketdata/options";
 import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
 import { heuristicOutcomes } from "./scenarios/heuristic";
 import { fetchRateContext, fomcOutcomesFromRates } from "./scenarios/weighting";
@@ -172,6 +173,34 @@ async function attachEconPrints(events: MarketEvent[]): Promise<MarketEvent[]> {
   return events.map((e) => {
     const prints = printsByKind.get(kindOf(e) ?? "");
     return prints ? { ...e, econPrints: prints } : e;
+  });
+}
+
+/**
+ * Attaches options-implied moves (v4.4) to earnings events from the ATM
+ * straddle. Fetches once per ticker; degrades to nothing if the (undocumented,
+ * flaky) options source is unavailable.
+ */
+async function attachImpliedMoves(events: MarketEvent[]): Promise<MarketEvent[]> {
+  const earnings = events.filter((e) => e.category === "earnings");
+  if (earnings.length === 0) return events;
+
+  const tickerOf = (e: MarketEvent): string | undefined =>
+    [...e.links].sort((a, b) => b.strength - a.strength)[0]?.asset;
+
+  const tickers = [...new Set(earnings.map(tickerOf).filter((t): t is string => !!t))];
+  const byTicker = new Map<string, Awaited<ReturnType<typeof fetchImpliedMove>>>();
+  await Promise.all(
+    tickers.map(async (t) => byTicker.set(t, await fetchImpliedMove(t))),
+  );
+  const got = [...byTicker.values()].filter(Boolean).length;
+  if (got === 0) return events;
+  console.log(`[pipeline] options-implied moves for ${got}/${tickers.length} tickers`);
+
+  return events.map((e) => {
+    if (e.category !== "earnings") return e;
+    const im = byTicker.get(tickerOf(e) ?? "");
+    return im ? { ...e, impliedMove: im } : e;
   });
 }
 
@@ -390,6 +419,7 @@ async function main() {
 
   events = await addScenarios(events);
   events = await attachEconPrints(events);
+  events = await attachImpliedMoves(events);
   const historical = await addHistorical(events, now);
   events = historical.events;
 

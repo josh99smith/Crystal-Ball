@@ -6,28 +6,38 @@ import type {
   Outcome,
 } from "../../shared/schema";
 import type { FredProvider } from "../providers/fred";
+import { fetchYahooLastClose } from "../marketdata/yahoo";
 
 /**
- * Market-based weighting (PLAN-V2 §2.3) — FOMC hike/hold/cut probabilities
- * derived from free Treasury-rate data, with explicit provenance. This is a
- * proxy for fed-funds-futures (CME FedWatch) odds, which aren't freely available
- * via API: we use the near-term 3-month T-bill vs the effective policy rate as a
- * standard read on the expected near-term rate path. Labeled as such.
+ * Market-based weighting (PLAN-V2 §2.3, upgraded v4.4) — FOMC hike/hold/cut
+ * probabilities from market data, with explicit provenance.
+ *
+ * Preferred source: 30-Day Fed Funds futures (CME "ZQ", front month) via Yahoo —
+ * the contract price implies the average effective funds rate for the month
+ * (implied = 100 − price), so the implied-vs-current gap is a direct read on the
+ * priced near-term path. This is the actual instrument CME FedWatch is built on
+ * (front-month only here — clean per-meeting contract data is paid).
+ * Fallback: the 3-month T-bill vs the effective policy rate, when futures are
+ * unavailable. Both are labeled.
  */
 
 export interface RateContext {
   dff: number; // effective federal funds rate (%)
   dgs3mo: number; // 3-month Treasury (%)
+  ffrImplied?: number; // fed funds futures front-month implied rate (%), if available
 }
 
-/** Fetch the rate context from FRED. null if unavailable (caller falls back). */
+/** Fetch the rate context (FRED rates + fed funds futures). null if unavailable. */
 export async function fetchRateContext(fred: FredProvider): Promise<RateContext | null> {
-  const [dff, dgs3mo] = await Promise.all([
+  const [dff, dgs3mo, zq] = await Promise.all([
     fred.latestValue("DFF"),
     fred.latestValue("DGS3MO"),
+    fetchYahooLastClose("ZQ=F"), // 30-Day Fed Funds futures, front month
   ]);
   if (dff == null || dgs3mo == null) return null;
-  return { dff, dgs3mo };
+  // ZQ price → implied average funds rate for the contract month.
+  const ffrImplied = zq != null && zq > 50 && zq <= 100 ? round2(100 - zq) : undefined;
+  return { dff, dgs3mo, ffrImplied };
 }
 
 const FOMC_DIR: Record<"hike" | "cut", Record<string, Direction>> = {
@@ -68,12 +78,15 @@ function round2(n: number): number {
 }
 
 /**
- * FOMC outcomes weighted by the Treasury-implied near-term rate path.
- * gap = 3M T-bill − policy rate, in bps: markedly negative ⇒ market prices cuts,
- * markedly positive ⇒ hikes, near zero ⇒ hold.
+ * FOMC outcomes weighted by the market-implied near-term rate path.
+ * gap = implied near-term rate − current policy rate, in bps: markedly negative
+ * ⇒ market prices cuts, markedly positive ⇒ hikes, near zero ⇒ hold. Prefers
+ * fed funds futures; falls back to the 3M T-bill spread.
  */
 export function fomcOutcomesFromRates(event: MarketEvent, ctx: RateContext): Outcome[] {
-  const gapBps = (ctx.dgs3mo - ctx.dff) * 100;
+  const useFutures = ctx.ffrImplied != null;
+  const impliedRate = useFutures ? (ctx.ffrImplied as number) : ctx.dgs3mo;
+  const gapBps = (impliedRate - ctx.dff) * 100;
 
   let pHike = 0.2;
   let pHold = 0.6;
@@ -98,9 +111,12 @@ export function fomcOutcomesFromRates(event: MarketEvent, ctx: RateContext): Out
   pHold /= total;
   pCut /= total;
 
-  const provenance =
-    `Treasury-implied: 3M ${ctx.dgs3mo.toFixed(2)}% vs policy ${ctx.dff.toFixed(2)}% ` +
-    `(${gapBps >= 0 ? "+" : ""}${Math.round(gapBps)}bps → leans ${lean}). Proxy for fed-funds-futures odds.`;
+  const provenance = useFutures
+    ? `Fed funds futures (ZQ front month): implied ${impliedRate.toFixed(2)}% vs effective ` +
+      `${ctx.dff.toFixed(2)}% (${gapBps >= 0 ? "+" : ""}${Math.round(gapBps)}bps → leans ${lean}). ` +
+      `Front-month average; per-meeting contract data is paid.`
+    : `Treasury-implied: 3M ${ctx.dgs3mo.toFixed(2)}% vs policy ${ctx.dff.toFixed(2)}% ` +
+      `(${gapBps >= 0 ? "+" : ""}${Math.round(gapBps)}bps → leans ${lean}). Fed funds futures unavailable — T-bill proxy.`;
 
   return [
     {
