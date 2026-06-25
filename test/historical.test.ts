@@ -31,6 +31,24 @@ describe("historicalLinks (event study)", () => {
     expect(spx!.stats!.n).toBe(6);
     expect(spx!.strength).toBeGreaterThan(0.15);
     expect(["low", "medium", "high"]).toContain(spx!.stats!.significance);
+    // v3.5: a 95% CI accompanies the hit rate and brackets it (here below 1.0
+    // even though every occurrence rose, since n is small).
+    expect(spx!.stats!.hitRateCiLow).toBeGreaterThan(0);
+    expect(spx!.stats!.hitRateCiLow!).toBeLessThan(1);
+    expect(spx!.stats!.hitRateCiHigh).toBeLessThanOrEqual(1);
+  });
+
+  it("shrinks strength for a small sample vs a large one at the same hit rate", () => {
+    const bars = risingBars(0, 300);
+    const small = historicalLinks([5, 15, 25, 35, 45].map((i) => bars[i].date), new Map([["SPX", bars]]), now);
+    const large = historicalLinks(
+      Array.from({ length: 25 }, (_, k) => bars[5 + k * 10].date),
+      new Map([["SPX", bars]]),
+      now,
+    );
+    const sStr = small.find((l) => l.asset === "SPX")!.strength;
+    const lStr = large.find((l) => l.asset === "SPX")!.strength;
+    expect(lStr).toBeGreaterThan(sStr); // more evidence ⇒ higher strength
   });
 
   it("returns nothing below the minimum sample", () => {

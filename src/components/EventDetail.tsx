@@ -126,6 +126,15 @@ export function EventDetail({ event, selectedAssets, narrative, onClose }: Props
                       (l.stats.recencyWeightedHitRate ?? l.stats.directionHitRate) * 100,
                     )}
                     % of the time
+                    {l.stats.hitRateCiLow != null && l.stats.hitRateCiHigh != null && (
+                      <span
+                        className="dl-ci"
+                        title="95% confidence interval on the hit rate — wider when fewer past occurrences were sampled"
+                      >
+                        {" "}(95% CI {Math.round(l.stats.hitRateCiLow * 100)}–
+                        {Math.round(l.stats.hitRateCiHigh * 100)}%)
+                      </span>
+                    )}
                     {l.stats.significance && (
                       <span
                         className={`sig sig-${l.stats.significance}`}

@@ -1127,6 +1127,18 @@ code {
   font-size: 13px;
 }
 
+/* Confidence intervals (v3.5) */
+.dl-ci {
+  color: var(--muted);
+  opacity: 0.85;
+}
+.rel-ci {
+  font-style: normal;
+  font-size: 0.85em;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
 /* Recent econ actuals (v3.4) */
 .econ-prints {
   list-style: none;

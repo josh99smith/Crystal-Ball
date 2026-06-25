@@ -51,7 +51,14 @@ function LoopSection({ loop }: { loop?: CalibrationMetrics }) {
                     }
                     style={{ width: `${b.hitRate * 100}%` }}
                   />
-                  <span>{Math.round(b.hitRate * 100)}%</span>
+                  <span>
+                    {Math.round(b.hitRate * 100)}%
+                    {b.hitRateCiLow != null && b.hitRateCiHigh != null && (
+                      <em className="rel-ci">
+                        {" "}±CI {Math.round(b.hitRateCiLow * 100)}–{Math.round(b.hitRateCiHigh * 100)}%
+                      </em>
+                    )}
+                  </span>
                 </div>
               </td>
               <td className="muted">{b.n}</td>
@@ -109,8 +116,9 @@ export function ReliabilityView({ rows, loop, selected }: Props) {
       <h3 className="rel-section-title">Event-study scorecard</h3>
       <p className="field-hint">
         For each event type × asset: how often the asset moved the same direction
-        ("same-dir"), the average move size, the sample size (n), and an overall
-        strength score. High same-dir = a reliable directional reaction.
+        ("same-dir") with its 95% confidence interval, the average move size, the
+        sample size (n), and an overall strength score. Strength uses a hit rate
+        shrunk toward 50% by sample size, so a small-n "edge" can't inflate it.
       </p>
       <div className="rel-summary">
         <div>
@@ -147,7 +155,14 @@ export function ReliabilityView({ rows, loop, selected }: Props) {
                           className={hitClass(r.directionHitRate)}
                           style={{ width: `${r.directionHitRate * 100}%` }}
                         />
-                        <span>{Math.round(r.directionHitRate * 100)}%</span>
+                        <span>
+                          {Math.round(r.directionHitRate * 100)}%
+                          {r.hitRateCiLow != null && r.hitRateCiHigh != null && (
+                            <em className="rel-ci">
+                              {" "}({Math.round(r.hitRateCiLow * 100)}–{Math.round(r.hitRateCiHigh * 100)})
+                            </em>
+                          )}
+                        </span>
                       </div>
                     </td>
                     <td>{r.avgAbsMovePct.toFixed(1)}%</td>

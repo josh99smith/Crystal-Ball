@@ -113,8 +113,15 @@ Seven pillars:
   the event detail. Honest labeling: change is vs prior, not analyst consensus (which
   isn't freely available). Remaining: true consensus/options-implied magnitude (needs
   paid data); intraday reaction tracking.
-- **v3.5 — Model rigor:** calibration-driven weighting, multi-event control,
-  regimes, confidence intervals.
+- **v3.5 — Model rigor:** ✅ 95% Wilson **confidence intervals** on every
+  event-study hit rate and on the live reliability bands (ranges, not bare point
+  estimates), shown in the event detail and the reliability scorecard;
+  **calibration-driven weighting** — link strength now uses a hit rate shrunk
+  toward the 0.5 base rate by sample size (Beta pseudo-counts), so an
+  under-evidenced small-n "edge" can't inflate strength. Pure stats module,
+  unit-tested. Remaining: multi-event (same-day) de-overlap control; regime
+  segmentation (condition correlations on rate/vol regime); live-ledger
+  overconfidence feedback (activates as predictions resolve).
 - **v3.6 — Ask-the-Ball:** natural-language Q&A (depends on §4 decision).
 
 ---

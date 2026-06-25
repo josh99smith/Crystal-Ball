@@ -5,6 +5,7 @@ import type {
   ReliabilityBand,
 } from "../shared/schema";
 import type { PriceBar } from "./marketdata/stooq";
+import { wilsonInterval } from "./stats";
 
 /**
  * Calibration loop (PLAN-V2 §2.4). For each scheduled event-asset, we log the
@@ -143,12 +144,16 @@ export function computeMetrics(ledger: LedgerRecord[], now: Date): CalibrationMe
     const hi = BAND_EDGES[i + 1];
     const inBand = resolved.filter((r) => r.confidence >= lo && r.confidence < hi);
     if (inBand.length === 0) continue;
+    const hits = inBand.filter((r) => r.resolved!.hit).length;
+    const ci = wilsonInterval(hits, inBand.length);
     bands.push({
       lo,
       hi: Math.min(hi, 1),
       n: inBand.length,
       avgConfidence: avg(inBand.map((r) => r.confidence)),
       hitRate: avg(inBand.map((r) => (r.resolved!.hit ? 1 : 0))),
+      hitRateCiLow: Math.round(ci.low * 1000) / 1000,
+      hitRateCiHigh: Math.round(ci.high * 1000) / 1000,
     });
   }
 

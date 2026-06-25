@@ -77,6 +77,9 @@ export interface EventAssetLink {
     intradayHitRate?: number;
     /** Average signed 3-day follow-through (drift after the reaction day), %. */
     threeDayDriftPct?: number;
+    /** 95% Wilson confidence interval on the direction hit rate (v3.5). */
+    hitRateCiLow?: number;
+    hitRateCiHigh?: number;
     /** Sample-size confidence in the estimate. */
     significance?: "low" | "medium" | "high";
   };
@@ -147,6 +150,9 @@ export interface CalibrationRow {
   n: number;
   avgAbsMovePct: number;
   directionHitRate: number;
+  /** 95% Wilson confidence interval on the hit rate (v3.5). */
+  hitRateCiLow?: number;
+  hitRateCiHigh?: number;
   strength: number;
 }
 
@@ -157,6 +163,9 @@ export interface ReliabilityBand {
   n: number;
   avgConfidence: number; // mean stated confidence in the band
   hitRate: number; // realized fraction the predicted direction was right
+  /** 95% Wilson confidence interval on the realized hit rate (v3.5). */
+  hitRateCiLow?: number;
+  hitRateCiHigh?: number;
 }
 
 /** Live calibration from the scored predictions ledger (v2.3). */

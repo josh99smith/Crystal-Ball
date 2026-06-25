@@ -193,6 +193,8 @@ function toCalibration(linksByKind: Map<string, EventAssetLink[]>): CalibrationR
         n: l.stats.n,
         avgAbsMovePct: l.stats.avgAbsMovePct,
         directionHitRate: l.stats.directionHitRate,
+        hitRateCiLow: l.stats.hitRateCiLow,
+        hitRateCiHigh: l.stats.hitRateCiHigh,
         strength: l.strength,
       });
     }

@@ -1,5 +1,6 @@
 import type { EventAssetLink, MarketEvent } from "../../shared/schema";
 import type { PriceBar } from "../marketdata/stooq";
+import { shrunkRate, wilsonInterval } from "../stats";
 
 /**
  * Historical (statistical) correlation tier (PLAN §7). An event study measures
@@ -29,6 +30,9 @@ interface StudyResult {
   recencyWeightedHitRate: number;
   intradayHitRate: number;
   threeDayDriftPct: number;
+  hitRateCiLow: number; // 95% Wilson interval on the dominant hit rate
+  hitRateCiHigh: number;
+  shrunkHitRate: number; // hit rate shrunk toward 0.5 by sample size (for strength)
   significance: "low" | "medium" | "high";
 }
 
@@ -66,8 +70,11 @@ function eventStudy(dates: string[], bars: PriceBar[], now: Date): StudyResult |
   const ups = reactions.filter((r) => r.oneDay > 0).length;
   const downs = reactions.filter((r) => r.oneDay < 0).length;
   const dominantUp = ups >= downs;
+  const dominant = Math.max(ups, downs);
   const avgAbsMovePct = mean(reactions.map((r) => Math.abs(r.oneDay)));
-  const directionHitRate = Math.max(ups, downs) / n;
+  const directionHitRate = dominant / n;
+  const ci = wilsonInterval(dominant, n);
+  const shrunkHitRate = shrunkRate(dominant, n);
 
   // Recency-weighted: share of weight agreeing with the dominant direction.
   const totalW = reactions.reduce((s, r) => s + r.weight, 0);
@@ -90,6 +97,9 @@ function eventStudy(dates: string[], bars: PriceBar[], now: Date): StudyResult |
     recencyWeightedHitRate,
     intradayHitRate,
     threeDayDriftPct,
+    hitRateCiLow: ci.low,
+    hitRateCiHigh: ci.high,
+    shrunkHitRate,
     significance,
   };
 }
@@ -97,9 +107,12 @@ function eventStudy(dates: string[], bars: PriceBar[], now: Date): StudyResult |
 function strengthFrom(s: {
   n: number;
   avgAbsMovePct: number;
-  recencyWeightedHitRate: number;
+  shrunkHitRate: number;
 }): number {
-  const consistency = (s.recencyWeightedHitRate - 0.5) * 2; // 0..1
+  // Consistency uses the sample-size-shrunk hit rate (calibration-driven
+  // weighting, PLAN-V3 §2.6): small samples are pulled toward 0.5, so an
+  // under-evidenced "edge" can't inflate strength.
+  const consistency = Math.max(0, (s.shrunkHitRate - 0.5) * 2); // 0..1
   const magnitude = Math.min(1, s.avgAbsMovePct / 1.5); // 1.5% ≈ strong
   const confidence = Math.min(1, s.n / 8); // ramp with sample size
   return clamp01((0.6 * consistency + 0.4 * magnitude) * confidence);
@@ -135,6 +148,8 @@ export function historicalLinks(
         recencyWeightedHitRate: round2(study.recencyWeightedHitRate),
         intradayHitRate: round2(study.intradayHitRate),
         threeDayDriftPct: round2(study.threeDayDriftPct),
+        hitRateCiLow: round2(study.hitRateCiLow),
+        hitRateCiHigh: round2(study.hitRateCiHigh),
         significance: study.significance,
       },
     });
@@ -169,8 +184,10 @@ export function sampleHistoricalLinks(event: MarketEvent): EventAssetLink[] {
       const intradayHitRate = round2(Math.min(0.95, directionHitRate - (h % 5) / 100));
       const threeDayDriftPct = round2((((h % 21) - 10) / 10)); // -1.0..1.0
       const significance = n >= 20 ? "high" : n >= 10 ? "medium" : "low";
+      const dominant = Math.round(directionHitRate * n);
+      const ci = wilsonInterval(dominant, n);
       const strength = round2(
-        strengthFrom({ n, avgAbsMovePct, recencyWeightedHitRate }),
+        strengthFrom({ n, avgAbsMovePct, shrunkHitRate: shrunkRate(dominant, n) }),
       );
       return {
         asset: l.asset,
@@ -183,6 +200,8 @@ export function sampleHistoricalLinks(event: MarketEvent): EventAssetLink[] {
           recencyWeightedHitRate,
           intradayHitRate,
           threeDayDriftPct,
+          hitRateCiLow: round2(ci.low),
+          hitRateCiHigh: round2(ci.high),
           significance: significance as "low" | "medium" | "high",
         },
       };
