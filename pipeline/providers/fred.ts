@@ -114,9 +114,13 @@ export class FredProvider implements EventProvider {
   async releaseDates(releaseId: number, from: Date, to: Date): Promise<string[]> {
     if (!this.isConfigured()) return [];
 
-    // FRED "realtime" bounds refer to data vintages, which can never be in the
-    // future — so clamp them to today. Upcoming scheduled dates still come back
-    // via include_release_dates_with_no_data=true; we filter to [from, to] below.
+    // The release/dates endpoint returns the *scheduled calendar* (including
+    // not-yet-released future dates) only when the realtime window extends past
+    // today — future release dates carry a future realtime_start, so capping
+    // realtime_end at today drops them (and with it CPI/NFP's next prints).
+    // Use FRED's documented max realtime_end (9999-12-31) and filter to
+    // [from, to] below. include_release_dates_with_no_data=true surfaces dates
+    // that have no data published yet.
     const today = new Date();
     const rtStart = from < today ? from : today;
 
@@ -127,7 +131,7 @@ export class FredProvider implements EventProvider {
     url.searchParams.set("include_release_dates_with_no_data", "true");
     url.searchParams.set("sort_order", "asc");
     url.searchParams.set("realtime_start", isoDate(rtStart));
-    url.searchParams.set("realtime_end", isoDate(today));
+    url.searchParams.set("realtime_end", "9999-12-31");
 
     try {
       const res = await fetch(url);
@@ -136,12 +140,17 @@ export class FredProvider implements EventProvider {
         return [];
       }
       const body = (await res.json()) as FredReleaseDatesResponse;
-      return (body.release_dates ?? [])
-        .map((rd) => rd.date)
-        .filter((d) => {
-          const t = new Date(`${d}T12:30:00Z`);
-          return t >= from && t <= to;
-        });
+      const seen = new Set<string>();
+      const dates: string[] = [];
+      for (const rd of body.release_dates ?? []) {
+        if (seen.has(rd.date)) continue; // a wide realtime window can repeat dates
+        const t = new Date(`${rd.date}T12:30:00Z`);
+        if (t >= from && t <= to) {
+          seen.add(rd.date);
+          dates.push(rd.date);
+        }
+      }
+      return dates;
     } catch (err) {
       console.warn(`[fred] release ${releaseId}: ${(err as Error).message}`);
       return [];
