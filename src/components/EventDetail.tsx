@@ -62,6 +62,38 @@ export function EventDetail({ event, selectedAssets, narrative, onClose }: Props
       </div>
       <p className="field-hint">How market-moving this event tends to be (0–100%).</p>
 
+      {event.econPrints && event.econPrints.length > 0 && (
+        <>
+          <h3 className="detail-sub">Recent actuals</h3>
+          <p className="field-hint">
+            The latest released figures for this series (FRED). Change is vs the{" "}
+            <b>prior reading</b>, not analyst consensus (which isn't freely available).
+          </p>
+          <ul className="econ-prints">
+            {event.econPrints.map((p) => (
+              <li key={p.period}>
+                <span className="ep-period">
+                  {new Date(`${p.period}T00:00:00Z`).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    timeZone: "UTC",
+                  })}
+                </span>
+                <span className="ep-value">
+                  {p.value > 0 ? "+" : ""}
+                  {p.value} {p.unit}
+                </span>
+                {p.changeFromPrior != null && (
+                  <span className={p.changeFromPrior >= 0 ? "ep-chg up" : "ep-chg down"}>
+                    {p.changeFromPrior >= 0 ? "▲" : "▼"} {Math.abs(p.changeFromPrior)} vs prior
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
       <h3 className="detail-sub">Correlated assets</h3>
       <p className="field-hint">
         Assets this event tends to move. Each shows up to two links — a{" "}

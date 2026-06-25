@@ -82,6 +82,22 @@ export interface EventAssetLink {
   };
 }
 
+/**
+ * A recent *actual* reading of the economic series behind an event (v3.4, FRED).
+ * Real, free data — change is measured vs the prior reading, not vs analyst
+ * consensus (which isn't freely available), and is labeled as such in the UI.
+ */
+export interface EconPrint {
+  /** Observation period (YYYY-MM-DD). */
+  period: string;
+  /** The figure people watch — YoY %, MoM change, or annualized rate. */
+  value: number;
+  /** Display unit, e.g. "% YoY", "K jobs", "% ann.". */
+  unit: string;
+  /** Change vs the prior print (same unit). */
+  changeFromPrior?: number;
+}
+
 export interface MarketEvent {
   id: string;
   title: string;
@@ -98,6 +114,8 @@ export interface MarketEvent {
   links: EventAssetLink[];
   /** Weighted outcome scenarios (added in Phase 2). */
   outcomes?: Outcome[];
+  /** Recent actual readings of the underlying data series (v3.4, FRED). */
+  econPrints?: EconPrint[];
 }
 
 /** One line of the generated digest (PLAN §2 surface). */

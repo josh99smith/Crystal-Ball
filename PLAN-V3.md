@@ -105,7 +105,14 @@ Seven pillars:
   return, best/worst over the published price history, with small-sample warnings.
   Plus a forward expected-move read from the next event's weighted outcomes.
   Remaining: longer price history for deeper backtests; multi-leg rules.
-- **v3.4 — Deeper data:** market-implied probs, consensus/actual, more assets.
+- **v3.4 — Deeper data:** ✅ asset-universe breadth (+12: US 2/5/10/30Y rate curve,
+  FX majors GBPUSD/USDJPY, commodities silver/copper/natgas, international DAX/Nikkei,
+  small-caps RUT, sectors XLF/XLV — all via Yahoo, flowing into charts, the lab, and
+  the event-study scorecard); real **recent actuals** for CPI/NFP/GDP/PCE pulled from
+  FRED (YoY %, MoM change, annualized rate) with change vs the prior reading, shown in
+  the event detail. Honest labeling: change is vs prior, not analyst consensus (which
+  isn't freely available). Remaining: true consensus/options-implied magnitude (needs
+  paid data); intraday reaction tracking.
 - **v3.5 — Model rigor:** calibration-driven weighting, multi-event control,
   regimes, confidence intervals.
 - **v3.6 — Ask-the-Ball:** natural-language Q&A (depends on §4 decision).

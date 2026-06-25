@@ -32,12 +32,16 @@ export async function fetchRateContext(fred: FredProvider): Promise<RateContext 
 
 const FOMC_DIR: Record<"hike" | "cut", Record<string, Direction>> = {
   hike: {
-    US10Y: "up", US2Y: "up", USD: "up", EURUSD: "down", SPX: "down", NDX: "down",
-    XLK: "down", SMH: "down", VIX: "up", GOLD: "down", BTC: "down",
+    US2Y: "up", US5Y: "up", US10Y: "up", US30Y: "up", USD: "up", EURUSD: "down",
+    GBPUSD: "down", USDJPY: "up", SPX: "down", NDX: "down", RUT: "down",
+    XLK: "down", XLF: "down", SMH: "down", VIX: "up", GOLD: "down", SILVER: "down",
+    BTC: "down",
   },
   cut: {
-    US10Y: "down", US2Y: "down", USD: "down", EURUSD: "up", SPX: "up", NDX: "up",
-    XLK: "up", SMH: "up", VIX: "down", GOLD: "up", BTC: "up",
+    US2Y: "down", US5Y: "down", US10Y: "down", US30Y: "down", USD: "down",
+    EURUSD: "up", GBPUSD: "up", USDJPY: "down", SPX: "up", NDX: "up", RUT: "up",
+    XLK: "up", XLF: "up", SMH: "up", VIX: "down", GOLD: "up", SILVER: "up",
+    BTC: "up",
   },
 };
 

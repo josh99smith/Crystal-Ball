@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import type {
   CalibrationRow,
   DataBundle,
+  EconPrint,
   EventAssetLink,
   MarketEvent,
 } from "../shared/schema";
@@ -28,7 +29,7 @@ import { claudeConfigured, claudeOutcomes } from "./scenarios/claude";
 import { heuristicOutcomes } from "./scenarios/heuristic";
 import { fetchRateContext, fomcOutcomesFromRates } from "./scenarios/weighting";
 import { fixtureEvents } from "./fixtures";
-import { FredProvider, fredKindFromId, RELEASES } from "./providers/fred";
+import { FredProvider, fredKindFromId, RELEASES, computeRecentPrints } from "./providers/fred";
 import { FinnhubProvider } from "./providers/finnhub";
 import { MarketStructureProvider } from "./providers/marketstructure";
 import { FomcProvider, FOMC_DECISION_DATES } from "./providers/fomc";
@@ -149,6 +150,29 @@ async function addScenarios(events: MarketEvent[]): Promise<MarketEvent[]> {
     out.push(...(await Promise.all(events.slice(i, i + LIMIT).map(generate))));
   }
   return out;
+}
+
+/**
+ * Attaches recent *actual* readings (v3.4) to economic-data events from FRED's
+ * underlying series. Real, free data — change is measured vs the prior reading
+ * (consensus isn't freely available). No-op without a FRED key.
+ */
+async function attachEconPrints(events: MarketEvent[]): Promise<MarketEvent[]> {
+  if (!fred.isConfigured()) return events;
+  const printsByKind = new Map<string, EconPrint[]>();
+  for (const r of RELEASES) {
+    if (!r.seriesId || !r.transform || !r.unit) continue;
+    if (!events.some((e) => kindOf(e) === r.kind)) continue;
+    const obs = await fred.fetchObservations(r.seriesId, 40);
+    const prints = computeRecentPrints(obs, r.transform, r.unit);
+    if (prints.length) printsByKind.set(r.kind, prints);
+  }
+  if (printsByKind.size === 0) return events;
+  console.log(`[pipeline] econ prints attached for ${printsByKind.size} series`);
+  return events.map((e) => {
+    const prints = printsByKind.get(kindOf(e) ?? "");
+    return prints ? { ...e, econPrints: prints } : e;
+  });
 }
 
 interface HistoricalResult {
@@ -363,6 +387,7 @@ async function main() {
   );
 
   events = await addScenarios(events);
+  events = await attachEconPrints(events);
   const historical = await addHistorical(events, now);
   events = historical.events;
 

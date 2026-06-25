@@ -9,12 +9,20 @@ import { fetchDailyCloses as stooqFetch } from "./stooq";
  */
 
 const YAHOO_SYMBOL: Record<string, string> = {
+  // Indices & volatility
   SPX: "^GSPC",
   NDX: "^NDX",
+  RUT: "^RUT",
   VIX: "^VIX",
+  DAX: "^GDAXI",
+  NIKKEI: "^N225",
+  // Sector ETFs
   XLK: "XLK",
   SMH: "SMH",
   XLE: "XLE",
+  XLF: "XLF",
+  XLV: "XLV",
+  // Single names
   NVDA: "NVDA",
   AAPL: "AAPL",
   MSFT: "MSFT",
@@ -22,12 +30,23 @@ const YAHOO_SYMBOL: Record<string, string> = {
   AMZN: "AMZN",
   META: "META",
   TSLA: "TSLA",
+  // Rates — Yahoo yield indices (×10, but relative moves are all the chart/
+  // event-study need). US2Y has no clean ^ ticker; left to the Stooq fallback.
+  US5Y: "^FVX",
   US10Y: "^TNX",
-  // US2Y has no clean Yahoo ^ ticker; left to the Stooq fallback.
+  US30Y: "^TYX",
+  // FX
   USD: "DX-Y.NYB",
   EURUSD: "EURUSD=X",
+  GBPUSD: "GBPUSD=X",
+  USDJPY: "USDJPY=X",
+  // Commodities
   GOLD: "GC=F",
+  SILVER: "SI=F",
+  COPPER: "HG=F",
   CRUDE: "CL=F",
+  NATGAS: "NG=F",
+  // Crypto
   BTC: "BTC-USD",
 };
 
