@@ -122,7 +122,16 @@ Seven pillars:
   unit-tested. Remaining: multi-event (same-day) de-overlap control; regime
   segmentation (condition correlations on rate/vol regime); live-ledger
   overconfidence feedback (activates as predictions resolve).
-- **v3.6 — Ask-the-Ball:** natural-language Q&A (depends on §4 decision).
+- **v3.6 — Ask-the-Ball:** ✅ natural-language Q&A grounded in the published
+  bundle (events, weighted outcomes, econ actuals, event-study calibration), via
+  **option A — bring-your-own-key** (§4): the SPA calls Claude directly from the
+  browser with the user's own Anthropic key (stored only in localStorage, sent
+  only to api.anthropic.com). New "Ask" tab with key setup, model picker
+  (Opus 4.8 default; Sonnet/Haiku selectable), suggested questions, and a
+  grounded-answer chat. Stays fully static — no backend, no shared secret. Pure
+  context-builder unit-tested. Guardrailed: answers only from site data, always
+  "not financial advice". Remaining (optional): a serverless proxy (option B) if
+  a keyless shared experience is ever wanted.
 
 ---
 
@@ -143,6 +152,13 @@ static site without exposing a key. Options:
 Recommendation: ship the **static intelligence** (briefs/narratives, §2.1 minus
 Q&A) first under C, and revisit A/B for Q&A later.
 
+**Decision (v3.6): option A — bring-your-own-key.** Live Q&A shipped while staying
+fully static: the SPA calls Claude directly from the browser with the user's own
+Anthropic key (localStorage-only; sent only to api.anthropic.com via the
+`anthropic-dangerous-direct-browser-access` CORS opt-in). Zero infra and no shared
+secret. Option B (serverless proxy) remains available later if a keyless shared
+experience is wanted.
+
 ---
 
 ## 5. Principles (unchanged)
@@ -154,8 +170,8 @@ Q&A) first under C, and revisit A/B for Q&A later.
 ## 6. Open questions
 1. **Start where?** v3.0 platform base, v3.1 intelligence, or v3.2 personalization?
    (Proposed: v3.0 — it unblocks the rest and is the most visible.)
-2. **Interactive AI (§4)?** Stay static (briefs only) for now, or add a serverless
-   proxy for live Q&A?
+2. ~~**Interactive AI (§4)?** Stay static or add a serverless proxy for live
+   Q&A?~~ **Resolved (v3.6): option A — bring-your-own-key, stays static.**
 3. **Email/push delivery** — worth wiring (needs a free email API key in Actions),
    or is the in-app digest + .ics calendar enough?
 4. **Portfolio model** — simple watchlist, or weighted positions for real

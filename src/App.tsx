@@ -17,10 +17,11 @@ import { BriefView } from "./components/BriefView";
 import { ReliabilityView } from "./components/ReliabilityView";
 import { AssetChart } from "./components/AssetChart";
 import { StrategyLab } from "./components/StrategyLab";
+import { AskView } from "./components/AskView";
 import { CryptoTicker } from "./components/CryptoTicker";
 
-type View = "timeline" | "brief" | "digest" | "reliability" | "chart" | "lab";
-const VIEWS: View[] = ["timeline", "brief", "digest", "reliability", "chart", "lab"];
+type View = "timeline" | "brief" | "ask" | "digest" | "reliability" | "chart" | "lab";
+const VIEWS: View[] = ["timeline", "brief", "ask", "digest", "reliability", "chart", "lab"];
 const SCALE_IDS = TIMELINE_SCALES.map((s) => s.id);
 
 const initial = readUrlState();
@@ -130,6 +131,14 @@ export function App() {
             </button>
             <button
               role="tab"
+              aria-selected={view === "ask"}
+              className={view === "ask" ? "vt active" : "vt"}
+              onClick={() => setView("ask")}
+            >
+              Ask
+            </button>
+            <button
+              role="tab"
               aria-selected={view === "digest"}
               className={view === "digest" ? "vt active" : "vt"}
               onClick={() => setView("digest")}
@@ -218,6 +227,7 @@ export function App() {
               }}
             />
           )}
+          {view === "ask" && <AskView bundle={bundle} />}
           {view === "digest" && (
             <DigestView
               digest={bundle.digest}
