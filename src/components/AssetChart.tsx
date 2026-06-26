@@ -14,6 +14,8 @@ import type { PastMarker } from "../usePastEvents";
 import type { ChartBar } from "../useChartPrices";
 
 type Mode = "area" | "line" | "candles";
+type RangeKey = "1M" | "3M" | "6M" | "1Y" | "ALL";
+const RANGE_DAYS: Record<RangeKey, number> = { "1M": 30, "3M": 92, "6M": 183, "1Y": 365, ALL: 100000 };
 
 interface Props {
   asset: string;
@@ -70,6 +72,9 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
   const [live, setLive] = useState<ChartBar[] | null>(null);
   const [mode, setMode] = useState<Mode>("area");
   const [showVol, setShowVol] = useState(false);
+  const [range, setRange] = useState<RangeKey>("1Y");
+  const [showForward, setShowForward] = useState(true);
+  const [hiddenCats, setHiddenCats] = useState<Set<string>>(new Set());
 
   // Crypto live fallback.
   useEffect(() => {
@@ -101,6 +106,14 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
     return { last, chgPct: first ? ((last - first) / first) * 100 : 0 };
   }, [effective]);
 
+  // Categories present for this asset (for the filter chips).
+  const presentCats = useMemo(() => {
+    const set = new Set<MarketEvent["category"]>();
+    for (const m of pastMarkers) if (m.assets.includes(asset)) set.add(m.category);
+    for (const e of events) set.add(e.category);
+    return [...set];
+  }, [pastMarkers, events, asset]);
+
   // Create the chart once.
   useEffect(() => {
     const el = containerRef.current;
@@ -130,7 +143,20 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
           lines.push(`O ${fmtPrice(bar.o)} H ${fmtPrice(bar.h)} L ${fmtPrice(bar.l)} C ${fmtPrice(bar.c)}`);
         else lines.push(`${asset} ${fmtPrice(bar.c)}`);
       }
-      if (infos) for (const i of infos.slice(0, 4)) lines.push(`• ${i.title}`);
+      if (infos) {
+        for (const i of infos.slice(0, 3)) {
+          let s = `• ${i.title}`;
+          if (i.event) {
+            const top = [...(i.event.outcomes ?? [])].sort((a, b) => b.weight - a.weight)[0];
+            const bits: string[] = [`impact ${Math.round(i.event.expectedImpact * 100)}%`];
+            if (top) bits.push(`${top.label} ${Math.round(top.weight * 100)}%`);
+            if (i.event.impliedMove) bits.push(`±${i.event.impliedMove.movePct}% implied`);
+            s += `<span class="tt-meta"> — ${bits.join(" · ")}</span>`;
+          }
+          lines.push(s);
+        }
+        if (infos.length > 3) lines.push(`<span class="tt-meta">+${infos.length - 3} more</span>`);
+      }
       tip.innerHTML = lines.join("<br/>");
       tip.style.display = "block";
       const x = Math.min(param.point.x + 14, el.clientWidth - 170);
@@ -180,7 +206,6 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
     for (const b of effective) bars.set(floorDay(b.t), b);
     barsRef.current = bars;
     const days = [...bars.keys()].sort((a, b) => a - b);
-    const firstTime = days[0];
     const lastPriceDay = days[days.length - 1];
 
     let price: ISeriesApi<"Area" | "Line" | "Candlestick">;
@@ -218,8 +243,12 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
       const d = floorDay(sec);
       const arr = atTime.get(d) ?? []; arr.push(info); atTime.set(d, arr);
     };
-    for (const m of pastMarkers) if (m.assets.includes(asset)) add(m.t, { category: m.category, title: m.title, scheduled: m.scheduled });
-    for (const e of events) add(Math.floor(Date.parse(e.scheduledAt) / 1000), { category: e.category, title: e.title, scheduled: e.isScheduled, event: e });
+    for (const m of pastMarkers)
+      if (m.assets.includes(asset) && !hiddenCats.has(m.category))
+        add(m.t, { category: m.category, title: m.title, scheduled: m.scheduled });
+    for (const e of events)
+      if (!hiddenCats.has(e.category))
+        add(Math.floor(Date.parse(e.scheduledAt) / 1000), { category: e.category, title: e.title, scheduled: e.isScheduled, event: e });
     markersRef.current = atTime;
 
     const markers: SeriesMarker<Time>[] = [...atTime.entries()].sort((a, b) => a[0] - b[0]).map(([d, infos]) => {
@@ -233,10 +262,21 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
       };
     });
     price.setMarkers(markers);
+  }, [asset, effective, events, pastMarkers, effMode, showVol, hasVol, theme, hiddenCats]);
 
+  // Visible range (preset + forward toggle) — independent of series rebuilds.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart || effective.length === 0) return;
+    const days = effective.map((b) => floorDay(b.t));
+    const firstTime = Math.min(...days);
+    const lastDataDay = Math.max(...days);
     const nowDay = floorDay(Date.now() / 1000);
-    chart.timeScale().setVisibleRange({ from: firstTime as UTCTimestamp, to: (nowDay + 120 * DAY) as UTCTimestamp });
-  }, [asset, effective, events, pastMarkers, effMode, showVol, hasVol, theme]);
+    const span = RANGE_DAYS[range] * DAY;
+    const from = range === "ALL" ? firstTime : Math.max(firstTime, nowDay - span);
+    const to = showForward ? nowDay + 120 * DAY : lastDataDay;
+    chart.timeScale().setVisibleRange({ from: from as UTCTimestamp, to: to as UTCTimestamp });
+  }, [range, showForward, effective]);
 
   if (effective.length === 0) {
     return (
@@ -264,6 +304,18 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
           )}
         </div>
         <div className="chart-controls">
+          <div className="seg" role="group" aria-label="Time range">
+            {(Object.keys(RANGE_DAYS) as RangeKey[]).map((r) => (
+              <button key={r} className={range === r ? "seg-btn active" : "seg-btn"} onClick={() => setRange(r)}>
+                {r}
+              </button>
+            ))}
+          </div>
+          <button className={showForward ? "seg-btn active" : "seg-btn"}
+            title="Show upcoming events to the right of today"
+            onClick={() => setShowForward((v) => !v)}>
+            Fwd
+          </button>
           <div className="seg" role="group" aria-label="Series type">
             {(["area", "line", "candles"] as Mode[]).map((m) => (
               <button key={m}
@@ -282,6 +334,30 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
           </button>
         </div>
       </div>
+
+      {presentCats.length > 1 && (
+        <div className="chart-cats">
+          <span className="field-hint cc-label">Events:</span>
+          {presentCats.map((c) => {
+            const on = !hiddenCats.has(c);
+            return (
+              <button key={c}
+                className={on ? "cc-chip on" : "cc-chip"}
+                style={on ? { borderColor: CATEGORY_META[c].color } : undefined}
+                onClick={() =>
+                  setHiddenCats((prev) => {
+                    const next = new Set(prev);
+                    next.has(c) ? next.delete(c) : next.add(c);
+                    return next;
+                  })
+                }>
+                <span className="cc-dot" style={{ background: CATEGORY_META[c].color }} />
+                {CATEGORY_META[c].label}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <div className="asset-chart-wrap">
         <div className="asset-chart-canvas" ref={containerRef} role="img" aria-label={`${asset} price chart with event markers`} />
         <div className="chart-tooltip" ref={tooltipRef} />
