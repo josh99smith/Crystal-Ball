@@ -888,6 +888,14 @@ body {
 }
 .cl-chg.up { color: var(--low); }
 .cl-chg.down { color: var(--high); }
+.cl-cmp {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cmp-select {
+  padding-right: 6px;
+}
 .tt-meta {
   color: var(--muted);
 }

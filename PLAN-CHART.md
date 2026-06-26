@@ -75,27 +75,28 @@ Concrete problems:
 
 ## 4. Phased roadmap
 
-- **C0 — Foundation & correctness (no new data):** theme-aware colors via the
-  toggle; create-once/update refactor; fluid/responsive height; custom crosshair
-  tooltip (date + price + Δ) and a legend (last price, period change); ARIA label
-  + offscreen data-summary fallback for a11y. Fixes the theme bug and the rebuild.
-- **C1 — Richer price data:** `writeChartPrices` publishes OHLC + volume (already
-  fetched); back-compatible read; **candlestick ⇄ area ⇄ line** toggle; optional
-  **volume** pane. Client types updated.
-- **C2 — Range & navigation:** 1M / 3M / 6M / 1Y / All presets + a **forward**
-  toggle; fit/reset; persist choice in the URL/localStorage; keep markers fanned.
-- **C3 — Event layer overhaul:** marker **hover tooltips** (title, date, category,
-  expected impact, top outcome odds, options-implied move); **category filter
-  chips**; a popover when several events share a day; click → detail (existing).
-- **C4 — Forward scenario cone (flagship):** from "now" to the next linked event,
-  draw the weighted-outcome **expected move** as a projected band, with the v3.5
-  **confidence interval** as a wider band. Clearly labeled "scenario, not a
-  prediction." This is what ties the chart to the forecasting engine.
-- **C5 — Comparison & context:** overlay/compare a second asset (normalized %);
-  optional correlated-asset overlay driven by structural links; relative-perf readout.
-- **C6 — Asset-centric page & polish:** fold into the v4.6 asset pages; searchable
-  asset switcher grouped by class; deep-linkable (asset + range + mode in URL);
-  mobile depth; remove the dead Stooq path and unify the live-fallback story.
+- **C0 — Foundation & correctness:** ✅ theme-aware colors via the toggle (fixes
+  the hardcoded-dark bug); create-once/update refactor; responsive height; custom
+  crosshair tooltip + legend (last price, period change); ARIA + offscreen
+  data-summary fallback.
+- **C1 — Richer price data:** ✅ `writeChartPrices` publishes OHLC + volume
+  (Yahoo volume parsed; `c` kept for back-compat); **candlestick ⇄ area ⇄ line**
+  toggle (candles auto-disabled without OHLC); **volume** pane (auto-disabled when
+  sparse).
+- **C2 — Range & navigation:** ✅ 1M / 3M / 6M / 1Y / ALL presets + a **Forward**
+  toggle, in a dedicated range effect; prefs persisted to localStorage.
+- **C3 — Event layer:** ✅ marker tooltips (impact, top weighted-outcome odds,
+  options-implied move); **category filter chips**; multi-event days listed with
+  "+N more"; click → detail.
+- **C4 — Forward scenario cone (flagship):** ✅ from "now" to the next linked
+  event, a dashed center line at the weighted-outcome **expected move** with a
+  dotted ± band from the asset's measured typical reaction (`avgAbsMovePct`).
+  Labeled "scenario, not a prediction." Ties the chart to the forecasting engine.
+- **C5 — Comparison:** ✅ overlay a second asset **rebased to the main's first
+  close** for true relative performance, with a legend readout.
+- **C6 — Polish:** ✅ asset switcher grouped by class (optgroups); chart prefs
+  persisted; mobile height. Remaining (minor): full URL deep-link of mode/range,
+  a searchable combobox, and removing the dead Stooq fallback path.
 
 ---
 

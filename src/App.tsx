@@ -178,10 +178,16 @@ export function App() {
               onChange={(e) => setChartAsset(e.target.value)}
               aria-label="Chart asset"
             >
-              {bundle.assets.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.id} — {a.label}
-                </option>
+              {[...new Set(bundle.assets.map((a) => a.class))].map((cls) => (
+                <optgroup key={cls} label={cls}>
+                  {bundle.assets
+                    .filter((a) => a.class === cls)
+                    .map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.id} — {a.label}
+                      </option>
+                    ))}
+                </optgroup>
               ))}
             </select>
           )}
@@ -255,6 +261,8 @@ export function App() {
               pastMarkers={pastEvents}
               onSelect={setSelectedEvent}
               theme={theme}
+              allPrices={prices ?? {}}
+              assets={bundle.assets}
             />
           )}
           {view === "lab" && (

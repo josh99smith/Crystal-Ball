@@ -2,16 +2,18 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createChart,
   ColorType,
+  LineStyle,
   type IChartApi,
   type ISeriesApi,
   type SeriesMarker,
   type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
-import type { MarketEvent } from "../../shared/schema";
+import type { Asset, MarketEvent } from "../../shared/schema";
 import { CATEGORY_META } from "../../shared/categories";
 import type { PastMarker } from "../usePastEvents";
-import type { ChartBar } from "../useChartPrices";
+import type { ChartBar, PriceSeries } from "../useChartPrices";
+import { expectedMovePct } from "../strategy";
 
 type Mode = "area" | "line" | "candles";
 type RangeKey = "1M" | "3M" | "6M" | "1Y" | "ALL";
@@ -24,7 +26,20 @@ interface Props {
   pastMarkers: PastMarker[]; // past occurrences (all assets)
   onSelect: (event: MarketEvent) => void;
   theme: "dark" | "light";
+  allPrices: PriceSeries; // for the comparison overlay (C5)
+  assets: Asset[]; // for the comparison picker (C5)
 }
+
+interface ChartPrefs {
+  mode: Mode; range: RangeKey; showVol: boolean;
+  showForward: boolean; showCone: boolean; compare: string;
+}
+const PREFS_KEY = "cb-chart-prefs";
+function loadPrefs(): Partial<ChartPrefs> {
+  try { return JSON.parse(localStorage.getItem(PREFS_KEY) ?? "{}"); } catch { return {}; }
+}
+
+const COMPARE_COLOR = "#f5a623";
 
 const DAY = 86400;
 const floorDay = (sec: number) => Math.floor(sec / DAY) * DAY;
@@ -58,23 +73,35 @@ const fmtPrice = (n: number) =>
 const fmtDay = (sec: number) =>
   new Date(sec * 1000).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
 
-export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme }: Props) {
+export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme, allPrices, assets }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const priceSeriesRef = useRef<ISeriesApi<"Area" | "Line" | "Candlestick"> | null>(null);
   const volSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+  const coneRef = useRef<ISeriesApi<"Line">[]>([]);
+  const compareRef = useRef<ISeriesApi<"Line"> | null>(null);
   const barsRef = useRef<Map<number, ChartBar>>(new Map());
   const markersRef = useRef<Map<number, MarkerInfo[]>>(new Map());
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
 
+  const prefs0 = useRef(loadPrefs()).current;
   const [live, setLive] = useState<ChartBar[] | null>(null);
-  const [mode, setMode] = useState<Mode>("area");
-  const [showVol, setShowVol] = useState(false);
-  const [range, setRange] = useState<RangeKey>("1Y");
-  const [showForward, setShowForward] = useState(true);
+  const [mode, setMode] = useState<Mode>(prefs0.mode ?? "area");
+  const [showVol, setShowVol] = useState(prefs0.showVol ?? false);
+  const [range, setRange] = useState<RangeKey>(prefs0.range ?? "1Y");
+  const [showForward, setShowForward] = useState(prefs0.showForward ?? true);
+  const [showCone, setShowCone] = useState(prefs0.showCone ?? true);
+  const [compare, setCompare] = useState<string>(prefs0.compare ?? "");
   const [hiddenCats, setHiddenCats] = useState<Set<string>>(new Set());
+
+  // Persist chart preferences across reloads.
+  useEffect(() => {
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify({ mode, range, showVol, showForward, showCone, compare }));
+    } catch { /* ignore */ }
+  }, [mode, range, showVol, showForward, showCone, compare]);
 
   // Crypto live fallback.
   useEffect(() => {
@@ -113,6 +140,14 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
     for (const e of events) set.add(e.category);
     return [...set];
   }, [pastMarkers, events, asset]);
+
+  const compareChg = useMemo(() => {
+    if (!compare || !allPrices[compare]?.length) return null;
+    const s = [...allPrices[compare]].sort((a, b) => a.t - b.t);
+    if (s.length < 2) return null;
+    const f = s[0].c, l = s[s.length - 1].c;
+    return f ? ((l - f) / f) * 100 : 0;
+  }, [compare, allPrices]);
 
   // Create the chart once.
   useEffect(() => {
@@ -278,6 +313,57 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
     chart.timeScale().setVisibleRange({ from: from as UTCTimestamp, to: to as UTCTimestamp });
   }, [range, showForward, effective]);
 
+  // C4 — forward scenario cone from the next event's weighted outcomes (+ band).
+  useEffect(() => {
+    const chart = chartRef.current;
+    for (const s of coneRef.current) chart?.removeSeries(s);
+    coneRef.current = [];
+    if (!chart || !showCone || effective.length === 0) return;
+    const sorted = [...effective].sort((a, b) => a.t - b.t);
+    const lastClose = sorted[sorted.length - 1].c;
+    const nowDay = floorDay(Date.now() / 1000);
+    const next = [...events]
+      .filter((e) => e.outcomes?.length)
+      .sort((a, b) => Date.parse(a.scheduledAt) - Date.parse(b.scheduledAt))[0];
+    if (!next) return;
+    const eventDay = floorDay(Date.parse(next.scheduledAt) / 1000);
+    if (eventDay <= nowDay) return;
+    const { evPct } = expectedMovePct(next, asset);
+    const link = next.links.find((l) => l.asset === asset);
+    const band = Math.min(25, link?.stats?.avgAbsMovePct ?? Math.abs(evPct) + 0.8);
+    if (evPct === 0 && band === 0) return;
+    const color = theme === "light" ? "rgba(120,90,200,0.85)" : "rgba(168,148,255,0.9)";
+    const line = (mvPct: number, style: LineStyle, width: 1 | 2) => {
+      const s = chart.addLineSeries({ color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+      s.setData([
+        { time: nowDay as UTCTimestamp, value: lastClose },
+        { time: eventDay as UTCTimestamp, value: lastClose * (1 + mvPct / 100) },
+      ]);
+      return s;
+    };
+    const center = line(evPct, LineStyle.Dashed, 2);
+    center.setMarkers([{ time: eventDay as UTCTimestamp, position: "aboveBar", color, shape: "circle", text: `EV ${evPct >= 0 ? "+" : ""}${evPct.toFixed(1)}%` }]);
+    coneRef.current = [center, line(evPct + band, LineStyle.Dotted, 1), line(evPct - band, LineStyle.Dotted, 1)];
+  }, [asset, effective, events, showCone, theme]);
+
+  // C5 — comparison overlay: a second asset rebased to the main's first close.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (compareRef.current) { chart?.removeSeries(compareRef.current); compareRef.current = null; }
+    if (!chart || !compare || compare === asset || effective.length === 0) return;
+    const cmp = allPrices[compare];
+    if (!cmp || cmp.length === 0) return;
+    const mainFirst = [...effective].sort((a, b) => a.t - b.t)[0].c;
+    const cmpSorted = [...cmp].sort((a, b) => a.t - b.t);
+    const cmpFirst = cmpSorted[0].c;
+    if (!mainFirst || !cmpFirst) return;
+    const byDay = new Map<number, number>();
+    for (const b of cmpSorted) byDay.set(floorDay(b.t), mainFirst * (b.c / cmpFirst));
+    const s = chart.addLineSeries({ color: COMPARE_COLOR, lineWidth: 2, priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false });
+    s.setData([...byDay.entries()].sort((a, b) => a[0] - b[0]).map(([t, v]) => ({ time: t as UTCTimestamp, value: v })));
+    compareRef.current = s;
+  }, [compare, asset, allPrices, effective, theme]);
+
   if (effective.length === 0) {
     return (
       <p className="muted empty">
@@ -301,6 +387,11 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
                 {legend.chgPct >= 0 ? "▲" : "▼"} {Math.abs(legend.chgPct).toFixed(1)}% (shown)
               </span>
             </>
+          )}
+          {compare && compareChg != null && (
+            <span className="cl-cmp" style={{ color: COMPARE_COLOR }}>
+              vs {compare} {compareChg >= 0 ? "▲" : "▼"} {Math.abs(compareChg).toFixed(1)}%
+            </span>
           )}
         </div>
         <div className="chart-controls">
@@ -332,6 +423,18 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
             onClick={() => setShowVol((v) => !v)}>
             Vol
           </button>
+          <button className={showCone ? "seg-btn active" : "seg-btn"}
+            title="Project the next event's weighted-outcome expected move (scenario, not a prediction)"
+            onClick={() => setShowCone((v) => !v)}>
+            Cone
+          </button>
+          <select className="seg-btn cmp-select" value={compare}
+            aria-label="Compare with asset" onChange={(e) => setCompare(e.target.value)}>
+            <option value="">Compare…</option>
+            {assets.filter((a) => a.id !== asset).map((a) => (
+              <option key={a.id} value={a.id}>vs {a.id}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -363,8 +466,9 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
         <div className="chart-tooltip" ref={tooltipRef} />
       </div>
       <p className="muted chart-note">
-        {asset} price (~1y) · markers = our events, past &amp; future (▢ = anticipated).
-        Scroll/drag to explore; click a future marker for details.
+        Markers = our events (▢ = anticipated); click a future one for details.
+        {showCone && " Dashed/dotted cone = next event's expected move ± typical reaction — a scenario, not a prediction."}
+        {compare && ` Orange = ${compare}, rebased to ${asset}'s start for relative performance.`}
       </p>
       <div className="visually-hidden">
         <p>{asset}: latest {legend ? fmtPrice(legend.last) : "n/a"}, {legend ? `${legend.chgPct >= 0 ? "up" : "down"} ${Math.abs(legend.chgPct).toFixed(1)}% over the shown window` : ""}.</p>
