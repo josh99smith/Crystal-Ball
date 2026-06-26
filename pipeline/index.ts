@@ -337,22 +337,34 @@ async function runCalibrationLoop(events: MarketEvent[], now: Date) {
   return metrics;
 }
 
-/** Publish a recent daily price series per asset for the in-app chart. */
+/**
+ * Publish a recent daily price series per asset for the in-app chart (overhaul
+ * C1: full OHLC + volume; `c` kept for back-compat with older clients).
+ */
 async function writeChartPrices(now: Date) {
   const from = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-  const out: Record<string, Array<{ t: number; c: number }>> = {};
+  type Bar = { t: number; o: number; h: number; l: number; c: number; v?: number };
+  const out: Record<string, Bar[]> = {};
   await Promise.all(
     ASSET_IDS.map(async (id) => {
       const bars = await fetchDailyCloses(id, from, now);
       if (bars.length) {
-        out[id] = bars
-          .slice(-250)
-          .map((b) => ({ t: Math.floor(Date.parse(`${b.date}T00:00:00Z`) / 1000), c: b.close }));
+        out[id] = bars.slice(-250).map((b) => {
+          const bar: Bar = {
+            t: Math.floor(Date.parse(`${b.date}T00:00:00Z`) / 1000),
+            o: b.open,
+            h: b.high,
+            l: b.low,
+            c: b.close,
+          };
+          if (b.volume != null) bar.v = b.volume;
+          return bar;
+        });
       }
     }),
   );
   await writeFile(resolve(DATA_DIR, "prices.json"), JSON.stringify(out) + "\n");
-  console.log(`[pipeline] wrote price series for ${Object.keys(out).length} assets`);
+  console.log(`[pipeline] wrote OHLC price series for ${Object.keys(out).length} assets`);
 }
 
 /** Publish the past year of recurring events as slim markers for the chart. */

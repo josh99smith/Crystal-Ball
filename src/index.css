@@ -824,11 +824,54 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   max-width: 160px;
 }
+.chart-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.chart-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.seg-btn {
+  background: var(--panel);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.seg .seg-btn {
+  border: 0;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+}
+.seg .seg-btn:last-child { border-right: 0; }
+.seg-btn.active {
+  background: var(--panel-2);
+  color: var(--text);
+  font-weight: 600;
+}
+.seg-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 .chart-legend {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin: 0 2px 8px;
+  margin: 0;
   flex-wrap: wrap;
 }
 .cl-asset {

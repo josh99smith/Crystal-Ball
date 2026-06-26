@@ -54,7 +54,7 @@ interface YahooChart {
   chart?: {
     result?: Array<{
       timestamp?: number[];
-      indicators?: { quote?: Array<{ open?: (number | null)[]; high?: (number | null)[]; low?: (number | null)[]; close?: (number | null)[] }> };
+      indicators?: { quote?: Array<{ open?: (number | null)[]; high?: (number | null)[]; low?: (number | null)[]; close?: (number | null)[]; volume?: (number | null)[] }> };
     }>;
   };
 }
@@ -83,12 +83,14 @@ export async function fetchDailyCloses(
           for (let i = 0; i < ts.length; i++) {
             const c = q.close[i];
             if (c == null) continue;
+            const v = q.volume?.[i];
             bars.push({
               date: new Date(ts[i] * 1000).toISOString().slice(0, 10),
               open: q.open?.[i] ?? c,
               high: q.high?.[i] ?? c,
               low: q.low?.[i] ?? c,
               close: c,
+              volume: v != null && v > 0 ? v : undefined,
             });
           }
           if (bars.length) return bars;
