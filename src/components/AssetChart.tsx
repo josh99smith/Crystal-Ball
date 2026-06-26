@@ -14,6 +14,7 @@ import { CATEGORY_META } from "../../shared/categories";
 import type { PastMarker } from "../usePastEvents";
 import type { ChartBar, PriceSeries } from "../useChartPrices";
 import { expectedMovePct } from "../strategy";
+import { sma } from "../chart/ma";
 
 type Mode = "area" | "line" | "candles";
 type RangeKey = "1M" | "3M" | "6M" | "1Y" | "ALL";
@@ -32,7 +33,7 @@ interface Props {
 
 interface ChartPrefs {
   mode: Mode; range: RangeKey; showVol: boolean;
-  showForward: boolean; showCone: boolean; compare: string;
+  showForward: boolean; showCone: boolean; compare: string; mas: number[];
 }
 const PREFS_KEY = "cb-chart-prefs";
 function loadPrefs(): Partial<ChartPrefs> {
@@ -40,6 +41,8 @@ function loadPrefs(): Partial<ChartPrefs> {
 }
 
 const COMPARE_COLOR = "#f5a623";
+const MA_PERIODS = [20, 50, 200] as const;
+const MA_COLORS: Record<number, string> = { 20: "#ffd166", 50: "#6ea8fe", 200: "#c792ea" };
 
 const DAY = 86400;
 const floorDay = (sec: number) => Math.floor(sec / DAY) * DAY;
@@ -81,6 +84,8 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
   const volSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const coneRef = useRef<ISeriesApi<"Line">[]>([]);
   const compareRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const maRef = useRef<ISeriesApi<"Line">[]>([]);
+  const maValuesRef = useRef<Map<number, Map<number, number>>>(new Map());
   const barsRef = useRef<Map<number, ChartBar>>(new Map());
   const markersRef = useRef<Map<number, MarkerInfo[]>>(new Map());
   const onSelectRef = useRef(onSelect);
@@ -94,14 +99,15 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
   const [showForward, setShowForward] = useState(prefs0.showForward ?? true);
   const [showCone, setShowCone] = useState(prefs0.showCone ?? true);
   const [compare, setCompare] = useState<string>(prefs0.compare ?? "");
+  const [mas, setMas] = useState<Set<number>>(new Set(prefs0.mas ?? []));
   const [hiddenCats, setHiddenCats] = useState<Set<string>>(new Set());
 
   // Persist chart preferences across reloads.
   useEffect(() => {
     try {
-      localStorage.setItem(PREFS_KEY, JSON.stringify({ mode, range, showVol, showForward, showCone, compare }));
+      localStorage.setItem(PREFS_KEY, JSON.stringify({ mode, range, showVol, showForward, showCone, compare, mas: [...mas] }));
     } catch { /* ignore */ }
-  }, [mode, range, showVol, showForward, showCone, compare]);
+  }, [mode, range, showVol, showForward, showCone, compare, mas]);
 
   // Crypto live fallback.
   useEffect(() => {
@@ -178,6 +184,12 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
           lines.push(`O ${fmtPrice(bar.o)} H ${fmtPrice(bar.h)} L ${fmtPrice(bar.l)} C ${fmtPrice(bar.c)}`);
         else lines.push(`${asset} ${fmtPrice(bar.c)}`);
       }
+      const maParts: string[] = [];
+      for (const p of [...maValuesRef.current.keys()].sort((a, b) => a - b)) {
+        const v = maValuesRef.current.get(p)?.get(day);
+        if (v != null) maParts.push(`MA${p} ${fmtPrice(v)}`);
+      }
+      if (maParts.length) lines.push(`<span class="tt-meta">${maParts.join(" · ")}</span>`);
       if (infos) {
         for (const i of infos.slice(0, 3)) {
           let s = `• ${i.title}`;
@@ -364,6 +376,37 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
     compareRef.current = s;
   }, [compare, asset, allPrices, effective, theme]);
 
+  // Moving-average overlays (SMA 20/50/200).
+  useEffect(() => {
+    const chart = chartRef.current;
+    for (const s of maRef.current) chart?.removeSeries(s);
+    maRef.current = [];
+    maValuesRef.current = new Map();
+    if (!chart || effective.length === 0 || mas.size === 0) return;
+    const sorted = [...effective].sort((a, b) => a.t - b.t);
+    const days = sorted.map((b) => floorDay(b.t));
+    const closes = sorted.map((b) => b.c);
+    for (const period of [...mas].sort((a, b) => a - b)) {
+      const vals = sma(closes, period);
+      const data: { time: UTCTimestamp; value: number }[] = [];
+      const valueMap = new Map<number, number>();
+      for (let i = 0; i < vals.length; i++) {
+        const v = vals[i];
+        if (v == null) continue;
+        data.push({ time: days[i] as UTCTimestamp, value: v });
+        valueMap.set(days[i], v);
+      }
+      if (data.length === 0) continue;
+      const line = chart.addLineSeries({
+        color: MA_COLORS[period], lineWidth: 1, priceLineVisible: false,
+        lastValueVisible: false, crosshairMarkerVisible: false,
+      });
+      line.setData(data);
+      maRef.current.push(line);
+      maValuesRef.current.set(period, valueMap);
+    }
+  }, [asset, effective, mas, theme]);
+
   if (effective.length === 0) {
     return (
       <p className="muted empty">
@@ -428,6 +471,26 @@ export function AssetChart({ asset, series, events, pastMarkers, onSelect, theme
             onClick={() => setShowCone((v) => !v)}>
             Cone
           </button>
+          <div className="seg" role="group" aria-label="Moving averages">
+            {MA_PERIODS.map((p) => {
+              const on = mas.has(p);
+              return (
+                <button key={p}
+                  className={on ? "seg-btn active" : "seg-btn"}
+                  style={on ? { color: MA_COLORS[p] } : undefined}
+                  title={`${p}-day simple moving average`}
+                  onClick={() =>
+                    setMas((prev) => {
+                      const next = new Set(prev);
+                      next.has(p) ? next.delete(p) : next.add(p);
+                      return next;
+                    })
+                  }>
+                  MA{p}
+                </button>
+              );
+            })}
+          </div>
           <select className="seg-btn cmp-select" value={compare}
             aria-label="Compare with asset" onChange={(e) => setCompare(e.target.value)}>
             <option value="">Compare…</option>
