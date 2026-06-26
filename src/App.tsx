@@ -254,6 +254,7 @@ export function App() {
               )}
               pastMarkers={pastEvents}
               onSelect={setSelectedEvent}
+              theme={theme}
             />
           )}
           {view === "lab" && (

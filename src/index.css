@@ -799,13 +799,66 @@ body {
   border-radius: 12px;
   padding: 12px;
 }
+.asset-chart-wrap {
+  position: relative;
+}
 .asset-chart-canvas {
   width: 100%;
-  height: 360px;
+  height: 380px;
 }
+@media (max-width: 640px) {
+  .asset-chart-canvas { height: 300px; }
+}
+.chart-tooltip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  z-index: 5;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  max-width: 160px;
+}
+.chart-legend {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 2px 8px;
+  flex-wrap: wrap;
+}
+.cl-asset {
+  font-weight: 700;
+}
+.cl-price {
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  font-weight: 700;
+}
+.cl-chg {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.cl-chg.up { color: var(--low); }
+.cl-chg.down { color: var(--high); }
 .chart-note {
   font-size: 11px;
   margin: 8px 2px 0;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .chart-asset-select {
   background: var(--panel);

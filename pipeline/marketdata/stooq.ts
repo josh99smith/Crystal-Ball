@@ -13,6 +13,7 @@ export interface PriceBar {
   high: number;
   low: number;
   close: number;
+  volume?: number;
 }
 
 // v1 asset id → Stooq symbol (best-effort; expand/verify as the universe grows).
